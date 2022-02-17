@@ -1,0 +1,13 @@
+[Unit]
+Description=Dd Vault Catalog Service
+
+[Service]
+ExecStart=/opt/dans.knaw.nl/dd-vault-catalog/bin/dd-vault-catalog server /etc/opt/dans.knaw.nl/dd-vault-catalog/config.yml
+# Java returns 143 even if the SIGTERM was handled correctly.
+SuccessExitStatus=143
+
+User=dd-vault-catalog
+Group=dd-vault-catalog
+
+[Install]
+WantedBy=multi-user.target
