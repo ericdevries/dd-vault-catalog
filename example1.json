@@ -1,0 +1,50 @@
+{
+  "tar_uuid": "34ea6b9a-e29b-47e8-843c-572c6cad3dc4",
+  "vault_path": "path2",
+  "archival_date": "2022-02-21T00:54:32",
+  "tar_parts": [
+    {
+      "checksum_algorithm": "md5",
+      "checksum_value": "the_checksum",
+      "part_name": "0000"
+    }
+  ],
+  "transfer_items": [
+    {
+      "bag_id": "urn:uuid:016526b1-c0ae-4237-854c-1f4d0b84d25a",
+      "datastation": "ds_archeology",
+      "dataverse_pid": "https://doi.org/10.17026/XXXXX",
+      "dataverse_pid_version": "V1.0",
+      "filepid_to_local_path": "filepid",
+      "metadata": {
+        "property1": "1",
+        "property2": 2
+      },
+      "nbn": "urn:nbn:nl:ui:13-DANSvalue",
+      "object_version": "1",
+      "ocfl_object_path": "01/65/26/b1-c0ae-4237-854c-1f4d0b84d25a",
+      "other_id": "pan:PAN00341",
+      "other_id_version": "3.1",
+      "sword_client": "PAN",
+      "sword_token": "sword:UUID"
+    },
+    {
+      "bag_id": "urn:uuid:a65d8a93-8fdc-4b0c-afae-f32dc3171960",
+      "datastation": "ds_science",
+      "dataverse_pid": "https://doi.org/10.12345/XXXXX",
+      "dataverse_pid_version": "V1.5",
+      "filepid_to_local_path": "filepid",
+      "metadata": {
+        "property1": "1",
+        "property2": 2
+      },
+      "nbn": "urn:nbn:nl:ui:14-DANSvalue",
+      "object_version": "1",
+      "ocfl_object_path": "a6/5d/8a/93-8fdc-4b0c-afae-f32dc3171960",
+      "other_id": "pan:PAN00123",
+      "other_id_version": "0.8",
+      "sword_client": "PAN",
+      "sword_token": "sword:53443d76-3ef3-4a12-8608-0d713c609ace"
+    }
+  ]
+}

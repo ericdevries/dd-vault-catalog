@@ -17,10 +17,26 @@
 package nl.knaw.dans.catalog;
 
 import io.dropwizard.Application;
+import io.dropwizard.db.PooledDataSourceFactory;
+import io.dropwizard.hibernate.HibernateBundle;
+import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import nl.knaw.dans.catalog.db.TarModel;
+import nl.knaw.dans.catalog.db.TarPartModel;
+import nl.knaw.dans.catalog.core.TarServiceImpl;
+import nl.knaw.dans.catalog.db.TransferItemModel;
+import nl.knaw.dans.catalog.db.TarModelDAO;
+import nl.knaw.dans.catalog.resource.TarAPIResource;
 
 public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfiguration> {
+    private final HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle = new HibernateBundle<>(TransferItemModel.class, TarModel.class, TarPartModel.class) {
+
+        @Override
+        public PooledDataSourceFactory getDataSourceFactory(DdVaultCatalogConfiguration configuration) {
+            return configuration.getDatabase();
+        }
+    };
 
     public static void main(final String[] args) throws Exception {
         new DdVaultCatalogApplication().run(args);
@@ -33,12 +49,17 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
 
     @Override
     public void initialize(final Bootstrap<DdVaultCatalogConfiguration> bootstrap) {
-        // TODO: application initialization
+        bootstrap.addBundle(hibernateBundle);
     }
 
     @Override
     public void run(final DdVaultCatalogConfiguration configuration, final Environment environment) {
 
+        var tarModelDao = new TarModelDAO(hibernateBundle.getSessionFactory());
+        var tarService = new UnitOfWorkAwareProxyFactory(hibernateBundle).create(TarServiceImpl.class,
+            TarModelDAO.class, tarModelDao);
+
+        environment.jersey().register(new TarAPIResource(tarService));
     }
 
 }

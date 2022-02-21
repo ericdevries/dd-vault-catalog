@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package nl.knaw.dans.catalog;
+package nl.knaw.dans.catalog.db;
 
-import io.dropwizard.Configuration;
-import io.dropwizard.db.DataSourceFactory;
+import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.SessionFactory;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
-public class DdVaultCatalogConfiguration extends Configuration {
-    @Valid
-    @NotNull
-    private DataSourceFactory database = new DataSourceFactory();
+public class TarModelDAO extends AbstractDAO<TarModel> {
 
-    public DataSourceFactory getDatabase() {
-        return database;
+    public TarModelDAO(SessionFactory sessionFactory) {
+        super(sessionFactory);
     }
 
-    public void setDatabase(DataSourceFactory database) {
-        this.database = database;
+    public Optional<TarModel> findById(String id) {
+        return Optional.ofNullable(get(id));
     }
 
+    public TarModel save(TarModel tar) {
+        return persist(tar);
+    }
 }

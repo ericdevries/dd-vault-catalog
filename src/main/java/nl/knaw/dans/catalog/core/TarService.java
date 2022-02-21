@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 
-package nl.knaw.dans.catalog;
+package nl.knaw.dans.catalog.core;
 
-import io.dropwizard.Configuration;
-import io.dropwizard.db.DataSourceFactory;
+import nl.knaw.dans.catalog.api.Tar;
+import nl.knaw.dans.catalog.db.TarModel;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
-public class DdVaultCatalogConfiguration extends Configuration {
-    @Valid
-    @NotNull
-    private DataSourceFactory database = new DataSourceFactory();
+public interface TarService {
 
-    public DataSourceFactory getDatabase() {
-        return database;
-    }
+    Optional<Tar> get(String id);
 
-    public void setDatabase(DataSourceFactory database) {
-        this.database = database;
-    }
-
+    void saveTar(Tar tar);
 }
