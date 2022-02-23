@@ -17,7 +17,6 @@
 package nl.knaw.dans.catalog.core;
 
 import nl.knaw.dans.catalog.api.Tar;
-import nl.knaw.dans.catalog.db.TransferItemModel;
 
 import java.util.Optional;
 

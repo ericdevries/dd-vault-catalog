@@ -47,9 +47,4 @@ public class SolrServiceImpl implements SolrService {
         solrClient.add(documents);
         solrClient.commit();
     }
-
-    @Override
-    public List<Tar> searchArchives(String query) {
-        return null;
-    }
 }

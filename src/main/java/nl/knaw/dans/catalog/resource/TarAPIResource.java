@@ -17,7 +17,6 @@
 package nl.knaw.dans.catalog.resource;
 
 import io.dropwizard.hibernate.UnitOfWork;
-import io.dropwizard.views.freemarker.FreemarkerViewRenderer;
 import nl.knaw.dans.catalog.api.Tar;
 import nl.knaw.dans.catalog.core.SolrService;
 import nl.knaw.dans.catalog.core.TarService;
@@ -36,7 +35,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.net.URI;
 
 @Path("/api/tar")
 @Produces(MediaType.APPLICATION_JSON)

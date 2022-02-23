@@ -24,7 +24,6 @@ import nl.knaw.dans.catalog.api.TransferItem;
 import nl.knaw.dans.catalog.db.TarModel;
 import nl.knaw.dans.catalog.db.TarModelDAO;
 import nl.knaw.dans.catalog.db.TarPartModel;
-import nl.knaw.dans.catalog.db.TransferItemDao;
 import nl.knaw.dans.catalog.db.TransferItemModel;
 
 import java.io.IOException;

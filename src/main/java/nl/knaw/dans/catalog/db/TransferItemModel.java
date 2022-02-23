@@ -16,9 +16,7 @@
 
 package nl.knaw.dans.catalog.db;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

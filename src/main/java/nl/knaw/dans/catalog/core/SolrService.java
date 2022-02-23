@@ -20,11 +20,9 @@ import nl.knaw.dans.catalog.api.Tar;
 import org.apache.solr.client.solrj.SolrServerException;
 
 import java.io.IOException;
-import java.util.List;
 
 public interface SolrService {
 
     void indexArchive(Tar tar) throws SolrServerException, IOException;
 
-    List<Tar> searchArchives(String query);
 }

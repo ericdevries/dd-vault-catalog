@@ -18,7 +18,6 @@ package nl.knaw.dans.catalog.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 public class TarPart {
     @JsonProperty("part_name")
     private String partName;

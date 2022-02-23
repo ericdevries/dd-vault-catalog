@@ -24,17 +24,15 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
 import nl.knaw.dans.catalog.core.SolrServiceImpl;
+import nl.knaw.dans.catalog.core.TarServiceImpl;
 import nl.knaw.dans.catalog.core.TransferItemServiceImpl;
 import nl.knaw.dans.catalog.db.TarModel;
+import nl.knaw.dans.catalog.db.TarModelDAO;
 import nl.knaw.dans.catalog.db.TarPartModel;
-import nl.knaw.dans.catalog.core.TarServiceImpl;
 import nl.knaw.dans.catalog.db.TransferItemDao;
 import nl.knaw.dans.catalog.db.TransferItemModel;
-import nl.knaw.dans.catalog.db.TarModelDAO;
 import nl.knaw.dans.catalog.resource.ArchiveDetailResource;
 import nl.knaw.dans.catalog.resource.TarAPIResource;
-
-import java.util.Map;
 
 public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfiguration> {
     private final HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle = new HibernateBundle<>(TransferItemModel.class, TarModel.class, TarPartModel.class) {
@@ -72,7 +70,6 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
             TransferItemDao.class, transferItemDao);
 
         var solrService = new SolrServiceImpl();
-
 
         environment.jersey().register(new TarAPIResource(tarService, solrService));
         environment.jersey().register(new ArchiveDetailResource(transferItemService));
