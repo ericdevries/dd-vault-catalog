@@ -17,20 +17,26 @@
 package nl.knaw.dans.catalog.resource;
 
 import io.dropwizard.hibernate.UnitOfWork;
+import io.dropwizard.views.freemarker.FreemarkerViewRenderer;
 import nl.knaw.dans.catalog.api.Tar;
+import nl.knaw.dans.catalog.core.SolrService;
 import nl.knaw.dans.catalog.core.TarService;
+import org.apache.solr.client.solrj.SolrServerException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.net.URI;
 
 @Path("/api/tar")
 @Produces(MediaType.APPLICATION_JSON)
@@ -38,9 +44,11 @@ import javax.ws.rs.core.Response;
 public class TarAPIResource {
 
     private final TarService tarService;
+    private final SolrService solrService;
 
-    public TarAPIResource(TarService tarService) {
+    public TarAPIResource(TarService tarService, SolrService solrService) {
         this.tarService = tarService;
+        this.solrService = solrService;
     }
 
     @GET
@@ -53,12 +61,23 @@ public class TarAPIResource {
 
     @POST
     @UnitOfWork
-    public Tar add(@NotNull @Valid Tar tar) {
+    public Tar add(@NotNull @Valid Tar tar) throws SolrServerException, IOException {
         if (tarService.get(tar.getTarUuid()).isPresent()) {
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
         tarService.saveTar(tar);
+        solrService.indexArchive(tar);
+
+        return tar;
+    }
+
+    @PUT
+    @Path("/{id}")
+    @UnitOfWork
+    public Tar update(@PathParam("id") String id, @NotNull @Valid Tar tar) throws SolrServerException, IOException {
+        tarService.saveTar(tar);
+        solrService.indexArchive(tar);
         return tar;
     }
 }

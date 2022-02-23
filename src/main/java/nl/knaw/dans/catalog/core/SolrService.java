@@ -17,13 +17,14 @@
 package nl.knaw.dans.catalog.core;
 
 import nl.knaw.dans.catalog.api.Tar;
-import nl.knaw.dans.catalog.db.TransferItemModel;
+import org.apache.solr.client.solrj.SolrServerException;
 
-import java.util.Optional;
+import java.io.IOException;
+import java.util.List;
 
-public interface TarService {
+public interface SolrService {
 
-    Optional<Tar> get(String id);
+    void indexArchive(Tar tar) throws SolrServerException, IOException;
 
-    void saveTar(Tar tar);
+    List<Tar> searchArchives(String query);
 }

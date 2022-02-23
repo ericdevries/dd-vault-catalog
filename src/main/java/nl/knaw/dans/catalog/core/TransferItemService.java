@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nl.knaw.dans.catalog.core;
 
-import nl.knaw.dans.catalog.api.Tar;
 import nl.knaw.dans.catalog.db.TransferItemModel;
 
 import java.util.Optional;
 
-public interface TarService {
+public interface TransferItemService {
 
-    Optional<Tar> get(String id);
+    Optional<TransferItemModel> findByNbn(String id);
 
-    void saveTar(Tar tar);
 }

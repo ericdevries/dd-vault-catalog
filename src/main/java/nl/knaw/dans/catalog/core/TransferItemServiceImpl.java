@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nl.knaw.dans.catalog.core;
 
-import nl.knaw.dans.catalog.api.Tar;
+import io.dropwizard.hibernate.UnitOfWork;
+import nl.knaw.dans.catalog.db.TransferItemDao;
 import nl.knaw.dans.catalog.db.TransferItemModel;
 
 import java.util.Optional;
 
-public interface TarService {
+public class TransferItemServiceImpl implements TransferItemService {
+    private final TransferItemDao transferItemDao;
 
-    Optional<Tar> get(String id);
+    public TransferItemServiceImpl(TransferItemDao transferItemDao) {
+        this.transferItemDao = transferItemDao;
+    }
 
-    void saveTar(Tar tar);
+    @Override
+    @UnitOfWork
+    public Optional<TransferItemModel> findByNbn(String id) {
+        return transferItemDao.findByNbn(id);
+    }
+
 }

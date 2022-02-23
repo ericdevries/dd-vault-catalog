@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.knaw.dans.catalog.db;
 
-package nl.knaw.dans.catalog.core;
-
-import nl.knaw.dans.catalog.api.Tar;
-import nl.knaw.dans.catalog.db.TransferItemModel;
+import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.SessionFactory;
 
 import java.util.Optional;
 
-public interface TarService {
+public class TransferItemDao extends AbstractDAO<TransferItemModel> {
 
-    Optional<Tar> get(String id);
+    public TransferItemDao(SessionFactory sessionFactory) {
+        super(sessionFactory);
+    }
 
-    void saveTar(Tar tar);
+    public Optional<TransferItemModel> findByNbn(String nbn) {
+        var query = currentSession().createQuery(
+            "from TransferItemModel where nbn = :nbn", TransferItemModel.class);
+
+        query.setParameter("nbn", nbn);
+
+        return query.uniqueResultOptional();
+    }
 }

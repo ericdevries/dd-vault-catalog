@@ -42,6 +42,7 @@ public class Tar {
     private LocalDateTime archivalDate;
 
     @Valid
+    @NotEmpty
     @JsonProperty("tar_parts")
     private List<TarPart> tarParts = new ArrayList<>();
 

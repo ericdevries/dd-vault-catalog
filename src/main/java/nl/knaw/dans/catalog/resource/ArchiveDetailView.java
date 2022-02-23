@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package nl.knaw.dans.catalog.core;
+package nl.knaw.dans.catalog.resource;
 
-import nl.knaw.dans.catalog.api.Tar;
+import io.dropwizard.views.View;
 import nl.knaw.dans.catalog.db.TransferItemModel;
 
-import java.util.Optional;
+public class ArchiveDetailView extends View {
+    private final TransferItemModel transferItem;
 
-public interface TarService {
+    protected ArchiveDetailView(TransferItemModel transferItem) {
+        super("transfer-item.ftl");
+        this.transferItem = transferItem;
+    }
 
-    Optional<Tar> get(String id);
-
-    void saveTar(Tar tar);
+    public TransferItemModel getTransferItem() {
+        return transferItem;
+    }
 }

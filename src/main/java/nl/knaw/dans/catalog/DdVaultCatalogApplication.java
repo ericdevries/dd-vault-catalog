@@ -22,12 +22,19 @@ import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.dropwizard.views.ViewBundle;
+import nl.knaw.dans.catalog.core.SolrServiceImpl;
+import nl.knaw.dans.catalog.core.TransferItemServiceImpl;
 import nl.knaw.dans.catalog.db.TarModel;
 import nl.knaw.dans.catalog.db.TarPartModel;
 import nl.knaw.dans.catalog.core.TarServiceImpl;
+import nl.knaw.dans.catalog.db.TransferItemDao;
 import nl.knaw.dans.catalog.db.TransferItemModel;
 import nl.knaw.dans.catalog.db.TarModelDAO;
+import nl.knaw.dans.catalog.resource.ArchiveDetailResource;
 import nl.knaw.dans.catalog.resource.TarAPIResource;
+
+import java.util.Map;
 
 public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfiguration> {
     private final HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle = new HibernateBundle<>(TransferItemModel.class, TarModel.class, TarPartModel.class) {
@@ -50,16 +57,25 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
     @Override
     public void initialize(final Bootstrap<DdVaultCatalogConfiguration> bootstrap) {
         bootstrap.addBundle(hibernateBundle);
+        bootstrap.addBundle(new ViewBundle<>());
     }
 
     @Override
     public void run(final DdVaultCatalogConfiguration configuration, final Environment environment) {
 
         var tarModelDao = new TarModelDAO(hibernateBundle.getSessionFactory());
+        var transferItemDao = new TransferItemDao(hibernateBundle.getSessionFactory());
         var tarService = new UnitOfWorkAwareProxyFactory(hibernateBundle).create(TarServiceImpl.class,
             TarModelDAO.class, tarModelDao);
 
-        environment.jersey().register(new TarAPIResource(tarService));
+        var transferItemService = new UnitOfWorkAwareProxyFactory(hibernateBundle).create(TransferItemServiceImpl.class,
+            TransferItemDao.class, transferItemDao);
+
+        var solrService = new SolrServiceImpl();
+
+
+        environment.jersey().register(new TarAPIResource(tarService, solrService));
+        environment.jersey().register(new ArchiveDetailResource(transferItemService));
     }
 
 }
