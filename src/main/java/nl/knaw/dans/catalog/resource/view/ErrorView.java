@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package nl.knaw.dans.catalog.resource;
+package nl.knaw.dans.catalog.resource.view;
 
+import io.dropwizard.jersey.errors.ErrorMessage;
 import io.dropwizard.views.View;
-import nl.knaw.dans.catalog.db.TransferItemModel;
 
-public class ArchiveDetailView extends View {
-    private final TransferItemModel transferItem;
+public class ErrorView extends View {
+    private final ErrorMessage errorMessage;
 
-    protected ArchiveDetailView(TransferItemModel transferItem) {
-        super("transfer-item.ftl");
-        this.transferItem = transferItem;
+    public ErrorView(ErrorMessage errorMessage) {
+        super("error.ftl");
+        this.errorMessage = errorMessage;
     }
 
-    public TransferItemModel getTransferItem() {
-        return transferItem;
+    public ErrorMessage getErrorMessage() {
+        return errorMessage;
     }
+
 }

@@ -18,10 +18,14 @@ package nl.knaw.dans.catalog.core;
 import io.dropwizard.hibernate.UnitOfWork;
 import nl.knaw.dans.catalog.db.TransferItemDao;
 import nl.knaw.dans.catalog.db.TransferItemModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
 public class TransferItemServiceImpl implements TransferItemService {
+    private static final Logger log = LoggerFactory.getLogger(TransferItemServiceImpl.class);
+
     private final TransferItemDao transferItemDao;
 
     public TransferItemServiceImpl(TransferItemDao transferItemDao) {
@@ -31,6 +35,7 @@ public class TransferItemServiceImpl implements TransferItemService {
     @Override
     @UnitOfWork
     public Optional<TransferItemModel> findByNbn(String id) {
+        log.trace("Getting TransferItem by NBN {}", id);
         return transferItemDao.findByNbn(id);
     }
 

@@ -17,6 +17,9 @@
 package nl.knaw.dans.catalog.resource;
 
 import nl.knaw.dans.catalog.core.TransferItemService;
+import nl.knaw.dans.catalog.resource.view.ArchiveDetailView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -29,6 +32,8 @@ import javax.ws.rs.core.Response;
 @Path("/nbn/{id}")
 @Produces(MediaType.TEXT_HTML)
 public class ArchiveDetailResource {
+    private static final Logger log = LoggerFactory.getLogger(ArchiveDetailResource.class);
+
     private final TransferItemService transferItemService;
 
     public ArchiveDetailResource(TransferItemService transferItemService) {
@@ -37,13 +42,10 @@ public class ArchiveDetailResource {
 
     @GET
     public ArchiveDetailView get(@PathParam("id") String id) {
-        var transferItem = transferItemService.findByNbn(id);
-
-        if (transferItem.isEmpty()) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
-
-        return new ArchiveDetailView(transferItem.get());
+        log.debug("Received request for page with NBN {}", id);
+        return transferItemService.findByNbn(id)
+            .map(ArchiveDetailView::new)
+            .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
     }
 
 }

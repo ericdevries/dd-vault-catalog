@@ -21,6 +21,8 @@ import nl.knaw.dans.catalog.api.Tar;
 import nl.knaw.dans.catalog.core.SolrService;
 import nl.knaw.dans.catalog.core.TarService;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -40,6 +42,7 @@ import java.io.IOException;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TarAPIResource {
+    private static final Logger log = LoggerFactory.getLogger(TarAPIResource.class);
 
     private final TarService tarService;
     private final SolrService solrService;
@@ -53,19 +56,28 @@ public class TarAPIResource {
     @Path("/{id}")
     @UnitOfWork
     public Tar get(@PathParam("id") String id) {
-        return tarService.get(id)
-            .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
+        log.debug("Fetching TAR with id {}", id);
+        return tarService.get(id).orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
     }
 
     @POST
     @UnitOfWork
-    public Tar add(@NotNull @Valid Tar tar) throws SolrServerException, IOException {
+    public Tar add(@NotNull @Valid Tar tar) {
+        log.info("Received new TAR {}, storing in database", tar);
         if (tarService.get(tar.getTarUuid()).isPresent()) {
+            log.error("TAR with ID {} is already present in database", tar.getTarUuid());
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
         tarService.saveTar(tar);
-        solrService.indexArchive(tar);
+
+        try {
+            log.info("Adding TAR document to Solr index");
+            solrService.indexArchive(tar);
+        }
+        catch (IOException | SolrServerException e) {
+            log.error("Unable to save document in Solr index", e);
+        }
 
         return tar;
     }
@@ -73,9 +85,25 @@ public class TarAPIResource {
     @PUT
     @Path("/{id}")
     @UnitOfWork
-    public Tar update(@PathParam("id") String id, @NotNull @Valid Tar tar) throws SolrServerException, IOException {
+    public Tar update(@PathParam("id") String id, @NotNull @Valid Tar tar) {
+        log.info("Received existing TAR {}, ID is {}, storing in database", tar, id);
+
+        if (!id.equals(tar.getTarUuid())) {
+            log.warn("ID's are not the same, returning error");
+            throw new WebApplicationException(String.format("ID %s does not match tar uuid %s", id, tar.getTarUuid()),
+                Response.Status.BAD_REQUEST);
+        }
+
         tarService.saveTar(tar);
-        solrService.indexArchive(tar);
+
+        try {
+            log.info("Updating TAR document in Solr index");
+            solrService.indexArchive(tar);
+        }
+        catch (IOException | SolrServerException e) {
+            log.error("Unable to save document in Solr index", e);
+        }
+
         return tar;
     }
 }

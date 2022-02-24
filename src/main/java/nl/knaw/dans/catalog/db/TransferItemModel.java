@@ -56,7 +56,7 @@ public class TransferItemModel {
     private String swordToken;
     @Column(name = "ocfl_object_path", nullable = false)
     private String ocflObjectPath;
-    @Column(name = "metadata", nullable = false)
+    @Column(name = "metadata", nullable = false, length = 100000)
     @Type(type = "materialized_blob")
     private byte[] metadata;
     @Column(name = "filepid_to_local_path")

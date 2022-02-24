@@ -16,35 +16,57 @@
 
 package nl.knaw.dans.catalog.core;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
 import nl.knaw.dans.catalog.api.Tar;
+import nl.knaw.dans.catalog.resource.ArchiveDetailResource;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.common.SolrInputDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SolrServiceImpl implements SolrService {
+    private static final Logger log = LoggerFactory.getLogger(SolrServiceImpl.class);
+
     private final HttpSolrClient solrClient;
 
-    public SolrServiceImpl() {
-        solrClient = new HttpSolrClient.Builder("http://localhost:8983/solr/gettingstarted").build();
+    public SolrServiceImpl(DdVaultCatalogConfiguration.SolrConfig solrConfig) {
+        solrClient = new HttpSolrClient.Builder(solrConfig.getUrl()).build();
     }
 
     @Override
     public void indexArchive(Tar tar) throws SolrServerException, IOException {
+        Objects.requireNonNull(tar, "tar cannot be null");
+
+        log.trace("Indexing archive {}", tar);
         var documents = tar.getTransferItems().stream().map(transferItem -> {
             var doc = new SolrInputDocument();
             doc.addField("datastation", transferItem.getDatastation());
             doc.addField("nbn", transferItem.getNbn());
             doc.addField("dataset_pid", transferItem.getDataversePid());
-            //            doc.addField("metadata", tar.getTransferItems().stream().map(TransferItem::getMetadata).collect(Collectors.toList()));
 
+            flattenMetadata(transferItem.getMetadata())
+                .forEach(doc::addField);
+
+            log.trace("Document generated: {}", doc);
             return doc;
         }).collect(Collectors.toList());
 
+        log.debug("Indexing document with ID {}", tar.getTarUuid());
         solrClient.add(documents);
         solrClient.commit();
+    }
+
+    Map<String, String> flattenMetadata(JsonNode node) {
+        // TODO read metadata from json
+        //            doc.addField("metadata_dcterms_creator", transferItem.getMetadata().get("dcterms:creator"));
+        return Map.of();
     }
 }

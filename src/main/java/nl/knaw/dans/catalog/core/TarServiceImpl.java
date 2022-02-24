@@ -25,6 +25,8 @@ import nl.knaw.dans.catalog.db.TarModel;
 import nl.knaw.dans.catalog.db.TarModelDAO;
 import nl.knaw.dans.catalog.db.TarPartModel;
 import nl.knaw.dans.catalog.db.TransferItemModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -32,6 +34,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TarServiceImpl implements TarService {
+    private static final Logger log = LoggerFactory.getLogger(TarServiceImpl.class);
+
     private final TarModelDAO tarModelDAO;
 
     public TarServiceImpl(TarModelDAO tarModelDAO) {
@@ -40,6 +44,7 @@ public class TarServiceImpl implements TarService {
 
     @Override
     public Optional<Tar> get(String id) {
+        log.trace("Getting TAR with ID {}", id);
         return tarModelDAO.findById(id)
             .map(this::convertModelToApi);
     }
@@ -47,6 +52,7 @@ public class TarServiceImpl implements TarService {
     @Override
     @UnitOfWork
     public void saveTar(Tar tar) {
+        log.trace("Saving TAR {}", tar);
         var model = convertTarToModel(tar);
         tarModelDAO.save(model);
     }

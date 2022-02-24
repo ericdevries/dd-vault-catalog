@@ -20,8 +20,11 @@ import io.dropwizard.Application;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
+import io.dropwizard.jersey.errors.ErrorEntityWriter;
+import io.dropwizard.jersey.errors.ErrorMessage;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.dropwizard.views.View;
 import io.dropwizard.views.ViewBundle;
 import nl.knaw.dans.catalog.core.SolrServiceImpl;
 import nl.knaw.dans.catalog.core.TarServiceImpl;
@@ -33,6 +36,9 @@ import nl.knaw.dans.catalog.db.TransferItemDao;
 import nl.knaw.dans.catalog.db.TransferItemModel;
 import nl.knaw.dans.catalog.resource.ArchiveDetailResource;
 import nl.knaw.dans.catalog.resource.TarAPIResource;
+import nl.knaw.dans.catalog.resource.view.ErrorView;
+
+import javax.ws.rs.core.MediaType;
 
 public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfiguration> {
     private final HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle = new HibernateBundle<>(TransferItemModel.class, TarModel.class, TarPartModel.class) {
@@ -69,10 +75,17 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
         var transferItemService = new UnitOfWorkAwareProxyFactory(hibernateBundle).create(TransferItemServiceImpl.class,
             TransferItemDao.class, transferItemDao);
 
-        var solrService = new SolrServiceImpl();
+        var solrService = new SolrServiceImpl(configuration.getSolr());
 
         environment.jersey().register(new TarAPIResource(tarService, solrService));
         environment.jersey().register(new ArchiveDetailResource(transferItemService));
-    }
+        environment.jersey().register(new ErrorEntityWriter<ErrorMessage, View>(MediaType.TEXT_HTML_TYPE, View.class) {
 
+            @Override
+            protected View getRepresentation(ErrorMessage errorMessage) {
+                return new ErrorView(errorMessage);
+            }
+        });
+
+    }
 }

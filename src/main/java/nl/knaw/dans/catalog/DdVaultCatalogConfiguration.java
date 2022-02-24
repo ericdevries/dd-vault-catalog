@@ -26,6 +26,16 @@ public class DdVaultCatalogConfiguration extends Configuration {
     @Valid
     @NotNull
     private DataSourceFactory database = new DataSourceFactory();
+    @Valid
+    private SolrConfig solr;
+
+    public SolrConfig getSolr() {
+        return solr;
+    }
+
+    public void setSolr(SolrConfig solr) {
+        this.solr = solr;
+    }
 
     public DataSourceFactory getDatabase() {
         return database;
@@ -35,4 +45,15 @@ public class DdVaultCatalogConfiguration extends Configuration {
         this.database = database;
     }
 
+    public static class SolrConfig {
+        private String url;
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+    }
 }
