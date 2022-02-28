@@ -19,7 +19,6 @@ package nl.knaw.dans.catalog.core;
 import com.fasterxml.jackson.databind.JsonNode;
 import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
 import nl.knaw.dans.catalog.api.Tar;
-import nl.knaw.dans.catalog.resource.ArchiveDetailResource;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.common.SolrInputDocument;
@@ -27,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -52,8 +50,8 @@ public class SolrServiceImpl implements SolrService {
             doc.addField("nbn", transferItem.getNbn());
             doc.addField("dataset_pid", transferItem.getDataversePid());
 
-            flattenMetadata(transferItem.getMetadata())
-                .forEach(doc::addField);
+//            flattenMetadata(transferItem.getMetadata())
+//                .forEach(doc::addField);
 
             log.trace("Document generated: {}", doc);
             return doc;

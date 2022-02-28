@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package nl.knaw.dans.catalog.resource;
+package nl.knaw.dans.catalog.resource.web;
 
 import nl.knaw.dans.catalog.core.TransferItemService;
 import nl.knaw.dans.catalog.resource.view.ArchiveDetailView;

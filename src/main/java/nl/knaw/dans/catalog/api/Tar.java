@@ -23,6 +23,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +39,8 @@ public class Tar {
 
     @NotNull
     @JsonProperty("archival_date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime archivalDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING) //, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private OffsetDateTime archivalDate;
 
     @Valid
     @NotEmpty
@@ -83,16 +84,22 @@ public class Tar {
         this.tarUuid = tarUuid;
     }
 
-    public LocalDateTime getArchivalDate() {
+    public OffsetDateTime getArchivalDate() {
         return archivalDate;
     }
 
-    public void setArchivalDate(LocalDateTime archivalDate) {
+    public void setArchivalDate(OffsetDateTime archivalDate) {
         this.archivalDate = archivalDate;
     }
 
     @Override
     public String toString() {
-        return "Tar{" + "tarUuid='" + tarUuid + '\'' + ", vaultPath='" + vaultPath + '\'' + ", archivalDate=" + archivalDate + '}';
+        return "Tar{" +
+            "tarUuid='" + tarUuid + '\'' +
+            ", vaultPath='" + vaultPath + '\'' +
+            ", archivalDate=" + archivalDate +
+            ", tarParts=" + tarParts +
+            ", transferItems=" + transferItems +
+            '}';
     }
 }

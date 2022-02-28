@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package nl.knaw.dans.catalog.resource;
+package nl.knaw.dans.catalog.resource.api;
 
 import io.dropwizard.hibernate.UnitOfWork;
+import io.swagger.v3.oas.annotations.Operation;
 import nl.knaw.dans.catalog.api.Tar;
 import nl.knaw.dans.catalog.core.SolrService;
 import nl.knaw.dans.catalog.core.TarService;
@@ -54,6 +55,7 @@ public class TarAPIResource {
 
     @GET
     @Path("/{id}")
+    @Operation(operationId = "getArchiveById", description = "Get archive details", tags = "tar")
     @UnitOfWork
     public Tar get(@PathParam("id") String id) {
         log.debug("Fetching TAR with id {}", id);
@@ -62,6 +64,7 @@ public class TarAPIResource {
 
     @POST
     @UnitOfWork
+    @Operation(operationId = "addArchive", description = "Adds a new archive", tags = "tar")
     public Tar add(@NotNull @Valid Tar tar) {
         log.info("Received new TAR {}, storing in database", tar);
         if (tarService.get(tar.getTarUuid()).isPresent()) {
@@ -85,6 +88,7 @@ public class TarAPIResource {
     @PUT
     @Path("/{id}")
     @UnitOfWork
+    @Operation(operationId = "updateArchive", description = "Updates an existing archive", tags = "tar")
     public Tar update(@PathParam("id") String id, @NotNull @Valid Tar tar) {
         log.info("Received existing TAR {}, ID is {}, storing in database", tar, id);
 

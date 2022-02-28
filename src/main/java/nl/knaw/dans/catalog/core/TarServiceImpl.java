@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -61,7 +62,7 @@ public class TarServiceImpl implements TarService {
         var tar = new Tar();
         tar.setTarUuid(model.getTarUuid());
         tar.setVaultPath(model.getVaultPath());
-        tar.setArchivalDate(model.getArchivalDate());
+        tar.setArchivalDate(model.getArchivalDate().atOffset(ZoneOffset.UTC));
 
         var parts = model.getTarParts().stream().map(p -> {
             var part = new TarPart();
@@ -85,13 +86,8 @@ public class TarServiceImpl implements TarService {
             item.setSwordClient(i.getSwordClient());
             item.setSwordToken(i.getSwordToken());
             item.setOcflObjectPath(i.getOcflObjectPath());
-            try {
-                item.setMetadata(new JsonMapper().readTree(i.getMetadata()));
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-            item.setFilepidToLocalPath(i.getFilepidToLocalPath());
+            item.setMetadata(new String(i.getMetadata())); // new JsonMapper().readTree(i.getMetadata()));
+            item.setFilepidToLocalPath(new String(i.getFilepidToLocalPath()));
             return item;
         }).collect(Collectors.toList());
 
@@ -105,7 +101,7 @@ public class TarServiceImpl implements TarService {
         var model = new TarModel();
         model.setTarUuid(tar.getTarUuid());
         model.setVaultPath(tar.getVaultPath());
-        model.setArchivalDate(tar.getArchivalDate());
+        model.setArchivalDate(tar.getArchivalDate().toLocalDateTime());
 
         var parts = tar.getTarParts().stream().map(p -> {
             var part = new TarPartModel();
@@ -129,8 +125,8 @@ public class TarServiceImpl implements TarService {
             item.setSwordClient(i.getSwordClient());
             item.setSwordToken(i.getSwordToken());
             item.setOcflObjectPath(i.getOcflObjectPath());
-            item.setMetadata(i.getMetadata().toString().getBytes(StandardCharsets.UTF_8));
-            item.setFilepidToLocalPath(i.getFilepidToLocalPath());
+            item.setMetadata(i.getMetadata().getBytes(StandardCharsets.UTF_8));
+            item.setFilepidToLocalPath(i.getFilepidToLocalPath().getBytes(StandardCharsets.UTF_8));
             item.setTar(model);
             return item;
         }).collect(Collectors.toList());

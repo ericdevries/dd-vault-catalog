@@ -60,7 +60,8 @@ public class TransferItemModel {
     @Type(type = "materialized_blob")
     private byte[] metadata;
     @Column(name = "filepid_to_local_path")
-    private String filepidToLocalPath; // what is this?
+    @Type(type = "materialized_blob")
+    private byte[] filepidToLocalPath; // what is this?
 
     public String getBagId() {
         return bagId;
@@ -166,11 +167,11 @@ public class TransferItemModel {
         this.metadata = metadata;
     }
 
-    public String getFilepidToLocalPath() {
+    public byte[] getFilepidToLocalPath() {
         return filepidToLocalPath;
     }
 
-    public void setFilepidToLocalPath(String filepidToLocalPath) {
+    public void setFilepidToLocalPath(byte[] filepidToLocalPath) {
         this.filepidToLocalPath = filepidToLocalPath;
     }
 

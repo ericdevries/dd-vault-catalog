@@ -17,7 +17,6 @@
 package nl.knaw.dans.catalog.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -54,8 +53,8 @@ public class TransferItem {
     @JsonProperty("ocfl_object_path")
     private String ocflObjectPath;
     @NotNull
-    @JsonProperty("metadata")
-    private JsonNode metadata;
+    @JsonProperty
+    private String metadata;
     @JsonProperty("filepid_to_local_path")
     private String filepidToLocalPath; // what is this?
 
@@ -147,11 +146,11 @@ public class TransferItem {
         this.ocflObjectPath = ocflObjectPath;
     }
 
-    public JsonNode getMetadata() {
+    public String getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(JsonNode metadata) {
+    public void setMetadata(String metadata) {
         this.metadata = metadata;
     }
 

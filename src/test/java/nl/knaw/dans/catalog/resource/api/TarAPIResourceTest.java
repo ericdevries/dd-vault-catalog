@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package nl.knaw.dans.catalog.resource;
+package nl.knaw.dans.catalog.resource.api;
 
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import io.dropwizard.testing.junit5.ResourceExtension;
@@ -30,6 +30,7 @@ import org.mockito.Mockito;
 
 import javax.ws.rs.client.Entity;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,7 +75,7 @@ class TarAPIResourceTest {
     void createTar() {
         var entity = new Tar();
         entity.setTarUuid("123");
-        entity.setArchivalDate(LocalDateTime.now());
+        entity.setArchivalDate(OffsetDateTime.now());
         entity.setVaultPath("vault-x");
 
         var transferItem = new TransferItem();
@@ -86,6 +87,7 @@ class TarAPIResourceTest {
         transferItem.setOcflObjectPath("path/to/thing");
         transferItem.setSwordClient("PAR");
         transferItem.setNbn("nbn:version");
+        transferItem.setMetadata("{}");
 
         var part = new TarPart();
         part.setPartName("0000");
@@ -93,8 +95,8 @@ class TarAPIResourceTest {
         part.setChecksumValue("thevalue");
 
         entity.setTarParts(List.of(part));
-
         entity.setTransferItems(List.of(transferItem));
+
         var response = EXT.target("/api/tar/").request().post(Entity.json(entity));
         assertEquals(200, response.getStatusInfo().getStatusCode());
     }
@@ -103,7 +105,7 @@ class TarAPIResourceTest {
     void createTarIncomplete() {
         var entity = new Tar();
         entity.setTarUuid("123");
-        entity.setArchivalDate(LocalDateTime.now());
+        entity.setArchivalDate(OffsetDateTime.now());
         entity.setVaultPath("vault-x");
         var response = EXT.target("/api/tar/").request().post(Entity.json(entity));
         assertEquals(422, response.getStatusInfo().getStatusCode());
