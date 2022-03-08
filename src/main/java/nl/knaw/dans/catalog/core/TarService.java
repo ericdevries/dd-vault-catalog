@@ -16,7 +16,7 @@
 
 package nl.knaw.dans.catalog.core;
 
-import nl.knaw.dans.catalog.api.Tar;
+import nl.knaw.dans.catalog.db.Tar;
 
 import java.util.Optional;
 
@@ -24,5 +24,5 @@ public interface TarService {
 
     Optional<Tar> get(String id);
 
-    void saveTar(Tar tar);
+    Tar saveTar(Tar tar);
 }

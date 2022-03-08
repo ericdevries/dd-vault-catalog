@@ -1,7 +1,7 @@
 {
   "tar_uuid": "34ea6b9a-e29b-47e8-843c-572c6cad3dc4",
   "vault_path": "path2",
-  "archival_date": "2022-02-21T00:54:32",
+  "archival_date": "2022-02-21T00:54:32Z",
   "tar_parts": [
     {
       "checksum_algorithm": "md5",
@@ -16,6 +16,8 @@
       "dataverse_pid": "https://doi.org/10.17026/XXXXX",
       "dataverse_pid_version": "V1.0",
       "filepid_to_local_path": "filepid",
+      "version_major": 1,
+      "version_minor": 1,
       "metadata": {
         "@context": {
           "Author": "http://purl.org/dc/terms/creator",
@@ -153,6 +155,8 @@
       "dataverse_pid": "https://doi.org/10.12345/XXXXX",
       "dataverse_pid_version": "V1.5",
       "filepid_to_local_path": "filepid",
+      "version_major": 1,
+      "version_minor": 2,
       "metadata": {
         "property1": "1",
         "property2": 2

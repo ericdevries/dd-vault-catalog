@@ -15,12 +15,12 @@
  */
 package nl.knaw.dans.catalog.core;
 
-import nl.knaw.dans.catalog.db.TransferItemModel;
+import nl.knaw.dans.catalog.db.TransferItem;
 
 import java.util.Optional;
 
 public interface TransferItemService {
 
-    Optional<TransferItemModel> findByNbn(String id);
+    Optional<TransferItem> findByNbn(String id);
 
 }

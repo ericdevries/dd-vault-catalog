@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package nl.knaw.dans.catalog.core;
+package nl.knaw.dans.catalog.db;
 
-import nl.knaw.dans.catalog.db.Tar;
-import org.apache.solr.client.solrj.SolrServerException;
+import org.hibernate.dialect.HSQLDialect;
 
-import java.io.IOException;
+import java.sql.Types;
 
-public interface SolrService {
+public class HsqldbDialect extends HSQLDialect {
 
-    void indexArchive(Tar tar) throws SolrServerException, IOException;
-
+    public HsqldbDialect() {
+        super();
+        registerColumnType(Types.OTHER, "clob");
+    }
 }

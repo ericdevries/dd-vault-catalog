@@ -16,124 +16,32 @@
 
 package nl.knaw.dans.catalog.core;
 
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.dropwizard.hibernate.UnitOfWork;
-import nl.knaw.dans.catalog.api.Tar;
-import nl.knaw.dans.catalog.api.TarPart;
-import nl.knaw.dans.catalog.api.TransferItem;
-import nl.knaw.dans.catalog.db.TarModel;
-import nl.knaw.dans.catalog.db.TarModelDAO;
-import nl.knaw.dans.catalog.db.TarPartModel;
-import nl.knaw.dans.catalog.db.TransferItemModel;
+import nl.knaw.dans.catalog.db.Tar;
+import nl.knaw.dans.catalog.db.TarDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.ZoneOffset;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class TarServiceImpl implements TarService {
     private static final Logger log = LoggerFactory.getLogger(TarServiceImpl.class);
 
-    private final TarModelDAO tarModelDAO;
+    private final TarDAO tarDAO;
 
-    public TarServiceImpl(TarModelDAO tarModelDAO) {
-        this.tarModelDAO = tarModelDAO;
+    public TarServiceImpl(TarDAO tarDAO) {
+        this.tarDAO = tarDAO;
     }
 
     @Override
     public Optional<Tar> get(String id) {
         log.trace("Getting TAR with ID {}", id);
-        return tarModelDAO.findById(id)
-            .map(this::convertModelToApi);
+        return tarDAO.findById(id);
     }
 
     @Override
-    @UnitOfWork
-    public void saveTar(Tar tar) {
+    public Tar saveTar(Tar tar) {
         log.trace("Saving TAR {}", tar);
-        var model = convertTarToModel(tar);
-        tarModelDAO.save(model);
-    }
-
-    Tar convertModelToApi(TarModel model) {
-        var tar = new Tar();
-        tar.setTarUuid(model.getTarUuid());
-        tar.setVaultPath(model.getVaultPath());
-        tar.setArchivalDate(model.getArchivalDate().atOffset(ZoneOffset.UTC));
-
-        var parts = model.getTarParts().stream().map(p -> {
-            var part = new TarPart();
-            part.setPartName(p.getPartName());
-            part.setChecksumValue(p.getChecksumValue());
-            part.setChecksumAlgorithm(p.getChecksumAlgorithm());
-
-            return part;
-        }).collect(Collectors.toList());
-
-        var transferItems = model.getTransferItems().stream().map(i -> {
-            var item = new TransferItem();
-            item.setBagId(i.getBagId());
-            item.setObjectVersion(i.getObjectVersion());
-            item.setDatastation(i.getDatastation());
-            item.setDataversePid(i.getDataversePid());
-            item.setDataversePidVersion(i.getDataversePidVersion());
-            item.setNbn(i.getNbn());
-            item.setOtherId(i.getOtherId());
-            item.setOtherIdVersion(i.getOtherIdVersion());
-            item.setSwordClient(i.getSwordClient());
-            item.setSwordToken(i.getSwordToken());
-            item.setOcflObjectPath(i.getOcflObjectPath());
-            item.setMetadata(new String(i.getMetadata())); // new JsonMapper().readTree(i.getMetadata()));
-            item.setFilepidToLocalPath(new String(i.getFilepidToLocalPath()));
-            return item;
-        }).collect(Collectors.toList());
-
-        tar.setTarParts(parts);
-        tar.setTransferItems(transferItems);
-
-        return tar;
-    }
-
-    TarModel convertTarToModel(Tar tar) {
-        var model = new TarModel();
-        model.setTarUuid(tar.getTarUuid());
-        model.setVaultPath(tar.getVaultPath());
-        model.setArchivalDate(tar.getArchivalDate().toLocalDateTime());
-
-        var parts = tar.getTarParts().stream().map(p -> {
-            var part = new TarPartModel();
-            part.setPartName(p.getPartName());
-            part.setChecksumValue(p.getChecksumValue());
-            part.setChecksumAlgorithm(p.getChecksumAlgorithm());
-            part.setTar(model);
-            return part;
-        }).collect(Collectors.toList());
-
-        var transferItems = tar.getTransferItems().stream().map(i -> {
-            var item = new TransferItemModel();
-            item.setBagId(i.getBagId());
-            item.setObjectVersion(i.getObjectVersion());
-            item.setDatastation(i.getDatastation());
-            item.setDataversePid(i.getDataversePid());
-            item.setDataversePidVersion(i.getDataversePidVersion());
-            item.setNbn(i.getNbn());
-            item.setOtherId(i.getOtherId());
-            item.setOtherIdVersion(i.getOtherIdVersion());
-            item.setSwordClient(i.getSwordClient());
-            item.setSwordToken(i.getSwordToken());
-            item.setOcflObjectPath(i.getOcflObjectPath());
-            item.setMetadata(i.getMetadata().getBytes(StandardCharsets.UTF_8));
-            item.setFilepidToLocalPath(i.getFilepidToLocalPath().getBytes(StandardCharsets.UTF_8));
-            item.setTar(model);
-            return item;
-        }).collect(Collectors.toList());
-
-        model.setTarParts(parts);
-        model.setTransferItems(transferItems);
-
-        return model;
+        return tarDAO.save(tar);
     }
 }

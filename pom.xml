@@ -43,7 +43,43 @@
                 <configuration>
                     <source>11</source>
                     <target>11</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${org.mapstruct.version}</version>
+                        </path>
+                        <!-- other annotation processors -->
+                    </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>5.4.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/dd-vault-catalog.yaml</inputSpec>
+                            <generatorName>jaxrs-spec</generatorName>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiTests>false</generateApiTests>
+                            <modelNameSuffix>Dto</modelNameSuffix>
+                            <configOptions>
+                                <apiPackage>nl.knaw.dans.catalog.openapi.server</apiPackage>
+                                <modelPackage>nl.knaw.dans.catalog.openapi.api</modelPackage>
+                                <invokerPackage>nl.knaw.dans.catalog.openapi</invokerPackage>
+                                <sourceFolder>src/gen/java/main</sourceFolder>
+                                <dateLibrary>java8</dateLibrary>
+                                <delegatePattern>true</delegatePattern>
+                                <interfaceOnly>true</interfaceOnly>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
         <resources>
@@ -55,6 +91,8 @@
 
     <properties>
         <main-class>nl.knaw.dans.catalog.DdVaultCatalogApplication</main-class>
+        <swagger-core-version>1.6.5</swagger-core-version>
+        <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
     </properties>
 
     <scm>
@@ -139,6 +177,21 @@
             <artifactId>swagger-integration</artifactId>
             <version>2.1.13</version>
         </dependency>
+        <dependency>
+            <groupId>com.vladmihalcea</groupId>
+            <artifactId>hibernate-types-55</artifactId>
+            <version>2.14.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>${swagger-core-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${org.mapstruct.version}</version>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -187,8 +240,10 @@
                             </execution>
                         </executions>
                     </plugin>
+
                 </plugins>
             </build>
+
         </profile>
     </profiles>
 </project>

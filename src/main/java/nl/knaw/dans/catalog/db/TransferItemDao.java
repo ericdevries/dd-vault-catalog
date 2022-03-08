@@ -20,15 +20,15 @@ import org.hibernate.SessionFactory;
 
 import java.util.Optional;
 
-public class TransferItemDao extends AbstractDAO<TransferItemModel> {
+public class TransferItemDao extends AbstractDAO<TransferItem> {
 
     public TransferItemDao(SessionFactory sessionFactory) {
         super(sessionFactory);
     }
 
-    public Optional<TransferItemModel> findByNbn(String nbn) {
+    public Optional<TransferItem> findByNbn(String nbn) {
         var query = currentSession().createQuery(
-            "from TransferItemModel where nbn = :nbn", TransferItemModel.class);
+            "from TransferItem where nbn = :nbn", TransferItem.class);
 
         query.setParameter("nbn", nbn);
 

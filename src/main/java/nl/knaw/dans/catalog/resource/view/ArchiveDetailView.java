@@ -17,17 +17,17 @@
 package nl.knaw.dans.catalog.resource.view;
 
 import io.dropwizard.views.View;
-import nl.knaw.dans.catalog.db.TransferItemModel;
+import nl.knaw.dans.catalog.db.TransferItem;
 
 public class ArchiveDetailView extends View {
-    private final TransferItemModel transferItem;
+    private final TransferItem transferItem;
 
-    public ArchiveDetailView(TransferItemModel transferItem) {
+    public ArchiveDetailView(TransferItem transferItem) {
         super("transfer-item.ftl");
         this.transferItem = transferItem;
     }
 
-    public TransferItemModel getTransferItem() {
+    public TransferItem getTransferItem() {
         return transferItem;
     }
 }

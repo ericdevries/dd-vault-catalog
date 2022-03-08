@@ -18,7 +18,7 @@ package nl.knaw.dans.catalog.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TarPart {
+public class TarPartOld {
     @JsonProperty("part_name")
     private String partName;
     @JsonProperty("checksum_algorithm")

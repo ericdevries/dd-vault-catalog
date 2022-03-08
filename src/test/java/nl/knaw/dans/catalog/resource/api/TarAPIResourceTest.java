@@ -18,18 +18,18 @@ package nl.knaw.dans.catalog.resource.api;
 
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import io.dropwizard.testing.junit5.ResourceExtension;
-import nl.knaw.dans.catalog.api.Tar;
-import nl.knaw.dans.catalog.api.TarPart;
-import nl.knaw.dans.catalog.api.TransferItem;
 import nl.knaw.dans.catalog.core.SolrService;
 import nl.knaw.dans.catalog.core.TarService;
+import nl.knaw.dans.catalog.db.Tar;
+import nl.knaw.dans.catalog.openapi.api.TarDto;
+import nl.knaw.dans.catalog.openapi.api.TarPartDto;
+import nl.knaw.dans.catalog.openapi.api.TransferItemDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import javax.ws.rs.client.Entity;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +57,7 @@ class TarAPIResourceTest {
         tar.setTarUuid("123");
         Mockito.when(tarService.get(Mockito.any())).thenReturn(Optional.of(tar));
 
-        var found = EXT.target("/api/tar/1").request().get(Tar.class);
+        var found = EXT.target("/api/tar/1").request().get(TarDto.class);
         assertEquals("123", found.getTarUuid());
     }
 
@@ -73,29 +73,33 @@ class TarAPIResourceTest {
 
     @Test
     void createTar() {
-        var entity = new Tar();
+        var entity = new TarDto();
         entity.setTarUuid("123");
         entity.setArchivalDate(OffsetDateTime.now());
         entity.setVaultPath("vault-x");
 
-        var transferItem = new TransferItem();
+        var transferItem = new TransferItemDto();
         transferItem.setBagId("bagid");
         transferItem.setDatastation("ds1");
         transferItem.setDataversePid("dspid");
         transferItem.setDataversePidVersion("dspidversion");
         transferItem.setObjectVersion("1.0");
+        transferItem.setVersionMajor(1);
+        transferItem.setVersionMinor(5);
         transferItem.setOcflObjectPath("path/to/thing");
         transferItem.setSwordClient("PAR");
         transferItem.setNbn("nbn:version");
         transferItem.setMetadata("{}");
 
-        var part = new TarPart();
+        var part = new TarPartDto();
         part.setPartName("0000");
         part.setChecksumAlgorithm("md5");
         part.setChecksumValue("thevalue");
 
         entity.setTarParts(List.of(part));
         entity.setTransferItems(List.of(transferItem));
+
+        Mockito.when(tarService.saveTar(Mockito.any())).thenReturn(new Tar());
 
         var response = EXT.target("/api/tar/").request().post(Entity.json(entity));
         assertEquals(200, response.getStatusInfo().getStatusCode());

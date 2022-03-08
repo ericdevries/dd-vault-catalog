@@ -22,12 +22,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tar {
+public class TarOld {
 
     @NotEmpty
     @JsonProperty("tar_uuid")
@@ -45,26 +44,26 @@ public class Tar {
     @Valid
     @NotEmpty
     @JsonProperty("tar_parts")
-    private List<TarPart> tarParts = new ArrayList<>();
+    private List<TarPartOld> tarParts = new ArrayList<>();
 
     @Valid
     @NotEmpty
     @JsonProperty("transfer_items")
-    private List<TransferItem> transferItems = new ArrayList<>();
+    private List<TransferItemOld> transferItems = new ArrayList<>();
 
-    public List<TarPart> getTarParts() {
+    public List<TarPartOld> getTarParts() {
         return tarParts;
     }
 
-    public void setTarParts(List<TarPart> tarParts) {
+    public void setTarParts(List<TarPartOld> tarParts) {
         this.tarParts = tarParts;
     }
 
-    public List<TransferItem> getTransferItems() {
+    public List<TransferItemOld> getTransferItems() {
         return transferItems;
     }
 
-    public void setTransferItems(List<TransferItem> transferItems) {
+    public void setTransferItems(List<TransferItemOld> transferItems) {
         this.transferItems = transferItems;
     }
 

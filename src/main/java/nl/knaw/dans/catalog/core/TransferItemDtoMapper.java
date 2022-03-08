@@ -13,25 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.knaw.dans.catalog.core;
 
-package nl.knaw.dans.catalog.db;
+import nl.knaw.dans.catalog.db.TransferItem;
+import nl.knaw.dans.catalog.openapi.api.TransferItemDto;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
-import io.dropwizard.hibernate.AbstractDAO;
-import org.hibernate.SessionFactory;
+@Mapper
+public interface TransferItemDtoMapper {
+    TransferItemDtoMapper INSTANCE = Mappers.getMapper(TransferItemDtoMapper.class);
 
-import java.util.Optional;
+    @Mapping(source = "metadata", target = "metadataJson")
+    @Mapping(target = "metadata", ignore = true)
+    TransferItem transferItemDtoToTransferItem(TransferItemDto transferItemDto);
 
-public class TarModelDAO extends AbstractDAO<TarModel> {
-
-    public TarModelDAO(SessionFactory sessionFactory) {
-        super(sessionFactory);
-    }
-
-    public Optional<TarModel> findById(String id) {
-        return Optional.ofNullable(get(id));
-    }
-
-    public TarModel save(TarModel tar) {
-        return persist(tar);
-    }
 }
+

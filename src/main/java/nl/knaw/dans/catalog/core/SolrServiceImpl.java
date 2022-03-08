@@ -16,9 +16,9 @@
 
 package nl.knaw.dans.catalog.core;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
-import nl.knaw.dans.catalog.api.Tar;
+import nl.knaw.dans.catalog.api.TarOld;
+import nl.knaw.dans.catalog.db.Tar;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.common.SolrInputDocument;
@@ -50,8 +50,8 @@ public class SolrServiceImpl implements SolrService {
             doc.addField("nbn", transferItem.getNbn());
             doc.addField("dataset_pid", transferItem.getDataversePid());
 
-//            flattenMetadata(transferItem.getMetadata())
-//                .forEach(doc::addField);
+            flattenMetadata(transferItem.getMetadata())
+                .forEach(doc::addField);
 
             log.trace("Document generated: {}", doc);
             return doc;
@@ -62,7 +62,7 @@ public class SolrServiceImpl implements SolrService {
         solrClient.commit();
     }
 
-    Map<String, String> flattenMetadata(JsonNode node) {
+    Map<String, String> flattenMetadata(String str) {
         // TODO read metadata from json
         //            doc.addField("metadata_dcterms_creator", transferItem.getMetadata().get("dcterms:creator"));
         return Map.of();

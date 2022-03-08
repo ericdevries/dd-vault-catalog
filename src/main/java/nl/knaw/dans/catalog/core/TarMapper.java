@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nl.knaw.dans.catalog.core;
 
 import nl.knaw.dans.catalog.db.Tar;
-import org.apache.solr.client.solrj.SolrServerException;
+import nl.knaw.dans.catalog.openapi.api.TarDto;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-import java.io.IOException;
+@Mapper(uses = { TransferItemMapper.class })
+public interface TarMapper {
+    TarMapper INSTANCE = Mappers.getMapper(TarMapper.class);
 
-public interface SolrService {
-
-    void indexArchive(Tar tar) throws SolrServerException, IOException;
-
+    TarDto tarToTarDto(Tar tar);
 }
+

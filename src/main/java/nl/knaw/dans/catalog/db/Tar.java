@@ -23,23 +23,24 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "tars")
-public class TarModel {
+public class Tar {
     @Id
     @Column(name = "tar_uuid", nullable = false)
     private String tarUuid;
     @Column(name = "vault_path")
     private String vaultPath;
     @Column(name = "archival_date")
-    private LocalDateTime archivalDate;
+    private OffsetDateTime archivalDate;
     @OneToMany(mappedBy = "tar", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TarPartModel> tarParts = new ArrayList<>();
+    private List<TarPart> tarParts = new ArrayList<>();
     @OneToMany(mappedBy = "tar", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TransferItemModel> transferItems = new ArrayList<>();
+    private List<TransferItem> transferItems = new ArrayList<>();
 
     public String getTarUuid() {
         return tarUuid;
@@ -57,27 +58,27 @@ public class TarModel {
         this.vaultPath = vaultPath;
     }
 
-    public LocalDateTime getArchivalDate() {
+    public OffsetDateTime getArchivalDate() {
         return archivalDate;
     }
 
-    public void setArchivalDate(LocalDateTime archivalDate) {
+    public void setArchivalDate(OffsetDateTime archivalDate) {
         this.archivalDate = archivalDate;
     }
 
-    public List<TarPartModel> getTarParts() {
+    public List<TarPart> getTarParts() {
         return tarParts;
     }
 
-    public void setTarParts(List<TarPartModel> tarParts) {
+    public void setTarParts(List<TarPart> tarParts) {
         this.tarParts = tarParts;
     }
 
-    public List<TransferItemModel> getTransferItems() {
+    public List<TransferItem> getTransferItems() {
         return transferItems;
     }
 
-    public void setTransferItems(List<TransferItemModel> transferItems) {
+    public void setTransferItems(List<TransferItem> transferItems) {
         this.transferItems = transferItems;
     }
 

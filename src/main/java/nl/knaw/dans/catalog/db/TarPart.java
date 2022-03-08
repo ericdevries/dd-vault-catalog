@@ -27,7 +27,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "tar_parts")
-public class TarPartModel {
+public class TarPart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,16 +40,16 @@ public class TarPartModel {
     private String checksumValue;
     @ManyToOne
     @JoinColumn(name = "tar_uuid")
-    private TarModel tar;
+    private Tar tar;
 
-    public TarPartModel(String partName, String checksumAlgorithm, String checksumValue, TarModel tar) {
+    public TarPart(String partName, String checksumAlgorithm, String checksumValue, Tar tar) {
         this.partName = partName;
         this.checksumAlgorithm = checksumAlgorithm;
         this.checksumValue = checksumValue;
         this.tar = tar;
     }
 
-    public TarPartModel() {
+    public TarPart() {
 
     }
 
@@ -85,11 +85,11 @@ public class TarPartModel {
         this.checksumValue = checksumValue;
     }
 
-    public TarModel getTar() {
+    public Tar getTar() {
         return tar;
     }
 
-    public void setTar(TarModel tar) {
+    public void setTar(Tar tar) {
         this.tar = tar;
     }
 

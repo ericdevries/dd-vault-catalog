@@ -33,11 +33,11 @@ import io.swagger.v3.oas.models.info.Info;
 import nl.knaw.dans.catalog.core.SolrServiceImpl;
 import nl.knaw.dans.catalog.core.TarServiceImpl;
 import nl.knaw.dans.catalog.core.TransferItemServiceImpl;
-import nl.knaw.dans.catalog.db.TarModel;
-import nl.knaw.dans.catalog.db.TarModelDAO;
-import nl.knaw.dans.catalog.db.TarPartModel;
+import nl.knaw.dans.catalog.db.Tar;
+import nl.knaw.dans.catalog.db.TarDAO;
+import nl.knaw.dans.catalog.db.TarPart;
 import nl.knaw.dans.catalog.db.TransferItemDao;
-import nl.knaw.dans.catalog.db.TransferItemModel;
+import nl.knaw.dans.catalog.db.TransferItem;
 import nl.knaw.dans.catalog.resource.api.TarAPIResource;
 import nl.knaw.dans.catalog.resource.view.ErrorView;
 import nl.knaw.dans.catalog.resource.web.ArchiveDetailResource;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfiguration> {
-    private final HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle = new HibernateBundle<>(TransferItemModel.class, TarModel.class, TarPartModel.class) {
+    private final HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle = new HibernateBundle<>(TransferItem.class, Tar.class, TarPart.class) {
 
         @Override
         public PooledDataSourceFactory getDataSourceFactory(DdVaultCatalogConfiguration configuration) {
@@ -92,9 +92,9 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
     public void run(final DdVaultCatalogConfiguration configuration, final Environment environment) {
         setupApi(environment);
 
-        var tarModelDao = new TarModelDAO(hibernateBundle.getSessionFactory());
+        var tarDao = new TarDAO(hibernateBundle.getSessionFactory());
         var transferItemDao = new TransferItemDao(hibernateBundle.getSessionFactory());
-        var tarService = new UnitOfWorkAwareProxyFactory(hibernateBundle).create(TarServiceImpl.class, TarModelDAO.class, tarModelDao);
+        var tarService = new UnitOfWorkAwareProxyFactory(hibernateBundle).create(TarServiceImpl.class, TarDAO.class, tarDao);
 
         var transferItemService = new UnitOfWorkAwareProxyFactory(hibernateBundle)
             .create(TransferItemServiceImpl.class, TransferItemDao.class, transferItemDao);

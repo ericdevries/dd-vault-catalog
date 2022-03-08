@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-package nl.knaw.dans.catalog.core;
+package nl.knaw.dans.catalog.db;
 
-import nl.knaw.dans.catalog.db.Tar;
-import org.apache.solr.client.solrj.SolrServerException;
+import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.SessionFactory;
 
-import java.io.IOException;
+import java.util.Optional;
 
-public interface SolrService {
+public class TarDAO extends AbstractDAO<Tar> {
 
-    void indexArchive(Tar tar) throws SolrServerException, IOException;
+    public TarDAO(SessionFactory sessionFactory) {
+        super(sessionFactory);
+    }
 
+    public Optional<Tar> findById(String id) {
+        return Optional.ofNullable(get(id));
+    }
+
+    public Tar save(Tar tar) {
+        return persist(tar);
+    }
 }

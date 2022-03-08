@@ -14,54 +14,71 @@
  * limitations under the License.
  */
 
-package nl.knaw.dans.catalog.db;
+package nl.knaw.dans.catalog.api;
 
-import org.hibernate.annotations.Type;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
-@Entity
-@Table(name = "transfer_items", uniqueConstraints = { @UniqueConstraint(columnNames = { "bag_id", "object_version" }) })
-public class TransferItemModel {
-
-    @Id
-    @Column(name = "bag_id")
+public class TransferItemOld {
+    @NotEmpty
+    @JsonProperty("bag_id")
     private String bagId;
-    @Column(name = "object_version", nullable = false)
+    @NotEmpty
+    @JsonProperty("object_version")
     private String objectVersion;
-    @ManyToOne
-    @JoinColumn(name = "tar_uuid")
-    private TarModel tar;
-    @Column(name = "datastation", nullable = false)
+    @NotEmpty
+    @JsonProperty("datastation")
     private String datastation;
-    @Column(name = "dataverse_pid", nullable = false)
+    @NotEmpty
+    @JsonProperty("dataverse_pid")
     private String dataversePid;
-    @Column(name = "dataverse_pid_version", nullable = false)
+    @NotEmpty
+    @JsonProperty("dataverse_pid_version")
     private String dataversePidVersion;
-    @Column(name = "nbn", nullable = false)
+    @NotEmpty
+    @JsonProperty("nbn")
     private String nbn;
-    @Column(name = "other_id")
+//    @NotEmpty
+    @JsonProperty("version_major")
+    private int versionMajor;
+//    @NotEmpty
+    @JsonProperty("version_minor")
+    private int versionMinor;
+    @JsonProperty("other_id")
     private String otherId;
-    @Column(name = "other_id_version")
+    @JsonProperty("other_id_version")
     private String otherIdVersion;
-    @Column(name = "sword_client", nullable = false)
+    @NotEmpty
+    @JsonProperty("sword_client")
     private String swordClient;
-    @Column(name = "sword_token")
+    @JsonProperty("sword_token")
     private String swordToken;
-    @Column(name = "ocfl_object_path", nullable = false)
+    @NotEmpty
+    @JsonProperty("ocfl_object_path")
     private String ocflObjectPath;
-    @Column(name = "metadata", nullable = false, length = 100000)
-    @Type(type = "materialized_blob")
-    private byte[] metadata;
-    @Column(name = "filepid_to_local_path")
-    @Type(type = "materialized_blob")
-    private byte[] filepidToLocalPath; // what is this?
+    @NotNull
+    @JsonProperty
+    private String metadata;
+    @JsonProperty("filepid_to_local_path")
+    private String filepidToLocalPath; // what is this?
+
+    public int getVersionMajor() {
+        return versionMajor;
+    }
+
+    public void setVersionMajor(int versionMajor) {
+        this.versionMajor = versionMajor;
+    }
+
+    public int getVersionMinor() {
+        return versionMinor;
+    }
+
+    public void setVersionMinor(int versionMinor) {
+        this.versionMinor = versionMinor;
+    }
 
     public String getBagId() {
         return bagId;
@@ -77,14 +94,6 @@ public class TransferItemModel {
 
     public void setObjectVersion(String objectVersion) {
         this.objectVersion = objectVersion;
-    }
-
-    public TarModel getTar() {
-        return tar;
-    }
-
-    public void setTar(TarModel tar) {
-        this.tar = tar;
     }
 
     public String getDatastation() {
@@ -159,20 +168,39 @@ public class TransferItemModel {
         this.ocflObjectPath = ocflObjectPath;
     }
 
-    public byte[] getMetadata() {
+    public String getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(byte[] metadata) {
+    public void setMetadata(String metadata) {
         this.metadata = metadata;
     }
 
-    public byte[] getFilepidToLocalPath() {
+    public String getFilepidToLocalPath() {
         return filepidToLocalPath;
     }
 
-    public void setFilepidToLocalPath(byte[] filepidToLocalPath) {
+    public void setFilepidToLocalPath(String filepidToLocalPath) {
         this.filepidToLocalPath = filepidToLocalPath;
     }
 
+    @Override
+    public String toString() {
+        return "TransferItem{" +
+            "bagId='" + bagId + '\'' +
+            ", objectVersion='" + objectVersion + '\'' +
+            ", datastation='" + datastation + '\'' +
+            ", dataversePid='" + dataversePid + '\'' +
+            ", dataversePidVersion='" + dataversePidVersion + '\'' +
+            ", nbn='" + nbn + '\'' +
+            ", versionMajor='" + versionMajor + '\'' +
+            ", versionMinor='" + versionMinor + '\'' +
+            ", otherId='" + otherId + '\'' +
+            ", otherIdVersion='" + otherIdVersion + '\'' +
+            ", swordClient='" + swordClient + '\'' +
+            ", swordToken='" + swordToken + '\'' +
+            ", ocflObjectPath='" + ocflObjectPath + '\'' +
+            ", filepidToLocalPath='" + filepidToLocalPath + '\'' +
+            '}';
+    }
 }

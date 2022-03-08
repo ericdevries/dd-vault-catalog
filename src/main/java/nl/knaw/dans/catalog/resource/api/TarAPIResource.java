@@ -17,62 +17,46 @@
 package nl.knaw.dans.catalog.resource.api;
 
 import io.dropwizard.hibernate.UnitOfWork;
-import io.swagger.v3.oas.annotations.Operation;
-import nl.knaw.dans.catalog.api.Tar;
 import nl.knaw.dans.catalog.core.SolrService;
+import nl.knaw.dans.catalog.core.TarDtoMapper;
+import nl.knaw.dans.catalog.core.TarMapper;
 import nl.knaw.dans.catalog.core.TarService;
+import nl.knaw.dans.catalog.openapi.api.TarDto;
+import nl.knaw.dans.catalog.openapi.server.TarApi;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
 @Path("/api/tar")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-public class TarAPIResource {
+public class TarAPIResource implements TarApi {
     private static final Logger log = LoggerFactory.getLogger(TarAPIResource.class);
 
     private final TarService tarService;
     private final SolrService solrService;
+    private final TarMapper tarMapper = Mappers.getMapper(TarMapper.class);
+    private final TarDtoMapper tarDtoMapper = Mappers.getMapper(TarDtoMapper.class);
 
     public TarAPIResource(TarService tarService, SolrService solrService) {
         this.tarService = tarService;
         this.solrService = solrService;
     }
 
-    @GET
-    @Path("/{id}")
-    @Operation(operationId = "getArchiveById", description = "Get archive details", tags = "tar")
+    @Override
     @UnitOfWork
-    public Tar get(@PathParam("id") String id) {
-        log.debug("Fetching TAR with id {}", id);
-        return tarService.get(id).orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
-    }
-
-    @POST
-    @UnitOfWork
-    @Operation(operationId = "addArchive", description = "Adds a new archive", tags = "tar")
-    public Tar add(@NotNull @Valid Tar tar) {
-        log.info("Received new TAR {}, storing in database", tar);
-        if (tarService.get(tar.getTarUuid()).isPresent()) {
-            log.error("TAR with ID {} is already present in database", tar.getTarUuid());
+    public TarDto addArchive(TarDto tarDto) {
+        log.info("Received new TAR {}, storing in database", tarDto);
+        if (tarService.get(tarDto.getTarUuid()).isPresent()) {
+            log.error("TAR with ID {} is already present in database", tarDto.getTarUuid());
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
-        tarService.saveTar(tar);
+        var tar = tarService.saveTar(tarDtoMapper.tarDtoToTar(tarDto));
 
         try {
             log.info("Adding TAR document to Solr index");
@@ -82,23 +66,31 @@ public class TarAPIResource {
             log.error("Unable to save document in Solr index", e);
         }
 
-        return tar;
+        return tarMapper.tarToTarDto(tar);
     }
 
-    @PUT
-    @Path("/{id}")
+    @Override
     @UnitOfWork
-    @Operation(operationId = "updateArchive", description = "Updates an existing archive", tags = "tar")
-    public Tar update(@PathParam("id") String id, @NotNull @Valid Tar tar) {
-        log.info("Received existing TAR {}, ID is {}, storing in database", tar, id);
+    public TarDto getArchiveById(String id) {
+        log.debug("Fetching TAR with id {}", id);
+        return tarService.get(id)
+            .map(tarMapper::tarToTarDto)
+            .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
 
-        if (!id.equals(tar.getTarUuid())) {
+    }
+
+    @Override
+    @UnitOfWork
+    public TarDto updateArchive(String id, TarDto tarDto) {
+        log.info("Received existing TAR {}, ID is {}, storing in database", tarDto, id);
+
+        if (!id.equals(tarDto.getTarUuid())) {
             log.warn("ID's are not the same, returning error");
-            throw new WebApplicationException(String.format("ID %s does not match tar uuid %s", id, tar.getTarUuid()),
+            throw new WebApplicationException(String.format("ID %s does not match tar uuid %s", id, tarDto.getTarUuid()),
                 Response.Status.BAD_REQUEST);
         }
 
-        tarService.saveTar(tar);
+        var tar = tarService.saveTar(tarDtoMapper.tarDtoToTar(tarDto));
 
         try {
             log.info("Updating TAR document in Solr index");
@@ -108,6 +100,6 @@ public class TarAPIResource {
             log.error("Unable to save document in Solr index", e);
         }
 
-        return tar;
+        return tarMapper.tarToTarDto(tar);
     }
 }
