@@ -17,7 +17,6 @@
 package nl.knaw.dans.catalog.core;
 
 import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
-import nl.knaw.dans.catalog.api.TarOld;
 import nl.knaw.dans.catalog.db.Tar;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;

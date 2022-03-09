@@ -17,10 +17,11 @@ package nl.knaw.dans.catalog.core;
 
 import nl.knaw.dans.catalog.db.TransferItem;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface TransferItemService {
 
-    Optional<TransferItem> findByNbn(String id);
+    List<TransferItem> findByNbn(String id);
 
 }

@@ -16,6 +16,7 @@
 
 package nl.knaw.dans.catalog.db;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -33,8 +34,8 @@ public class TransferItem {
     private String bagId;
     @Column(name = "object_version", nullable = false)
     private String objectVersion;
-    @ManyToOne
-    @JoinColumn(name = "tar_uuid")
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "tar_uuid", nullable = false)
     private Tar tar;
     @Column(name = "datastation", nullable = false)
     private String datastation;
@@ -191,4 +192,24 @@ public class TransferItem {
         this.ocflObjectPath = ocflObjectPath;
     }
 
+    @Override
+    public String toString() {
+        return "TransferItem{" +
+            "bagId='" + bagId + '\'' +
+            ", objectVersion='" + objectVersion + '\'' +
+            ", datastation='" + datastation + '\'' +
+            ", dataversePid='" + dataversePid + '\'' +
+            ", dataversePidVersion='" + dataversePidVersion + '\'' +
+            ", nbn='" + nbn + '\'' +
+            ", versionMajor=" + versionMajor +
+            ", versionMinor=" + versionMinor +
+            ", otherId='" + otherId + '\'' +
+            ", otherIdVersion='" + otherIdVersion + '\'' +
+            ", swordClient='" + swordClient + '\'' +
+            ", swordToken='" + swordToken + '\'' +
+            ", ocflObjectPath='" + ocflObjectPath + '\'' +
+            ", metadata='" + metadata + '\'' +
+            ", filepidToLocalPath='" + filepidToLocalPath + '\'' +
+            '}';
+    }
 }

@@ -21,6 +21,7 @@ import nl.knaw.dans.catalog.db.TransferItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Optional;
 
 public class TransferItemServiceImpl implements TransferItemService {
@@ -34,7 +35,7 @@ public class TransferItemServiceImpl implements TransferItemService {
 
     @Override
     @UnitOfWork
-    public Optional<TransferItem> findByNbn(String id) {
+    public List<TransferItem> findByNbn(String id) {
         log.trace("Getting TransferItem by NBN {}", id);
         return transferItemDao.findByNbn(id);
     }

@@ -19,15 +19,22 @@ package nl.knaw.dans.catalog.resource.view;
 import io.dropwizard.views.View;
 import nl.knaw.dans.catalog.db.TransferItem;
 
-public class ArchiveDetailView extends View {
-    private final TransferItem transferItem;
+import java.util.List;
 
-    public ArchiveDetailView(TransferItem transferItem) {
+public class ArchiveDetailView extends View {
+    private final List<TransferItem> transferItems;
+
+    public ArchiveDetailView(List<TransferItem> transferItems) {
         super("transfer-item.ftl");
-        this.transferItem = transferItem;
+        this.transferItems = transferItems;
     }
 
     public TransferItem getTransferItem() {
-        return transferItem;
+        return transferItems.get(0);
     }
+
+    public List<TransferItem> getOtherTransferItems() {
+        return transferItems.subList(1, transferItems.size());
+    }
+
 }

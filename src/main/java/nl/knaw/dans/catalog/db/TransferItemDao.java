@@ -18,7 +18,7 @@ package nl.knaw.dans.catalog.db;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.SessionFactory;
 
-import java.util.Optional;
+import java.util.List;
 
 public class TransferItemDao extends AbstractDAO<TransferItem> {
 
@@ -26,12 +26,13 @@ public class TransferItemDao extends AbstractDAO<TransferItem> {
         super(sessionFactory);
     }
 
-    public Optional<TransferItem> findByNbn(String nbn) {
+    public List<TransferItem> findByNbn(String nbn) {
         var query = currentSession().createQuery(
-            "from TransferItem where nbn = :nbn", TransferItem.class);
+            "from TransferItem where nbn = :nbn "
+                + "order by versionMajor desc, versionMinor desc", TransferItem.class);
 
         query.setParameter("nbn", nbn);
 
-        return query.uniqueResultOptional();
+        return query.list();
     }
 }

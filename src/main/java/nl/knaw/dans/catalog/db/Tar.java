@@ -37,9 +37,9 @@ public class Tar {
     private String vaultPath;
     @Column(name = "archival_date")
     private OffsetDateTime archivalDate;
-    @OneToMany(mappedBy = "tar", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "tar")
     private List<TarPart> tarParts = new ArrayList<>();
-    @OneToMany(mappedBy = "tar", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "tar")
     private List<TransferItem> transferItems = new ArrayList<>();
 
     public String getTarUuid() {
@@ -82,4 +82,14 @@ public class Tar {
         this.transferItems = transferItems;
     }
 
+    @Override
+    public String toString() {
+        return "Tar{" +
+            "tarUuid='" + tarUuid + '\'' +
+            ", vaultPath='" + vaultPath + '\'' +
+            ", archivalDate=" + archivalDate +
+            ", tarParts=" + tarParts +
+            ", transferItems=" + transferItems +
+            '}';
+    }
 }

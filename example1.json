@@ -1,5 +1,5 @@
 {
-  "tar_uuid": "34ea6b9a-e29b-47e8-843c-572c6cad3dc4",
+  "tar_uuid": "34ea6b9a-e29b-47e8-843c-572c6cad3dd1",
   "vault_path": "path2",
   "archival_date": "2022-02-21T00:54:32Z",
   "tar_parts": [
@@ -17,7 +17,7 @@
       "dataverse_pid_version": "V1.0",
       "filepid_to_local_path": "filepid",
       "version_major": 1,
-      "version_minor": 1,
+      "version_minor": 2,
       "metadata": {
         "@context": {
           "Author": "http://purl.org/dc/terms/creator",
@@ -161,7 +161,7 @@
         "property1": "1",
         "property2": 2
       },
-      "nbn": "urn:nbn:nl:ui:14-DANSvalue",
+      "nbn": "urn:nbn:nl:ui:15-DANSvalue",
       "object_version": "1",
       "ocfl_object_path": "a6/5d/8a/93-8fdc-4b0c-afae-f32dc3171960",
       "other_id": "pan:PAN00123",

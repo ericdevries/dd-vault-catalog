@@ -43,9 +43,14 @@ public class ArchiveDetailResource {
     @GET
     public ArchiveDetailView get(@PathParam("id") String id) {
         log.debug("Received request for page with NBN {}", id);
-        return transferItemService.findByNbn(id)
-            .map(ArchiveDetailView::new)
-            .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
+        var items = transferItemService.findByNbn(id);
+
+        if (items.size() == 0) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+
+        return new ArchiveDetailView(items);
+
     }
 
 }
