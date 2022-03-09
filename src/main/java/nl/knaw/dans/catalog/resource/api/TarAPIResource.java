@@ -18,8 +18,8 @@ package nl.knaw.dans.catalog.resource.api;
 
 import io.dropwizard.hibernate.UnitOfWork;
 import nl.knaw.dans.catalog.core.SolrService;
-import nl.knaw.dans.catalog.core.TarDtoMapper;
-import nl.knaw.dans.catalog.core.TarMapper;
+import nl.knaw.dans.catalog.core.mapper.TarDtoMapper;
+import nl.knaw.dans.catalog.core.mapper.TarMapper;
 import nl.knaw.dans.catalog.core.TarService;
 import nl.knaw.dans.catalog.openapi.api.TarDto;
 import nl.knaw.dans.catalog.openapi.server.TarApi;

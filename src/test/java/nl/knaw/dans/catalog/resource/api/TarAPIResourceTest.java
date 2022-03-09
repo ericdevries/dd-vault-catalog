@@ -21,6 +21,7 @@ import io.dropwizard.testing.junit5.ResourceExtension;
 import nl.knaw.dans.catalog.core.SolrService;
 import nl.knaw.dans.catalog.core.TarService;
 import nl.knaw.dans.catalog.db.Tar;
+import nl.knaw.dans.catalog.db.TransferItem;
 import nl.knaw.dans.catalog.openapi.api.TarDto;
 import nl.knaw.dans.catalog.openapi.api.TarPartDto;
 import nl.knaw.dans.catalog.openapi.api.TransferItemDto;
@@ -30,8 +31,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import javax.ws.rs.client.Entity;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -89,7 +94,7 @@ class TarAPIResourceTest {
         transferItem.setOcflObjectPath("path/to/thing");
         transferItem.setSwordClient("PAR");
         transferItem.setNbn("nbn:version");
-        transferItem.setMetadata("{}");
+        transferItem.setMetadata(Map.of("data1", "5", "data2", "6"));
 
         var part = new TarPartDto();
         part.setPartName("0000");
@@ -99,10 +104,20 @@ class TarAPIResourceTest {
         entity.setTarParts(List.of(part));
         entity.setTransferItems(List.of(transferItem));
 
-        Mockito.when(tarService.saveTar(Mockito.any())).thenReturn(new Tar());
+        var result = new Tar();
+        result.setTransferItems(new ArrayList<>());
+        var ti = new TransferItem();
+        ti.setMetadata("{\"key\": 1}");
+        result.getTransferItems().add(ti);
+
+        Mockito.when(tarService.saveTar(Mockito.any())).thenReturn(result);
 
         var response = EXT.target("/api/tar/").request().post(Entity.json(entity));
         assertEquals(200, response.getStatusInfo().getStatusCode());
+        var stream = (ByteArrayInputStream)response.getEntity();
+
+        var s = new String(stream.readAllBytes());
+        System.out.println(s);
     }
 
     @Test
@@ -114,4 +129,5 @@ class TarAPIResourceTest {
         var response = EXT.target("/api/tar/").request().post(Entity.json(entity));
         assertEquals(422, response.getStatusInfo().getStatusCode());
     }
+
 }

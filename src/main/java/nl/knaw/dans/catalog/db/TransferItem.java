@@ -16,12 +16,6 @@
 
 package nl.knaw.dans.catalog.db;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vladmihalcea.hibernate.type.json.JsonType;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -32,10 +26,6 @@ import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "transfer_items", uniqueConstraints = { @UniqueConstraint(columnNames = { "bag_id", "version_major", "version_minor" }) })
-@TypeDef(
-    name = "json",
-    typeClass = JsonType.class
-)
 public class TransferItem {
 
     @Id
@@ -69,7 +59,6 @@ public class TransferItem {
     @Column(name = "ocfl_object_path", nullable = false)
     private String ocflObjectPath;
     @Column(name = "metadata", nullable = false, length = 100000)
-    @Type(type = "json")
     private String metadata;
     @Column(name = "filepid_to_local_path")
     private String filepidToLocalPath; // what is this?
@@ -202,21 +191,4 @@ public class TransferItem {
         this.ocflObjectPath = ocflObjectPath;
     }
 
-    public Object getMetadataJson() {
-        try {
-            return new ObjectMapper().readTree(metadata);
-        }
-        catch (JsonProcessingException e) {
-            return null;
-        }
-    }
-
-    public void setMetadataJson(Object value) {
-        try {
-            setMetadata(new ObjectMapper().writeValueAsString(value));
-        }
-        catch (JsonProcessingException e) {
-
-        }
-    }
 }

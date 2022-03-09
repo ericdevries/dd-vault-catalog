@@ -26,25 +26,19 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.View;
 import io.dropwizard.views.ViewBundle;
-import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
-import io.swagger.v3.oas.integration.SwaggerConfiguration;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
 import nl.knaw.dans.catalog.core.SolrServiceImpl;
 import nl.knaw.dans.catalog.core.TarServiceImpl;
 import nl.knaw.dans.catalog.core.TransferItemServiceImpl;
 import nl.knaw.dans.catalog.db.Tar;
 import nl.knaw.dans.catalog.db.TarDAO;
 import nl.knaw.dans.catalog.db.TarPart;
-import nl.knaw.dans.catalog.db.TransferItemDao;
 import nl.knaw.dans.catalog.db.TransferItem;
+import nl.knaw.dans.catalog.db.TransferItemDao;
 import nl.knaw.dans.catalog.resource.api.TarAPIResource;
 import nl.knaw.dans.catalog.resource.view.ErrorView;
 import nl.knaw.dans.catalog.resource.web.ArchiveDetailResource;
 
 import javax.ws.rs.core.MediaType;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfiguration> {
     private final HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle = new HibernateBundle<>(TransferItem.class, Tar.class, TarPart.class) {
@@ -70,28 +64,8 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
         bootstrap.addBundle(new ViewBundle<>());
     }
 
-    void setupApi(final Environment environment) {
-        var oas = new OpenAPI();
-        var info = new Info()
-            .title("DANS Vault Catalog API")
-            .description("Catalog service for archives")
-            .version("1.0.0");
-
-        oas.info(info);
-        var oasConfig = new SwaggerConfiguration()
-            .openAPI(oas)
-            .prettyPrint(true)
-            .resourcePackages(Stream.of("nl.knaw.dans.catalog.resource.api")
-                .collect(Collectors.toSet()));
-
-        environment.jersey().register(new OpenApiResource().openApiConfiguration(oasConfig));
-
-    }
-
     @Override
     public void run(final DdVaultCatalogConfiguration configuration, final Environment environment) {
-        setupApi(environment);
-
         var tarDao = new TarDAO(hibernateBundle.getSessionFactory());
         var transferItemDao = new TransferItemDao(hibernateBundle.getSessionFactory());
         var tarService = new UnitOfWorkAwareProxyFactory(hibernateBundle).create(TarServiceImpl.class, TarDAO.class, tarDao);

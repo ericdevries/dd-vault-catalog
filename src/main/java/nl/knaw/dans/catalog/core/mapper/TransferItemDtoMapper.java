@@ -13,17 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.catalog.core;
+package nl.knaw.dans.catalog.core.mapper;
 
-import nl.knaw.dans.catalog.db.Tar;
-import nl.knaw.dans.catalog.openapi.api.TarDto;
+import nl.knaw.dans.catalog.db.TransferItem;
+import nl.knaw.dans.catalog.openapi.api.TransferItemDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = { TransferItemMapper.class })
-public interface TarMapper {
-    TarMapper INSTANCE = Mappers.getMapper(TarMapper.class);
+@Mapper
+public interface TransferItemDtoMapper {
+    TransferItemDtoMapper INSTANCE = Mappers.getMapper(TransferItemDtoMapper.class);
 
-    TarDto tarToTarDto(Tar tar);
+//    @Mapping(source = "metadata", target = "metadataJson")
+//    @Mapping(target = "metadata", ignore = true)
+    @Mapping(expression = "java(JsonMapper.toString(transferItemDto.getMetadata()))", target = "metadata")
+    TransferItem transferItemDtoToTransferItem(TransferItemDto transferItemDto);
+
 }
 
