@@ -1,6 +1,6 @@
 <#-- @ftlvariable name="" type="nl.knaw.dans.catalog.resource.ArchiveDetailView" -->
 <h1>${transferItem.nbn}</h1>
-<h2>${transferItem.bagId}, version: ${transferItem.objectVersion}</h2>
+<h2>${transferItem.bagId}, version: ${transferItem.versionMajor}.${transferItem.versionMinor}</h2>
 
 <p>Archived on ${transferItem.tar.archivalDate}</p>
 
@@ -18,3 +18,13 @@
 <tr><td>ocflObjectPath</td><td>${transferItem.ocflObjectPath}</td></tr>
 <tr><td>filepidToLocalPath</td><td>${transferItem.filepidToLocalPath}</td></tr>
 </table>
+
+<#if otherTransferItems?size gt 0>
+<h2>Older versions</h2>
+
+<ul>
+    <#list otherTransferItems as other>
+        <li>${other.versionMajor}.${other.versionMinor}</li>
+    </#list>
+</ul>
+</#if>
