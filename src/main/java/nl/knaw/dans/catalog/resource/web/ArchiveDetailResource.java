@@ -50,7 +50,5 @@ public class ArchiveDetailResource {
         }
 
         return new ArchiveDetailView(items);
-
     }
-
 }

@@ -84,6 +84,5 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
                 return new ErrorView(errorMessage);
             }
         });
-
     }
 }
