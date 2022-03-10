@@ -16,7 +16,6 @@
 
 package nl.knaw.dans.catalog.core;
 
-import io.dropwizard.hibernate.UnitOfWork;
 import nl.knaw.dans.catalog.db.Tar;
 import nl.knaw.dans.catalog.db.TarDAO;
 import org.slf4j.Logger;
