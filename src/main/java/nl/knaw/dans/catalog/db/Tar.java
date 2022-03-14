@@ -22,7 +22,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,7 @@ public class Tar {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "tar")
     private List<TarPart> tarParts = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "tar")
-    private List<TransferItem> transferItems = new ArrayList<>();
+    private List<OcflObjectVersion> ocflObjectVersions = new ArrayList<>();
 
     public String getTarUuid() {
         return tarUuid;
@@ -74,12 +73,12 @@ public class Tar {
         this.tarParts = tarParts;
     }
 
-    public List<TransferItem> getTransferItems() {
-        return transferItems;
+    public List<OcflObjectVersion> getOcflObjectVersions() {
+        return ocflObjectVersions;
     }
 
-    public void setTransferItems(List<TransferItem> transferItems) {
-        this.transferItems = transferItems;
+    public void setOcflObjectVersions(List<OcflObjectVersion> ocflObjectVersions) {
+        this.ocflObjectVersions = ocflObjectVersions;
     }
 
     @Override
@@ -89,7 +88,7 @@ public class Tar {
             ", vaultPath='" + vaultPath + '\'' +
             ", archivalDate=" + archivalDate +
             ", tarParts=" + tarParts +
-            ", transferItems=" + transferItems +
+            ", ocflObjectVersions=" + ocflObjectVersions +
             '}';
     }
 }

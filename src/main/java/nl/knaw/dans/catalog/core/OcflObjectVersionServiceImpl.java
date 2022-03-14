@@ -16,27 +16,27 @@
 package nl.knaw.dans.catalog.core;
 
 import io.dropwizard.hibernate.UnitOfWork;
-import nl.knaw.dans.catalog.db.TransferItem;
-import nl.knaw.dans.catalog.db.TransferItemDao;
+import nl.knaw.dans.catalog.db.OcflObjectVersion;
+import nl.knaw.dans.catalog.db.OcflObjectVersionDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class TransferItemServiceImpl implements TransferItemService {
-    private static final Logger log = LoggerFactory.getLogger(TransferItemServiceImpl.class);
+public class OcflObjectVersionServiceImpl implements OcflObjectVersionService {
+    private static final Logger log = LoggerFactory.getLogger(OcflObjectVersionServiceImpl.class);
 
-    private final TransferItemDao transferItemDao;
+    private final OcflObjectVersionDao ocflObjectVersionDao;
 
-    public TransferItemServiceImpl(TransferItemDao transferItemDao) {
-        this.transferItemDao = transferItemDao;
+    public OcflObjectVersionServiceImpl(OcflObjectVersionDao ocflObjectVersionDao) {
+        this.ocflObjectVersionDao = ocflObjectVersionDao;
     }
 
     @Override
     @UnitOfWork
-    public List<TransferItem> findByNbn(String id) {
-        log.trace("Getting TransferItem by NBN {}", id);
-        return transferItemDao.findByNbn(id);
+    public List<OcflObjectVersion> findByNbn(String id) {
+        log.trace("Getting OcflObjectVersion by NBN {}", id);
+        return ocflObjectVersionDao.findByNbn(id);
     }
 
 }

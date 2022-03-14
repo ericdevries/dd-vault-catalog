@@ -20,7 +20,7 @@ import nl.knaw.dans.catalog.openapi.api.TarDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = { TransferItemMapper.class })
+@Mapper(uses = { OcflObjectVersionMapper.class })
 public interface TarMapper {
     TarMapper INSTANCE = Mappers.getMapper(TarMapper.class);
 

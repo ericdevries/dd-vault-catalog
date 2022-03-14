@@ -16,7 +16,7 @@
 
 package nl.knaw.dans.catalog.resource.web;
 
-import nl.knaw.dans.catalog.core.TransferItemService;
+import nl.knaw.dans.catalog.core.OcflObjectVersionService;
 import nl.knaw.dans.catalog.resource.view.ArchiveDetailView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,16 +34,16 @@ import javax.ws.rs.core.Response;
 public class ArchiveDetailResource {
     private static final Logger log = LoggerFactory.getLogger(ArchiveDetailResource.class);
 
-    private final TransferItemService transferItemService;
+    private final OcflObjectVersionService ocflObjectVersionService;
 
-    public ArchiveDetailResource(TransferItemService transferItemService) {
-        this.transferItemService = transferItemService;
+    public ArchiveDetailResource(OcflObjectVersionService ocflObjectVersionService) {
+        this.ocflObjectVersionService = ocflObjectVersionService;
     }
 
     @GET
     public ArchiveDetailView get(@PathParam("id") String id) {
         log.debug("Received request for page with NBN {}", id);
-        var items = transferItemService.findByNbn(id);
+        var items = ocflObjectVersionService.findByNbn(id);
 
         if (items.size() == 0) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);

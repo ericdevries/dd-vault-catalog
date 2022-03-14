@@ -43,13 +43,13 @@ public class SolrServiceImpl implements SolrService {
         Objects.requireNonNull(tar, "tar cannot be null");
 
         log.trace("Indexing archive {}", tar);
-        var documents = tar.getTransferItems().stream().map(transferItem -> {
+        var documents = tar.getOcflObjectVersions().stream().map(ocflObjectVersion -> {
             var doc = new SolrInputDocument();
-            doc.addField("datastation", transferItem.getDatastation());
-            doc.addField("nbn", transferItem.getNbn());
-            doc.addField("dataset_pid", transferItem.getDataversePid());
+            doc.addField("datastation", ocflObjectVersion.getDatastation());
+            doc.addField("nbn", ocflObjectVersion.getNbn());
+            doc.addField("dataset_pid", ocflObjectVersion.getDataversePid());
 
-            flattenMetadata(transferItem.getMetadata())
+            flattenMetadata(ocflObjectVersion.getMetadata())
                 .forEach(doc::addField);
 
             log.trace("Document generated: {}", doc);

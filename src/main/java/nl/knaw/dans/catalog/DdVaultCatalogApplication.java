@@ -28,12 +28,12 @@ import io.dropwizard.views.View;
 import io.dropwizard.views.ViewBundle;
 import nl.knaw.dans.catalog.core.SolrServiceImpl;
 import nl.knaw.dans.catalog.core.TarServiceImpl;
-import nl.knaw.dans.catalog.core.TransferItemServiceImpl;
+import nl.knaw.dans.catalog.core.OcflObjectVersionServiceImpl;
+import nl.knaw.dans.catalog.db.OcflObjectVersion;
 import nl.knaw.dans.catalog.db.Tar;
 import nl.knaw.dans.catalog.db.TarDAO;
 import nl.knaw.dans.catalog.db.TarPart;
-import nl.knaw.dans.catalog.db.TransferItem;
-import nl.knaw.dans.catalog.db.TransferItemDao;
+import nl.knaw.dans.catalog.db.OcflObjectVersionDao;
 import nl.knaw.dans.catalog.resource.api.TarAPIResource;
 import nl.knaw.dans.catalog.resource.view.ErrorView;
 import nl.knaw.dans.catalog.resource.web.ArchiveDetailResource;
@@ -41,7 +41,7 @@ import nl.knaw.dans.catalog.resource.web.ArchiveDetailResource;
 import javax.ws.rs.core.MediaType;
 
 public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfiguration> {
-    private final HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle = new HibernateBundle<>(TransferItem.class, Tar.class, TarPart.class) {
+    private final HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle = new HibernateBundle<>(OcflObjectVersion.class, Tar.class, TarPart.class) {
 
         @Override
         public PooledDataSourceFactory getDataSourceFactory(DdVaultCatalogConfiguration configuration) {
@@ -67,16 +67,16 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
     @Override
     public void run(final DdVaultCatalogConfiguration configuration, final Environment environment) {
         var tarDao = new TarDAO(hibernateBundle.getSessionFactory());
-        var transferItemDao = new TransferItemDao(hibernateBundle.getSessionFactory());
+        var ocflObjectVersionDao = new OcflObjectVersionDao(hibernateBundle.getSessionFactory());
         var tarService = new UnitOfWorkAwareProxyFactory(hibernateBundle).create(TarServiceImpl.class, TarDAO.class, tarDao);
 
-        var transferItemService = new UnitOfWorkAwareProxyFactory(hibernateBundle)
-            .create(TransferItemServiceImpl.class, TransferItemDao.class, transferItemDao);
+        var ocflObjectVersionService = new UnitOfWorkAwareProxyFactory(hibernateBundle)
+            .create(OcflObjectVersionServiceImpl.class, OcflObjectVersionDao.class, ocflObjectVersionDao);
 
         var solrService = new SolrServiceImpl(configuration.getSolr());
 
         environment.jersey().register(new TarAPIResource(tarService, solrService));
-        environment.jersey().register(new ArchiveDetailResource(transferItemService));
+        environment.jersey().register(new ArchiveDetailResource(ocflObjectVersionService));
         environment.jersey().register(new ErrorEntityWriter<ErrorMessage, View>(MediaType.TEXT_HTML_TYPE, View.class) {
 
             @Override

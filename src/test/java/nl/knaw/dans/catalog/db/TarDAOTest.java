@@ -28,7 +28,7 @@ class TarDAOTest {
     private static final Logger log = LoggerFactory.getLogger(TarDAOTest.class);
 
     private final DAOTestExtension daoTestRule = DAOTestExtension.newBuilder()
-        .addEntityClass(TransferItem.class)
+        .addEntityClass(OcflObjectVersion.class)
         .addEntityClass(Tar.class)
         .addEntityClass(TarPart.class)
         .build();

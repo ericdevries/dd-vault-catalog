@@ -76,7 +76,7 @@ components:
         - archival_date
         - tar_parts
         - tar_uuid
-        - transfer_items
+        - ocfl_object_versions
         - vault_path
       type: object
       properties:
@@ -91,10 +91,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TarPart'
-        transfer_items:
+        ocfl_objects:
           type: array
           items:
-            $ref: '#/components/schemas/TransferItem'
+            $ref: '#/components/schemas/OcflObject'
     TarPart:
       type: object
       properties:
@@ -104,7 +104,7 @@ components:
           type: string
         checksum_value:
           type: string
-    TransferItem:
+    OcflObject:
       required:
         - bag_id
         - datastation

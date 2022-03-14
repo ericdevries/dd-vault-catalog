@@ -40,7 +40,7 @@ public class TarServiceImpl implements TarService {
 
     @Override
     public Tar saveTar(Tar tar) {
-        tar.getTransferItems().forEach(t -> t.setTar(tar));
+        tar.getOcflObjectVersions().forEach(t -> t.setTar(tar));
         tar.getTarParts().forEach(t -> t.setTar(tar));
         log.trace("Saving TAR {}", tar);
         return tarDAO.save(tar);

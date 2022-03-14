@@ -20,11 +20,11 @@ import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import io.dropwizard.testing.junit5.ResourceExtension;
 import nl.knaw.dans.catalog.core.SolrService;
 import nl.knaw.dans.catalog.core.TarService;
+import nl.knaw.dans.catalog.db.OcflObjectVersion;
 import nl.knaw.dans.catalog.db.Tar;
-import nl.knaw.dans.catalog.db.TransferItem;
+import nl.knaw.dans.catalog.openapi.api.OcflObjectDto;
 import nl.knaw.dans.catalog.openapi.api.TarDto;
 import nl.knaw.dans.catalog.openapi.api.TarPartDto;
-import nl.knaw.dans.catalog.openapi.api.TransferItemDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +32,6 @@ import org.mockito.Mockito;
 
 import javax.ws.rs.client.Entity;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,18 +82,18 @@ class TarAPIResourceTest {
         entity.setArchivalDate(OffsetDateTime.now());
         entity.setVaultPath("vault-x");
 
-        var transferItem = new TransferItemDto();
-        transferItem.setBagId("bagid");
-        transferItem.setDatastation("ds1");
-        transferItem.setDataversePid("dspid");
-        transferItem.setDataversePidVersion("dspidversion");
-        transferItem.setObjectVersion("1.0");
-        transferItem.setVersionMajor(1);
-        transferItem.setVersionMinor(5);
-        transferItem.setOcflObjectPath("path/to/thing");
-        transferItem.setSwordClient("PAR");
-        transferItem.setNbn("nbn:version");
-        transferItem.setMetadata(Map.of("data1", "5", "data2", "6"));
+        var ocflObjectDto = new OcflObjectDto();
+        ocflObjectDto.setBagId("bagid");
+        ocflObjectDto.setDatastation("ds1");
+        ocflObjectDto.setDataversePid("dspid");
+        ocflObjectDto.setDataversePidVersion("dspidversion");
+        ocflObjectDto.setObjectVersion("1.0");
+        ocflObjectDto.setVersionMajor(1);
+        ocflObjectDto.setVersionMinor(5);
+        ocflObjectDto.setOcflObjectPath("path/to/thing");
+        ocflObjectDto.setSwordClient("PAR");
+        ocflObjectDto.setNbn("nbn:version");
+        ocflObjectDto.setMetadata(Map.of("data1", "5", "data2", "6"));
 
         var part = new TarPartDto();
         part.setPartName("0000");
@@ -102,22 +101,21 @@ class TarAPIResourceTest {
         part.setChecksumValue("thevalue");
 
         entity.setTarParts(List.of(part));
-        entity.setTransferItems(List.of(transferItem));
+        entity.setOcflObjects(List.of(ocflObjectDto));
 
         var result = new Tar();
-        result.setTransferItems(new ArrayList<>());
-        var ti = new TransferItem();
+        result.setOcflObjectVersions(new ArrayList<>());
+        var ti = new OcflObjectVersion();
         ti.setMetadata("{\"key\": 1}");
-        result.getTransferItems().add(ti);
+        result.getOcflObjectVersions().add(ti);
 
         Mockito.when(tarService.saveTar(Mockito.any())).thenReturn(result);
 
         var response = EXT.target("/api/tar/").request().post(Entity.json(entity));
         assertEquals(200, response.getStatusInfo().getStatusCode());
-        var stream = (ByteArrayInputStream)response.getEntity();
+        var stream = (ByteArrayInputStream) response.getEntity();
 
         var s = new String(stream.readAllBytes());
-        System.out.println(s);
     }
 
     @Test

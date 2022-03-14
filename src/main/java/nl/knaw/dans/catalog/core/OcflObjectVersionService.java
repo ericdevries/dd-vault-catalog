@@ -15,13 +15,12 @@
  */
 package nl.knaw.dans.catalog.core;
 
-import nl.knaw.dans.catalog.db.TransferItem;
+import nl.knaw.dans.catalog.db.OcflObjectVersion;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface TransferItemService {
+public interface OcflObjectVersionService {
 
-    List<TransferItem> findByNbn(String id);
+    List<OcflObjectVersion> findByNbn(String id);
 
 }

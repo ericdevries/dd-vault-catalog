@@ -26,8 +26,8 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "transfer_items", uniqueConstraints = { @UniqueConstraint(columnNames = { "bag_id", "version_major", "version_minor" }) })
-public class TransferItem {
+@Table(name = "ocfl_object_versions", uniqueConstraints = { @UniqueConstraint(columnNames = { "bag_id", "version_major", "version_minor" }) })
+public class OcflObjectVersion {
 
     @Id
     @Column(name = "bag_id")
@@ -194,7 +194,7 @@ public class TransferItem {
 
     @Override
     public String toString() {
-        return "TransferItem{" +
+        return "OcflObjectVersion{" +
             "bagId='" + bagId + '\'' +
             ", objectVersion='" + objectVersion + '\'' +
             ", datastation='" + datastation + '\'' +

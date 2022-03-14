@@ -17,24 +17,24 @@
 package nl.knaw.dans.catalog.resource.view;
 
 import io.dropwizard.views.View;
-import nl.knaw.dans.catalog.db.TransferItem;
+import nl.knaw.dans.catalog.db.OcflObjectVersion;
 
 import java.util.List;
 
 public class ArchiveDetailView extends View {
-    private final List<TransferItem> transferItems;
+    private final List<OcflObjectVersion> ocflObjectVersions;
 
-    public ArchiveDetailView(List<TransferItem> transferItems) {
-        super("transfer-item.ftl");
-        this.transferItems = transferItems;
+    public ArchiveDetailView(List<OcflObjectVersion> ocflObjectVersions) {
+        super("ocfl-object-version.ftl");
+        this.ocflObjectVersions = ocflObjectVersions;
     }
 
-    public TransferItem getTransferItem() {
-        return transferItems.get(0);
+    public OcflObjectVersion getOcflObjectVersion() {
+        return ocflObjectVersions.get(0);
     }
 
-    public List<TransferItem> getOtherTransferItems() {
-        return transferItems.subList(1, transferItems.size());
+    public List<OcflObjectVersion> getOtherOcflObjectVersions() {
+        return ocflObjectVersions.subList(1, ocflObjectVersions.size());
     }
 
 }

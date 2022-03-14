@@ -15,20 +15,18 @@
  */
 package nl.knaw.dans.catalog.core.mapper;
 
-import nl.knaw.dans.catalog.db.TransferItem;
-import nl.knaw.dans.catalog.openapi.api.TransferItemDto;
+import nl.knaw.dans.catalog.db.OcflObjectVersion;
+import nl.knaw.dans.catalog.openapi.api.OcflObjectDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface TransferItemDtoMapper {
-    TransferItemDtoMapper INSTANCE = Mappers.getMapper(TransferItemDtoMapper.class);
+public interface OcflObjectVersionDtoMapper {
+    OcflObjectVersionDtoMapper INSTANCE = Mappers.getMapper(OcflObjectVersionDtoMapper.class);
 
-//    @Mapping(source = "metadata", target = "metadataJson")
-//    @Mapping(target = "metadata", ignore = true)
-    @Mapping(expression = "java(JsonMapper.toString(transferItemDto.getMetadata()))", target = "metadata")
-    TransferItem transferItemDtoToTransferItem(TransferItemDto transferItemDto);
+    @Mapping(expression = "java(JsonMapper.toString(ocflObjectDto.getMetadata()))", target = "metadata")
+    OcflObjectVersion ocflObjectVersionDtoToOcflObjectVersion(OcflObjectDto ocflObjectDto);
 
 }
 
