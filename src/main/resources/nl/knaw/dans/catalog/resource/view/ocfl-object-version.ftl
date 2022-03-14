@@ -26,12 +26,12 @@
                 <tr><th scope="row">Dataverse PID</th><td>${ocflObjectVersion.dataversePid}</td></tr>
                 <tr><th scope="row">Dataverse PID version</th><td>${ocflObjectVersion.dataversePidVersion}</td></tr>
                 <tr><th scope="row">NBN</th><td>${ocflObjectVersion.nbn}</td></tr>
-                <tr><th scope="row">Other ID</th><td>${ocflObjectVersion.otherId}</td></tr>
-                <tr><th scope="row">Other ID version</th><td>${ocflObjectVersion.otherIdVersion}</td></tr>
-                <tr><th scope="row">Sword client</th><td>${ocflObjectVersion.swordClient}</td></tr>
-                <tr><th scope="row">Sword token</th><td>${ocflObjectVersion.swordToken}</td></tr>
-                <tr><th scope="row">OCFL object path</th><td>${ocflObjectVersion.ocflObjectPath}</td></tr>
-                <tr><th scope="row">File pid to local path</th><td>${ocflObjectVersion.filepidToLocalPath}</td></tr>
+                <tr><th scope="row">Other ID</th><td><#if ocflObjectVersion.otherId??>${ocflObjectVersion.otherId}<#else>-</#if></td></tr>
+                <tr><th scope="row">Other ID version</th><td><#if ocflObjectVersion.otherIdVersion??>${ocflObjectVersion.otherIdVersion}<#else>-</#if></td></tr>
+                <tr><th scope="row">Sword client</th><td><#if ocflObjectVersion.swordClient??>${ocflObjectVersion.swordClient}<#else>-</#if></td></tr>
+                <tr><th scope="row">Sword token</th><td><#if ocflObjectVersion.swordToken??>${ocflObjectVersion.swordToken}<#else>-</#if></td></tr>
+                <tr><th scope="row">OCFL object path</th><td><#if ocflObjectVersion.ocflObjectPath??>${ocflObjectVersion.ocflObjectPath}<#else>-</#if></td></tr>
+                <tr><th scope="row">File pid to local path</th><td><#if ocflObjectVersion.filepidToLocalPath??>${ocflObjectVersion.filepidToLocalPath}<#else>-</#if></td></tr>
             </tbody>
         </table>
 

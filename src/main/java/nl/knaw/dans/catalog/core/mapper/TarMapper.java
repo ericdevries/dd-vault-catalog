@@ -18,12 +18,14 @@ package nl.knaw.dans.catalog.core.mapper;
 import nl.knaw.dans.catalog.db.Tar;
 import nl.knaw.dans.catalog.openapi.api.TarDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(uses = { OcflObjectVersionMapper.class })
 public interface TarMapper {
     TarMapper INSTANCE = Mappers.getMapper(TarMapper.class);
 
+    @Mapping(source = "ocflObjectVersions", target = "ocflObjects")
     TarDto tarToTarDto(Tar tar);
 }
 

@@ -116,7 +116,6 @@ components:
         - version_minor
         - object_version
         - ocfl_object_path
-        - sword_client
       type: object
       properties:
         metadata:

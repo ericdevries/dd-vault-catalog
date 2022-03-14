@@ -26,7 +26,7 @@ public interface OcflObjectVersionMapper {
     OcflObjectVersionMapper INSTANCE = Mappers.getMapper(OcflObjectVersionMapper.class);
 
     @Mapping(expression = "java(JsonMapper.toJson(ocflObjectVersion.getMetadata()))", target = "metadata")
-    OcflObjectDto ocflObjectVersionToOcflObjectVersionDto(OcflObjectVersion ocflObjectVersion);
+    OcflObjectDto ocflObjectVersionToOcflObjectDto(OcflObjectVersion ocflObjectVersion);
 
 }
 

@@ -16,6 +16,8 @@
 
 package nl.knaw.dans.catalog;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.dropwizard.Application;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
@@ -62,6 +64,7 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
     public void initialize(final Bootstrap<DdVaultCatalogConfiguration> bootstrap) {
         bootstrap.addBundle(hibernateBundle);
         bootstrap.addBundle(new ViewBundle<>());
+        bootstrap.getObjectMapper().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     @Override

@@ -34,7 +34,7 @@ public class ArchiveDetailView extends View {
     }
 
     public List<OcflObjectVersion> getOtherOcflObjectVersions() {
-        return ocflObjectVersions.subList(1, ocflObjectVersions.size());
+        return ocflObjectVersions;
     }
 
 }
