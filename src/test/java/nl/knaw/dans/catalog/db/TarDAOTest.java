@@ -39,7 +39,7 @@ class TarDAOTest {
     void setUp() {
         tarDAO = new TarDAO(daoTestRule.getSessionFactory());
     }
-//
+
     //    @Test
     //    void findAllTarsToBeConfirmed() {
     //        daoTestRule.inTransaction(() -> {

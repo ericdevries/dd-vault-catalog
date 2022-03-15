@@ -16,8 +16,6 @@
 
 package nl.knaw.dans.catalog.db;
 
-import org.hibernate.annotations.Type;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -65,6 +63,30 @@ public class OcflObjectVersion {
     private String metadata;
     @Column(name = "filepid_to_local_path", columnDefinition = "clob")
     private String filepidToLocalPath; // what is this?
+
+    public OcflObjectVersion(String bagId, String objectVersion, Tar tar, String datastation, String dataversePid, String dataversePidVersion, String nbn, int versionMajor, int versionMinor,
+        String otherId, String otherIdVersion, String swordClient, String swordToken, String ocflObjectPath, String metadata, String filepidToLocalPath) {
+        this.bagId = bagId;
+        this.objectVersion = objectVersion;
+        this.tar = tar;
+        this.datastation = datastation;
+        this.dataversePid = dataversePid;
+        this.dataversePidVersion = dataversePidVersion;
+        this.nbn = nbn;
+        this.versionMajor = versionMajor;
+        this.versionMinor = versionMinor;
+        this.otherId = otherId;
+        this.otherIdVersion = otherIdVersion;
+        this.swordClient = swordClient;
+        this.swordToken = swordToken;
+        this.ocflObjectPath = ocflObjectPath;
+        this.metadata = metadata;
+        this.filepidToLocalPath = filepidToLocalPath;
+    }
+
+    public OcflObjectVersion() {
+
+    }
 
     public int getVersionMajor() {
         return versionMajor;

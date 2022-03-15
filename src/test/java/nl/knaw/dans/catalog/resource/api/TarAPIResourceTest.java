@@ -22,9 +22,10 @@ import nl.knaw.dans.catalog.core.SolrService;
 import nl.knaw.dans.catalog.core.TarService;
 import nl.knaw.dans.catalog.db.OcflObjectVersion;
 import nl.knaw.dans.catalog.db.Tar;
-import nl.knaw.dans.catalog.openapi.api.OcflObjectDto;
-import nl.knaw.dans.catalog.openapi.api.TarDto;
-import nl.knaw.dans.catalog.openapi.api.TarPartDto;
+import nl.knaw.dans.catalog.db.TarPart;
+import nl.knaw.dans.openapi.api.OcflObjectDto;
+import nl.knaw.dans.openapi.api.TarDto;
+import nl.knaw.dans.openapi.api.TarPartDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,9 +46,7 @@ class TarAPIResourceTest {
 
     private static final TarService tarService = Mockito.mock(TarService.class);
     private static final SolrService solrService = Mockito.mock(SolrService.class);
-    private static final ResourceExtension EXT = ResourceExtension.builder()
-        .addResource(new TarAPIResource(tarService, solrService))
-        .build();
+    private static final ResourceExtension EXT = ResourceExtension.builder().addResource(new TarAPIResource(tarService, solrService)).build();
 
     @AfterEach
     void tearDown() {
@@ -114,9 +113,52 @@ class TarAPIResourceTest {
         var response = EXT.target("/api/tar/").request().post(Entity.json(entity));
         assertEquals(200, response.getStatusInfo().getStatusCode());
         var stream = (ByteArrayInputStream) response.getEntity();
-
-        var s = new String(stream.readAllBytes());
     }
+
+
+    @Test
+    void updateTar() {
+        var entity = new TarDto();
+        entity.setTarUuid("123");
+        entity.setArchivalDate(OffsetDateTime.now());
+        entity.setVaultPath("vault-x");
+
+        var ocflObjectDto = new OcflObjectDto();
+        ocflObjectDto.setBagId("bagid2");
+        ocflObjectDto.setDatastation("ds1");
+        ocflObjectDto.setDataversePid("dspid");
+        ocflObjectDto.setDataversePidVersion("dspidversion");
+        ocflObjectDto.setObjectVersion("1.0");
+        ocflObjectDto.setVersionMajor(1);
+        ocflObjectDto.setVersionMinor(5);
+        ocflObjectDto.setOcflObjectPath("path/to/thing");
+        ocflObjectDto.setSwordClient("PAR");
+        ocflObjectDto.setNbn("nbn:version");
+        ocflObjectDto.setMetadata(Map.of("data1", "5", "data2", "6"));
+
+        var part = new TarPartDto();
+        part.setPartName("0000");
+        part.setChecksumAlgorithm("md5");
+        part.setChecksumValue("thevalue");
+
+        entity.setTarParts(List.of(part));
+        entity.setOcflObjects(List.of(ocflObjectDto));
+
+        var result = new Tar();
+        result.setOcflObjectVersions(new ArrayList<>());
+        result.setTarUuid(entity.getTarUuid());
+        var ti = new OcflObjectVersion();
+        ti.setMetadata("{\"key\": 1}");
+        result.getOcflObjectVersions().add(ti);
+
+        Mockito.when(tarService.get(Mockito.any())).thenReturn(Optional.of(result));
+        Mockito.when(tarService.saveTar(Mockito.any())).thenReturn(result);
+
+        var response = EXT.target("/api/tar/" + entity.getTarUuid()).request().put(Entity.json(entity));
+        assertEquals(200, response.getStatusInfo().getStatusCode());
+
+    }
+
 
     @Test
     void createTarIncomplete() {
@@ -124,8 +166,33 @@ class TarAPIResourceTest {
         entity.setTarUuid("123");
         entity.setArchivalDate(OffsetDateTime.now());
         entity.setVaultPath("vault-x");
+
         var response = EXT.target("/api/tar/").request().post(Entity.json(entity));
         assertEquals(422, response.getStatusInfo().getStatusCode());
     }
 
+    @Test
+    void createTarIncompleteMissingTarParts() {
+        var entity = new Tar();
+        entity.setTarUuid("123");
+        entity.setArchivalDate(OffsetDateTime.now());
+        entity.setVaultPath("vault-x");
+        entity.setOcflObjectVersions(
+            List.of(new OcflObjectVersion("bagid", "objectversion", null, "ds", "pid", "version", "nbn", 2, 1, "other", "version", "client", "token", "otherpath", "{}", "filepid")));
+
+        var response = EXT.target("/api/tar/").request().post(Entity.json(entity));
+        assertEquals(422, response.getStatusInfo().getStatusCode());
+    }
+
+    @Test
+    void createTarIncompleteMissingOcflObjects() {
+        var entity = new Tar();
+        entity.setTarUuid("123");
+        entity.setArchivalDate(OffsetDateTime.now());
+        entity.setVaultPath("vault-x");
+        entity.setTarParts(List.of(new TarPart("0000", "md5", "value", null)));
+
+        var response = EXT.target("/api/tar/").request().post(Entity.json(entity));
+        assertEquals(422, response.getStatusInfo().getStatusCode());
+    }
 }

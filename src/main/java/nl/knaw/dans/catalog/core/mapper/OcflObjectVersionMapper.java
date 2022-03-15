@@ -16,7 +16,7 @@
 package nl.knaw.dans.catalog.core.mapper;
 
 import nl.knaw.dans.catalog.db.OcflObjectVersion;
-import nl.knaw.dans.catalog.openapi.api.OcflObjectDto;
+import nl.knaw.dans.openapi.api.OcflObjectDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;

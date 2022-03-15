@@ -41,6 +41,16 @@ public class Tar {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "tar")
     private List<OcflObjectVersion> ocflObjectVersions = new ArrayList<>();
 
+    public Tar() {
+
+    }
+
+    public Tar(String tarUuid, String vaultPath, OffsetDateTime archivalDate) {
+        this.tarUuid = tarUuid;
+        this.vaultPath = vaultPath;
+        this.archivalDate = archivalDate;
+    }
+
     public String getTarUuid() {
         return tarUuid;
     }
