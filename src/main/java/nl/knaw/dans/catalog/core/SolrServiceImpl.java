@@ -38,8 +38,49 @@ public class SolrServiceImpl implements SolrService {
         solrClient = new HttpSolrClient.Builder(solrConfig.getUrl()).build();
     }
 
+    /**
+     * ## ids
+     * bag_id: string
+     * tar_id: string
+     * nbn: string
+     * dataverse_pid: string
+     * sword_client: string
+     * sword_token: string
+     * ocfl_object_path: string
+     * tar_part_name: string
+     *
+     *
+     * ## timestamps
+     * tar_archival_date
+     * export_timestamp
+     *
+     * ## text fields
+     * filepid_to_local_path
+     *
+     * ## int fields
+     * version_major
+     * version_minor
+     *
+     *
+     * ## metadata fields
+     * metadata_citation_topic_classification
+     * metadata_author_name
+     * metadata_author_affiliation
+     * metadata_citation_email
+     * metadata_citation_distributor
+     * metadata_citation_description
+     * metadata_related_publication
+     * metadata_title
+     * metadata_subject
+     * metadata_data_catalog
+     *
+     * @param tar
+     * @throws SolrServerException
+     * @throws IOException
+     */
     @Override
     public void indexArchive(Tar tar) throws SolrServerException, IOException {
+        /*
         Objects.requireNonNull(tar, "tar cannot be null");
 
         log.trace("Indexing archive {}", tar);
@@ -59,6 +100,8 @@ public class SolrServiceImpl implements SolrService {
         log.debug("Indexing document with ID {}", tar.getTarUuid());
         solrClient.add(documents);
         solrClient.commit();
+
+         */
     }
 
     Map<String, String> flattenMetadata(String str) {

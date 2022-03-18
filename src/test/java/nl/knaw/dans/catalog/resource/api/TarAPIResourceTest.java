@@ -93,6 +93,7 @@ class TarAPIResourceTest {
         ocflObjectDto.setSwordClient("PAR");
         ocflObjectDto.setNbn("nbn:version");
         ocflObjectDto.setMetadata(Map.of("data1", "5", "data2", "6"));
+        ocflObjectDto.setExportTimestamp(OffsetDateTime.now());
 
         var part = new TarPartDto();
         part.setPartName("0000");
@@ -135,6 +136,7 @@ class TarAPIResourceTest {
         ocflObjectDto.setSwordClient("PAR");
         ocflObjectDto.setNbn("nbn:version");
         ocflObjectDto.setMetadata(Map.of("data1", "5", "data2", "6"));
+        ocflObjectDto.setExportTimestamp(OffsetDateTime.now());
 
         var part = new TarPartDto();
         part.setPartName("0000");
@@ -178,7 +180,7 @@ class TarAPIResourceTest {
         entity.setArchivalDate(OffsetDateTime.now());
         entity.setVaultPath("vault-x");
         entity.setOcflObjectVersions(
-            List.of(new OcflObjectVersion("bagid", "objectversion", null, "ds", "pid", "version", "nbn", 2, 1, "other", "version", "client", "token", "otherpath", "{}", "filepid")));
+            List.of(new OcflObjectVersion("bagid", "objectversion", null, "ds", "pid", "version", "nbn", 2, 1, "other", "version", "client", "token", "otherpath", "{}", "filepid", OffsetDateTime.now())));
 
         var response = EXT.target("/api/tar/").request().post(Entity.json(entity));
         assertEquals(422, response.getStatusInfo().getStatusCode());

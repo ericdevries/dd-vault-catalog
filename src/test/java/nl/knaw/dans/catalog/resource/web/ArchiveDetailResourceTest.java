@@ -49,7 +49,7 @@ class ArchiveDetailResourceTest {
 
     @Test
     void getOK() {
-        var ocflObjectVersion = new OcflObjectVersion("bagid", "objectversion", null, "ds", "pid", "version", "nbn", 2, 1, "other", "version", "client", "token", "otherpath", "{}", "filepid");
+        var ocflObjectVersion = new OcflObjectVersion("bagid", "objectversion", null, "ds", "pid", "version", "nbn", 2, 1, "other", "version", "client", "token", "otherpath", "{}", "filepid", OffsetDateTime.now());
         var tar = new Tar("uuid", "path", OffsetDateTime.now());
         ocflObjectVersion.setTar(tar);
 
