@@ -1,17 +1,34 @@
-#
-# Module configuration file
-#
-# Please, modify the configuration below to match your environment. Also, delete and/or modify
-# this description.
-
 server:
   applicationContextPath: /
   adminContextPath: /
   applicationConnectors:
     - type: http
-      # Replace with port number unique for this service
-      port: 20000
+      port: 20100
   adminConnectors:
     - type: http
-      # Replace with port number unique for this service
-      port: 20001
+      port: 20101
+
+solr:
+  url: http://localhost:8983/solr/dd_vault_catalog
+
+database:
+  driverClass: com.mysql.cj.jdbc.Driver
+  url: jdbc:mysql://localhost:3306/dd_vault_catalog?useSSL=false
+  user: dd_vault_catalog
+  password: changeme
+  logValidationErrors: true
+  validationQuery: SELECT 1
+  properties:
+    hibernate.hbm2ddl.auto: update
+
+logging:
+  level: INFO
+  loggers:
+    "nl.knaw.dans": INFO
+    "io.dropwizard": INFO
+  appenders:
+    - type: file
+      archive: false
+      currentLogFilename: '/var/opt/dans.knaw.nl/dd-transfer-to-vault/dd-transfer-to-vault.log'
+    - type: console
+      logFormat: "%-5p [%d{ISO8601}] [%t] %c: %m%n%rEx"
