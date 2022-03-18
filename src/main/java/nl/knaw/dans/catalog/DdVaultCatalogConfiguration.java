@@ -16,11 +16,44 @@
 
 package nl.knaw.dans.catalog;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
+import io.dropwizard.db.DataSourceFactory;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 public class DdVaultCatalogConfiguration extends Configuration {
+    @Valid
+    @NotNull
+    private DataSourceFactory database = new DataSourceFactory();
+    @Valid
+    private SolrConfig solr;
 
+    public SolrConfig getSolr() {
+        return solr;
+    }
+
+    public void setSolr(SolrConfig solr) {
+        this.solr = solr;
+    }
+
+    public DataSourceFactory getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(DataSourceFactory database) {
+        this.database = database;
+    }
+
+    public static class SolrConfig {
+        private String url;
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+    }
 }
