@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-package nl.knaw.dans.catalog.core;
+package nl.knaw.dans.catalog.db;
 
-import nl.knaw.dans.catalog.db.Tar;
+import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.SessionFactory;
 
 import java.util.Optional;
 
-public interface TarService {
+public class TarDAO extends AbstractDAO<Tar> {
 
-    Optional<Tar> get(String id);
+    public TarDAO(SessionFactory sessionFactory) {
+        super(sessionFactory);
+    }
 
-    Tar saveTar(Tar tar);
+    public Optional<Tar> findById(String id) {
+        return Optional.ofNullable(get(id));
+    }
+
+    public Tar save(Tar tar) {
+        return persist(tar);
+    }
 }

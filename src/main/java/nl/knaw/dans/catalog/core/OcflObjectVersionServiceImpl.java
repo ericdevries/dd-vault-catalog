@@ -13,36 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nl.knaw.dans.catalog.core;
 
-import nl.knaw.dans.catalog.db.Tar;
-import nl.knaw.dans.catalog.db.TarDAO;
+import io.dropwizard.hibernate.UnitOfWork;
+import nl.knaw.dans.catalog.db.OcflObjectVersion;
+import nl.knaw.dans.catalog.db.OcflObjectVersionDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
+import java.util.List;
 
-public class TarServiceImpl implements TarService {
-    private static final Logger log = LoggerFactory.getLogger(TarServiceImpl.class);
+public class OcflObjectVersionServiceImpl implements OcflObjectVersionService {
+    private static final Logger log = LoggerFactory.getLogger(OcflObjectVersionServiceImpl.class);
 
-    private final TarDAO tarDAO;
+    private final OcflObjectVersionDao ocflObjectVersionDao;
 
-    public TarServiceImpl(TarDAO tarDAO) {
-        this.tarDAO = tarDAO;
+    public OcflObjectVersionServiceImpl(OcflObjectVersionDao ocflObjectVersionDao) {
+        this.ocflObjectVersionDao = ocflObjectVersionDao;
     }
 
     @Override
-    public Optional<Tar> get(String id) {
-        log.trace("Getting TAR with ID {}", id);
-        return tarDAO.findById(id);
+    @UnitOfWork
+    public List<OcflObjectVersion> findByNbn(String id) {
+        log.trace("Getting OcflObjectVersion by NBN {}", id);
+        return ocflObjectVersionDao.findByNbn(id);
     }
 
-    @Override
-    public Tar saveTar(Tar tar) {
-        tar.getOcflObjectVersions().forEach(t -> t.setTar(tar));
-        tar.getTarParts().forEach(t -> t.setTar(tar));
-        log.trace("Saving TAR {}", tar);
-        return tarDAO.save(tar);
-    }
 }

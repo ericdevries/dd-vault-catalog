@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nl.knaw.dans.catalog.core;
 
-import nl.knaw.dans.catalog.db.Tar;
+import nl.knaw.dans.catalog.db.OcflObjectVersion;
 
-import java.util.Optional;
+import java.util.List;
 
-public interface TarService {
+public interface OcflObjectVersionService {
 
-    Optional<Tar> get(String id);
+    List<OcflObjectVersion> findByNbn(String id);
 
-    Tar saveTar(Tar tar);
 }

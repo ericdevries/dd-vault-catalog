@@ -14,15 +14,27 @@
  * limitations under the License.
  */
 
-package nl.knaw.dans.catalog.core;
+package nl.knaw.dans.catalog.resource.view;
 
-import nl.knaw.dans.catalog.db.Tar;
+import io.dropwizard.views.View;
+import nl.knaw.dans.catalog.db.OcflObjectVersion;
 
-import java.util.Optional;
+import java.util.List;
 
-public interface TarService {
+public class ArchiveDetailView extends View {
+    private final List<OcflObjectVersion> ocflObjectVersions;
 
-    Optional<Tar> get(String id);
+    public ArchiveDetailView(List<OcflObjectVersion> ocflObjectVersions) {
+        super("ocfl-object-version.ftl");
+        this.ocflObjectVersions = ocflObjectVersions;
+    }
 
-    Tar saveTar(Tar tar);
+    public OcflObjectVersion getOcflObjectVersion() {
+        return ocflObjectVersions.get(0);
+    }
+
+    public List<OcflObjectVersion> getOtherOcflObjectVersions() {
+        return ocflObjectVersions;
+    }
+
 }

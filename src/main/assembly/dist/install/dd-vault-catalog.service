@@ -1,5 +1,5 @@
 [Unit]
-Description=Dd Vault Catalog Service
+Description=Vault Catalog Service
 
 [Service]
 ExecStart=/opt/dans.knaw.nl/dd-vault-catalog/bin/dd-vault-catalog server /etc/opt/dans.knaw.nl/dd-vault-catalog/config.yml

@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.knaw.dans.catalog.core.mapper;
 
-package nl.knaw.dans.catalog.core;
+import nl.knaw.dans.catalog.db.OcflObjectVersion;
+import nl.knaw.dans.openapi.api.OcflObjectDto;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
-import nl.knaw.dans.catalog.db.Tar;
+@Mapper
+public interface OcflObjectVersionDtoMapper {
+    OcflObjectVersionDtoMapper INSTANCE = Mappers.getMapper(OcflObjectVersionDtoMapper.class);
 
-import java.util.Optional;
+    @Mapping(expression = "java(JsonMapper.toString(ocflObjectDto.getMetadata()))", target = "metadata")
+    OcflObjectVersion ocflObjectDtoToOcflObjectVersion(OcflObjectDto ocflObjectDto);
 
-public interface TarService {
-
-    Optional<Tar> get(String id);
-
-    Tar saveTar(Tar tar);
 }
+

@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package nl.knaw.dans.catalog.core;
+package nl.knaw.dans.catalog.core.mapper;
 
 import nl.knaw.dans.catalog.db.Tar;
+import nl.knaw.dans.openapi.api.TarDto;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
-import java.util.Optional;
+@Mapper(uses = { OcflObjectVersionDtoMapper.class })
+public interface TarDtoMapper {
+    TarDtoMapper INSTANCE = Mappers.getMapper(TarDtoMapper.class);
 
-public interface TarService {
-
-    Optional<Tar> get(String id);
-
-    Tar saveTar(Tar tar);
+    @Mapping(source = "ocflObjects", target = "ocflObjectVersions")
+    Tar tarDtoToTar(TarDto tarDto);
 }
+

@@ -16,28 +16,33 @@
 
 package nl.knaw.dans.catalog;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.dropwizard.Application;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
+import io.dropwizard.jersey.errors.ErrorEntityWriter;
+import io.dropwizard.jersey.errors.ErrorMessage;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.dropwizard.views.View;
 import io.dropwizard.views.ViewBundle;
+import nl.knaw.dans.catalog.core.OcflObjectVersionServiceImpl;
 import nl.knaw.dans.catalog.core.SolrServiceImpl;
-import nl.knaw.dans.catalog.core.TransferItemServiceImpl;
-import nl.knaw.dans.catalog.db.TarModel;
-import nl.knaw.dans.catalog.db.TarPartModel;
 import nl.knaw.dans.catalog.core.TarServiceImpl;
-import nl.knaw.dans.catalog.db.TransferItemDao;
-import nl.knaw.dans.catalog.db.TransferItemModel;
-import nl.knaw.dans.catalog.db.TarModelDAO;
-import nl.knaw.dans.catalog.resource.ArchiveDetailResource;
-import nl.knaw.dans.catalog.resource.TarAPIResource;
+import nl.knaw.dans.catalog.db.OcflObjectVersion;
+import nl.knaw.dans.catalog.db.OcflObjectVersionDao;
+import nl.knaw.dans.catalog.db.Tar;
+import nl.knaw.dans.catalog.db.TarDAO;
+import nl.knaw.dans.catalog.db.TarPart;
+import nl.knaw.dans.catalog.resource.api.TarAPIResource;
+import nl.knaw.dans.catalog.resource.view.ErrorView;
+import nl.knaw.dans.catalog.resource.web.ArchiveDetailResource;
 
-import java.util.Map;
+import javax.ws.rs.core.MediaType;
 
 public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfiguration> {
-    private final HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle = new HibernateBundle<>(TransferItemModel.class, TarModel.class, TarPartModel.class) {
+    private final HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle = new HibernateBundle<>(OcflObjectVersion.class, Tar.class, TarPart.class) {
 
         @Override
         public PooledDataSourceFactory getDataSourceFactory(DdVaultCatalogConfiguration configuration) {
@@ -58,24 +63,28 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
     public void initialize(final Bootstrap<DdVaultCatalogConfiguration> bootstrap) {
         bootstrap.addBundle(hibernateBundle);
         bootstrap.addBundle(new ViewBundle<>());
+        bootstrap.getObjectMapper().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     @Override
     public void run(final DdVaultCatalogConfiguration configuration, final Environment environment) {
+        var tarDao = new TarDAO(hibernateBundle.getSessionFactory());
+        var ocflObjectVersionDao = new OcflObjectVersionDao(hibernateBundle.getSessionFactory());
+        var tarService = new UnitOfWorkAwareProxyFactory(hibernateBundle).create(TarServiceImpl.class, TarDAO.class, tarDao);
 
-        var tarModelDao = new TarModelDAO(hibernateBundle.getSessionFactory());
-        var transferItemDao = new TransferItemDao(hibernateBundle.getSessionFactory());
-        var tarService = new UnitOfWorkAwareProxyFactory(hibernateBundle).create(TarServiceImpl.class,
-            TarModelDAO.class, tarModelDao);
+        var ocflObjectVersionService = new UnitOfWorkAwareProxyFactory(hibernateBundle)
+            .create(OcflObjectVersionServiceImpl.class, OcflObjectVersionDao.class, ocflObjectVersionDao);
 
-        var transferItemService = new UnitOfWorkAwareProxyFactory(hibernateBundle).create(TransferItemServiceImpl.class,
-            TransferItemDao.class, transferItemDao);
-
-        var solrService = new SolrServiceImpl();
-
+        var solrService = new SolrServiceImpl(configuration.getSolr());
 
         environment.jersey().register(new TarAPIResource(tarService, solrService));
-        environment.jersey().register(new ArchiveDetailResource(transferItemService));
-    }
+        environment.jersey().register(new ArchiveDetailResource(ocflObjectVersionService));
+        environment.jersey().register(new ErrorEntityWriter<ErrorMessage, View>(MediaType.TEXT_HTML_TYPE, View.class) {
 
+            @Override
+            protected View getRepresentation(ErrorMessage errorMessage) {
+                return new ErrorView(errorMessage);
+            }
+        });
+    }
 }

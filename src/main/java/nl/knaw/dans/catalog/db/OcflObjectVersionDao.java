@@ -13,16 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.knaw.dans.catalog.db;
 
-package nl.knaw.dans.catalog.core;
+import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.SessionFactory;
 
-import nl.knaw.dans.catalog.db.Tar;
+import java.util.List;
 
-import java.util.Optional;
+public class OcflObjectVersionDao extends AbstractDAO<OcflObjectVersion> {
 
-public interface TarService {
+    public OcflObjectVersionDao(SessionFactory sessionFactory) {
+        super(sessionFactory);
+    }
 
-    Optional<Tar> get(String id);
+    public List<OcflObjectVersion> findByNbn(String nbn) {
+        var query = currentSession().createQuery(
+            "from OcflObjectVersion where nbn = :nbn "
+                + "order by versionMajor desc, versionMinor desc", OcflObjectVersion.class);
 
-    Tar saveTar(Tar tar);
+        query.setParameter("nbn", nbn);
+
+        return query.list();
+    }
 }
