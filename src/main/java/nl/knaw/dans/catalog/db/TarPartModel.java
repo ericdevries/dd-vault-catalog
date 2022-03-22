@@ -16,7 +16,6 @@
 
 package nl.knaw.dans.catalog.db;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,7 +27,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "tar_parts")
-public class TarPart {
+public class TarPartModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,16 +40,16 @@ public class TarPart {
     private String checksumValue;
     @ManyToOne
     @JoinColumn(name = "tar_uuid")
-    private Tar tar;
+    private TarModel tar;
 
-    public TarPart(String partName, String checksumAlgorithm, String checksumValue, Tar tar) {
+    public TarPartModel(String partName, String checksumAlgorithm, String checksumValue, TarModel tar) {
         this.partName = partName;
         this.checksumAlgorithm = checksumAlgorithm;
         this.checksumValue = checksumValue;
         this.tar = tar;
     }
 
-    public TarPart() {
+    public TarPartModel() {
 
     }
 
@@ -86,21 +85,12 @@ public class TarPart {
         this.checksumValue = checksumValue;
     }
 
-    public Tar getTar() {
+    public TarModel getTar() {
         return tar;
     }
 
-    public void setTar(Tar tar) {
+    public void setTar(TarModel tar) {
         this.tar = tar;
     }
 
-    @Override
-    public String toString() {
-        return "TarPart{" +
-            "id=" + id +
-            ", partName='" + partName + '\'' +
-            ", checksumAlgorithm='" + checksumAlgorithm + '\'' +
-            ", checksumValue='" + checksumValue + '\'' +
-            '}';
-    }
 }

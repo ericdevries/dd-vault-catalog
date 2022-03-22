@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.catalog.core.mapper;
+package nl.knaw.dans.catalog.db;
 
-import nl.knaw.dans.catalog.db.Tar;
-import nl.knaw.dans.openapi.api.TarDto;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
+import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.SessionFactory;
 
-@Mapper(uses = { OcflObjectVersionMapper.class })
-public interface TarMapper {
-    TarMapper INSTANCE = Mappers.getMapper(TarMapper.class);
+import java.util.Optional;
 
-    @Mapping(source = "ocflObjectVersions", target = "ocflObjects")
-    TarDto tarToTarDto(Tar tar);
+public class TransferItemDao extends AbstractDAO<TransferItemModel> {
 
-    Tar update(@MappingTarget Tar existingTar, Tar tar);
+    public TransferItemDao(SessionFactory sessionFactory) {
+        super(sessionFactory);
+    }
+
+    public Optional<TransferItemModel> findByNbn(String nbn) {
+        var query = currentSession().createQuery(
+            "from TransferItemModel where nbn = :nbn", TransferItemModel.class);
+
+        query.setParameter("nbn", nbn);
+
+        return query.uniqueResultOptional();
+    }
 }
-

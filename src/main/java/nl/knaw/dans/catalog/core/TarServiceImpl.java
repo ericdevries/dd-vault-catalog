@@ -43,6 +43,7 @@ public class TarServiceImpl implements TarService {
         tar.getOcflObjectVersions().forEach(t -> t.setTar(tar));
         tar.getTarParts().forEach(t -> t.setTar(tar));
         log.trace("Saving TAR {}", tar);
-        return tarDAO.save(tar);
+        return tarDAO.save(tarDAO.merge(tar));
     }
+
 }

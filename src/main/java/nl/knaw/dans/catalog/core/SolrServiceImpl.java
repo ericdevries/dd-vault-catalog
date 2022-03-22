@@ -18,6 +18,7 @@ package nl.knaw.dans.catalog.core;
 
 import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
 import nl.knaw.dans.catalog.db.Tar;
+import nl.knaw.dans.catalog.db.TarPart;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.common.SolrInputDocument;
@@ -25,8 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SolrServiceImpl implements SolrService {
@@ -39,56 +40,37 @@ public class SolrServiceImpl implements SolrService {
     }
 
     /**
-     * ## ids
-     * bag_id: string
-     * tar_id: string
-     * nbn: string
-     * dataverse_pid: string
-     * sword_client: string
-     * sword_token: string
-     * ocfl_object_path: string
-     * tar_part_name: string
+     * ## ids bag_id: string tar_id: string nbn: string dataverse_pid: string sword_client: string sword_token: string ocfl_object_path: string tar_part_name: string
      *
      *
-     * ## timestamps
-     * tar_archival_date
-     * export_timestamp
+     * ## timestamps tar_archival_date export_timestamp
      *
-     * ## text fields
-     * filepid_to_local_path
+     * ## text fields filepid_to_local_path
      *
-     * ## int fields
-     * version_major
-     * version_minor
+     * ## int fields version_major version_minor
      *
      *
-     * ## metadata fields
-     * metadata_citation_topic_classification
-     * metadata_author_name
-     * metadata_author_affiliation
-     * metadata_citation_email
-     * metadata_citation_distributor
-     * metadata_citation_description
-     * metadata_related_publication
-     * metadata_title
-     * metadata_subject
-     * metadata_data_catalog
-     *
-     * @param tar
-     * @throws SolrServerException
-     * @throws IOException
+     * ## metadata fields metadata_citation_topic_classification metadata_author_name metadata_author_affiliation metadata_citation_email metadata_citation_distributor metadata_citation_description
+     * metadata_related_publication metadata_title metadata_subject metadata_data_catalog
      */
     @Override
     public void indexArchive(Tar tar) throws SolrServerException, IOException {
-        /*
-        Objects.requireNonNull(tar, "tar cannot be null");
-
-        log.trace("Indexing archive {}", tar);
         var documents = tar.getOcflObjectVersions().stream().map(ocflObjectVersion -> {
             var doc = new SolrInputDocument();
-            doc.addField("datastation", ocflObjectVersion.getDatastation());
-            doc.addField("nbn", ocflObjectVersion.getNbn());
-            doc.addField("dataset_pid", ocflObjectVersion.getDataversePid());
+            var id = String.format("%s/%s.%s", ocflObjectVersion.getId().getBagId(), ocflObjectVersion.getId().getVersionMajor(), ocflObjectVersion.getId().getVersionMinor());
+
+            doc.setField("id", id);
+            doc.setField("bag_id", ocflObjectVersion.getId().getBagId());
+            doc.setField("tar_id", ocflObjectVersion.getTar().getTarUuid());
+            doc.setField("nbn", ocflObjectVersion.getNbn());
+            doc.setField("dataverse_pid", ocflObjectVersion.getDataversePid());
+            doc.setField("sword_client", ocflObjectVersion.getSwordClient());
+            doc.setField("sword_token", ocflObjectVersion.getSwordToken());
+            doc.setField("ocfl_object_path", ocflObjectVersion.getOcflObjectPath());
+            doc.setField("tar_part_name", ocflObjectVersion.getTar().getTarParts().stream().map(TarPart::getPartName).collect(Collectors.toList()));
+
+            doc.addField("tar_archival_timestamp", ocflObjectVersion.getTar().getArchivalDate());
+            doc.addField("export_timestamp", ocflObjectVersion.getExportTimestamp());
 
             flattenMetadata(ocflObjectVersion.getMetadata())
                 .forEach(doc::addField);
@@ -100,8 +82,11 @@ public class SolrServiceImpl implements SolrService {
         log.debug("Indexing document with ID {}", tar.getTarUuid());
         solrClient.add(documents);
         solrClient.commit();
+    }
 
-         */
+    @Override
+    public List<Tar> searchArchives(String query) {
+        return null;
     }
 
     Map<String, String> flattenMetadata(String str) {

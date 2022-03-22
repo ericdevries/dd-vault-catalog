@@ -26,6 +26,7 @@ public class DdVaultCatalogConfiguration extends Configuration {
     @Valid
     @NotNull
     private DataSourceFactory database = new DataSourceFactory();
+
     @Valid
     private SolrConfig solr;
 

@@ -16,7 +16,6 @@
 
 package nl.knaw.dans.catalog;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.dropwizard.Application;
 import io.dropwizard.db.PooledDataSourceFactory;
@@ -28,14 +27,14 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.View;
 import io.dropwizard.views.ViewBundle;
+import nl.knaw.dans.catalog.core.OcflObjectVersionServiceImpl;
 import nl.knaw.dans.catalog.core.SolrServiceImpl;
 import nl.knaw.dans.catalog.core.TarServiceImpl;
-import nl.knaw.dans.catalog.core.OcflObjectVersionServiceImpl;
 import nl.knaw.dans.catalog.db.OcflObjectVersion;
+import nl.knaw.dans.catalog.db.OcflObjectVersionDao;
 import nl.knaw.dans.catalog.db.Tar;
 import nl.knaw.dans.catalog.db.TarDAO;
 import nl.knaw.dans.catalog.db.TarPart;
-import nl.knaw.dans.catalog.db.OcflObjectVersionDao;
 import nl.knaw.dans.catalog.resource.api.TarAPIResource;
 import nl.knaw.dans.catalog.resource.view.ErrorView;
 import nl.knaw.dans.catalog.resource.web.ArchiveDetailResource;
@@ -78,7 +77,7 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
 
         var solrService = new SolrServiceImpl(configuration.getSolr());
 
-        environment.jersey().register(new TarAPIResource(tarService, solrService));
+        environment.jersey().register(new TarAPIResource(tarService, solrService, ocflObjectVersionService));
         environment.jersey().register(new ArchiveDetailResource(ocflObjectVersionService));
         environment.jersey().register(new ErrorEntityWriter<ErrorMessage, View>(MediaType.TEXT_HTML_TYPE, View.class) {
 

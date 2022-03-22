@@ -5,14 +5,14 @@
   "tar_parts": [
     {
       "checksum_algorithm": "md5",
-      "checksum_value": "the_checksum",
+      "checksum_value": "the_checksum2",
       "part_name": "0000"
     }
   ],
-  "transfer_items": [
+  "ocfl_objects": [
     {
-      "bag_id": "urn:uuid:016526b1-c0ae-4237-854c-1f4d0b84d25a",
-      "datastation": "ds_archeology",
+      "bag_id": "urn:uuid:016526b1-c0ae-4237-854c-1f4d0b84d25b",
+      "datastation": "ds_archeology3",
       "dataverse_pid": "https://doi.org/10.17026/XXXXX",
       "dataverse_pid_version": "V1.0",
       "filepid_to_local_path": "filepid",
@@ -147,14 +147,16 @@
       "other_id": "pan:PAN00341",
       "other_id_version": "3.1",
       "sword_client": "PAN",
-      "sword_token": "sword:UUID"
+      "sword_token": "sword:UUID",
+      "export_timestamp": "2022-01-02T00:54:32Z"
     },
     {
       "bag_id": "urn:uuid:a65d8a93-8fdc-4b0c-afae-f32dc3171960",
-      "datastation": "ds_science",
+      "datastation": "ds_science2",
       "dataverse_pid": "https://doi.org/10.12345/XXXXX",
       "dataverse_pid_version": "V1.5",
       "filepid_to_local_path": "filepid",
+      "export_timestamp": "2022-01-02T00:54:32Z",
       "version_major": 1,
       "version_minor": 2,
       "metadata": {
