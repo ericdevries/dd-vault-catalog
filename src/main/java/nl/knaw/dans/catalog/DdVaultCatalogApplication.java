@@ -77,7 +77,7 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
 
         var solrService = new SolrServiceImpl(configuration.getSolr());
 
-        environment.jersey().register(new TarAPIResource(tarService, solrService));
+        environment.jersey().register(new TarAPIResource(tarService, solrService, ocflObjectVersionService));
         environment.jersey().register(new ArchiveDetailResource(ocflObjectVersionService));
         environment.jersey().register(new ErrorEntityWriter<ErrorMessage, View>(MediaType.TEXT_HTML_TYPE, View.class) {
 

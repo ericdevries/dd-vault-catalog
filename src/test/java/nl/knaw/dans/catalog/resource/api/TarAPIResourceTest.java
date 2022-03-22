@@ -18,6 +18,7 @@ package nl.knaw.dans.catalog.resource.api;
 
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import io.dropwizard.testing.junit5.ResourceExtension;
+import nl.knaw.dans.catalog.core.OcflObjectVersionService;
 import nl.knaw.dans.catalog.core.SolrService;
 import nl.knaw.dans.catalog.core.TarService;
 import nl.knaw.dans.catalog.db.OcflObjectVersion;
@@ -46,7 +47,8 @@ class TarAPIResourceTest {
 
     private static final TarService tarService = Mockito.mock(TarService.class);
     private static final SolrService solrService = Mockito.mock(SolrService.class);
-    private static final ResourceExtension EXT = ResourceExtension.builder().addResource(new TarAPIResource(tarService, solrService)).build();
+    private static final OcflObjectVersionService ocflObjectVersionService = Mockito.mock(OcflObjectVersionService.class);
+    private static final ResourceExtension EXT = ResourceExtension.builder().addResource(new TarAPIResource(tarService, solrService, ocflObjectVersionService)).build();
 
     @AfterEach
     void tearDown() {

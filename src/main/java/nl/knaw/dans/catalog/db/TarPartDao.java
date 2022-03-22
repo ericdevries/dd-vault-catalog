@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.knaw.dans.catalog.db;
 
-package nl.knaw.dans.catalog.resource;
+import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.SessionFactory;
 
-import io.dropwizard.views.View;
-import nl.knaw.dans.catalog.db.TransferItemModel;
+import java.util.List;
 
-public class ArchiveDetailView extends View {
-    private final TransferItemModel transferItem;
+public class TarPartDao extends AbstractDAO<TarPart> {
 
-    protected ArchiveDetailView(TransferItemModel transferItem) {
-        super("transfer-item.ftl");
-        this.transferItem = transferItem;
+    public TarPartDao(SessionFactory sessionFactory) {
+        super(sessionFactory);
     }
 
-    public TransferItemModel getTransferItem() {
-        return transferItem;
+    public List<TarPart> findAll() {
+        return currentSession().createQuery("from TarPart", TarPart.class)
+            .list();
     }
+
 }

@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 public class OcflObjectVersionServiceImpl implements OcflObjectVersionService {
     private static final Logger log = LoggerFactory.getLogger(OcflObjectVersionServiceImpl.class);
@@ -37,6 +38,11 @@ public class OcflObjectVersionServiceImpl implements OcflObjectVersionService {
     public List<OcflObjectVersion> findByNbn(String id) {
         log.trace("Getting OcflObjectVersion by NBN {}", id);
         return ocflObjectVersionDao.findByNbn(id);
+    }
+
+    @Override
+    public Optional<OcflObjectVersion> findByBagIdAndVersion(String bagId, int versionMajor, int versionMinor) {
+        return ocflObjectVersionDao.findByBagIdAndVersion(bagId, versionMajor, versionMinor);
     }
 
 }

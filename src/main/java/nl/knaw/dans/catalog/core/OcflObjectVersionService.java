@@ -18,9 +18,12 @@ package nl.knaw.dans.catalog.core;
 import nl.knaw.dans.catalog.db.OcflObjectVersion;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OcflObjectVersionService {
 
     List<OcflObjectVersion> findByNbn(String id);
 
+
+    Optional<OcflObjectVersion> findByBagIdAndVersion(String bagId, int versionMajor, int versionMinor);
 }

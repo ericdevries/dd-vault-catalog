@@ -39,7 +39,7 @@ public class TarPart {
     private String checksumAlgorithm;
     @Column(name = "checksum_value")
     private String checksumValue;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "tar_uuid")
     private Tar tar;
 
