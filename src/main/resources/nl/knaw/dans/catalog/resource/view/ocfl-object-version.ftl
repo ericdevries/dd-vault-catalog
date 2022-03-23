@@ -41,6 +41,7 @@
             <thead>
                 <tr>
                     <th scope="col">Version</th>
+                    <th scope="col">Staged date</td>
                     <th scope="col">Archival date</td>
                     <th scope="col">TAR</td>
                 </tr>
@@ -49,7 +50,8 @@
                 <#list otherOcflObjectVersions as other>
                     <tr>
                         <th scope="row">${other.id.versionMajor}.${other.id.versionMinor}</th>
-                        <td>${other.tar.archivalDate}</td>
+                        <td>${other.tar.stagedDate}</td>
+                        <td><#if other.tar.archivalDate??>${other.tar.archivalDate}<#else>-</#if></td>
                         <td>${other.tar.tarUuid}</td>
                     </tr>
                 </#list>

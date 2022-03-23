@@ -24,6 +24,5 @@ public interface OcflObjectVersionService {
 
     List<OcflObjectVersion> findByNbn(String id);
 
-
     Optional<OcflObjectVersion> findByBagIdAndVersion(String bagId, int versionMajor, int versionMinor);
 }
