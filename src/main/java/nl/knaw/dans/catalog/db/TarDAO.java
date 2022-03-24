@@ -19,6 +19,7 @@ package nl.knaw.dans.catalog.db;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.SessionFactory;
 
+import java.util.List;
 import java.util.Optional;
 
 public class TarDAO extends AbstractDAO<Tar> {
@@ -33,5 +34,17 @@ public class TarDAO extends AbstractDAO<Tar> {
 
     public Tar save(Tar tar) {
         return persist(tar);
+    }
+
+    public Tar merge(Tar tar) {
+        return (Tar) currentSession().merge(tar);
+    }
+
+    public void evict(Tar tar) {
+        currentSession().evict(tar);
+    }
+
+    public List<Tar> findAll() {
+        return currentSession().createQuery("from Tar", Tar.class).list();
     }
 }

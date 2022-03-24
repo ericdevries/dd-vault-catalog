@@ -19,6 +19,7 @@ import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 public class OcflObjectVersionDao extends AbstractDAO<OcflObjectVersion> {
 
@@ -29,10 +30,27 @@ public class OcflObjectVersionDao extends AbstractDAO<OcflObjectVersion> {
     public List<OcflObjectVersion> findByNbn(String nbn) {
         var query = currentSession().createQuery(
             "from OcflObjectVersion where nbn = :nbn "
-                + "order by versionMajor desc, versionMinor desc", OcflObjectVersion.class);
+                + "order by id.versionMajor desc, id.versionMinor desc", OcflObjectVersion.class);
 
         query.setParameter("nbn", nbn);
 
         return query.list();
+    }
+
+    public Optional<OcflObjectVersion> findByBagIdAndVersion(String bagId, int versionMajor, int versionMinor) {
+        var query = currentSession().createQuery(
+            "from OcflObjectVersion where id.bagId = :bagId "
+                + "and id.versionMajor = :versionMajor and id.versionMinor = :versionMinor", OcflObjectVersion.class);
+
+        query.setParameter("bagId", bagId);
+        query.setParameter("versionMajor", versionMajor);
+        query.setParameter("versionMinor", versionMinor);
+
+        return query.uniqueResultOptional();
+    }
+
+    public List<OcflObjectVersion> findAll() {
+        return currentSession().createQuery("from OcflObjectVersion", OcflObjectVersion.class)
+            .list();
     }
 }

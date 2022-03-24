@@ -17,6 +17,7 @@
 package nl.knaw.dans.catalog.resource.api;
 
 import io.dropwizard.hibernate.UnitOfWork;
+import nl.knaw.dans.catalog.core.OcflObjectVersionService;
 import nl.knaw.dans.catalog.core.SolrService;
 import nl.knaw.dans.catalog.core.TarService;
 import nl.knaw.dans.catalog.core.mapper.TarDtoMapper;
@@ -39,34 +40,36 @@ public class TarAPIResource implements TarApi {
 
     private final TarService tarService;
     private final SolrService solrService;
+    private final OcflObjectVersionService ocflObjectVersionService;
     private final TarMapper tarMapper = Mappers.getMapper(TarMapper.class);
     private final TarDtoMapper tarDtoMapper = Mappers.getMapper(TarDtoMapper.class);
 
-    public TarAPIResource(TarService tarService, SolrService solrService) {
+    public TarAPIResource(TarService tarService, SolrService solrService, OcflObjectVersionService ocflObjectVersionService) {
         this.tarService = tarService;
         this.solrService = solrService;
+        this.ocflObjectVersionService = ocflObjectVersionService;
     }
 
     @Override
     @UnitOfWork
     public TarDto addArchive(TarDto tarDto) {
         log.info("Received new TAR {}, storing in database", tarDto);
+
         if (tarService.get(tarDto.getTarUuid()).isPresent()) {
             log.error("TAR with ID {} is already present in database", tarDto.getTarUuid());
             throw new WebApplicationException(Response.Status.CONFLICT);
         }
 
-        var tar = tarService.saveTar(tarDtoMapper.tarDtoToTar(tarDto));
+        // check that none of these ocfl objects already exist within another TAR
+        for (var ocflObject : tarDto.getOcflObjects()) {
+            var existingOcflObject = ocflObjectVersionService.findByBagIdAndVersion(ocflObject.getBagId(), ocflObject.getVersionMajor(), ocflObject.getVersionMinor());
 
-        try {
-            log.info("Adding TAR document to Solr index");
-            solrService.indexArchive(tar);
-        }
-        catch (IOException | SolrServerException e) {
-            log.error("Unable to save document in Solr index", e);
+            if (existingOcflObject.isPresent()) {
+                throw new WebApplicationException(String.format("OCFL object version with id %s already exists as part of another TAR", existingOcflObject.get().getId()));
+            }
         }
 
-        return tarMapper.tarToTarDto(tar);
+        return saveAndIndexTar(tarDto);
     }
 
     @Override
@@ -90,6 +93,26 @@ public class TarAPIResource implements TarApi {
                 Response.Status.BAD_REQUEST);
         }
 
+        var existingTar = tarService.get(id);
+
+        if (existingTar.isEmpty()) {
+            log.warn("Update on non-existing ID {}", id);
+            throw new WebApplicationException(String.format("Tar with UUID %s does not exist", id), Response.Status.NOT_FOUND);
+        }
+
+        // check that none of these ocfl objects already exist within another TAR
+        for (var ocflObject : tarDto.getOcflObjects()) {
+            var existingOcflObject = ocflObjectVersionService.findByBagIdAndVersion(ocflObject.getBagId(), ocflObject.getVersionMajor(), ocflObject.getVersionMinor());
+
+            if (existingOcflObject.isPresent() && !existingOcflObject.get().getTar().getTarUuid().equals(id)) {
+                throw new WebApplicationException(String.format("OCFL object version with id %s already exists as part of another TAR", existingOcflObject.get().getId()));
+            }
+        }
+
+        return saveAndIndexTar(tarDto);
+    }
+
+    private TarDto saveAndIndexTar(TarDto tarDto) {
         var tar = tarService.saveTar(tarDtoMapper.tarDtoToTar(tarDto));
 
         try {

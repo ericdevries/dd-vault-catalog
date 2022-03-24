@@ -18,6 +18,7 @@ package nl.knaw.dans.catalog.resource.api;
 
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import io.dropwizard.testing.junit5.ResourceExtension;
+import nl.knaw.dans.catalog.core.OcflObjectVersionService;
 import nl.knaw.dans.catalog.core.SolrService;
 import nl.knaw.dans.catalog.core.TarService;
 import nl.knaw.dans.catalog.db.OcflObjectVersion;
@@ -46,7 +47,8 @@ class TarAPIResourceTest {
 
     private static final TarService tarService = Mockito.mock(TarService.class);
     private static final SolrService solrService = Mockito.mock(SolrService.class);
-    private static final ResourceExtension EXT = ResourceExtension.builder().addResource(new TarAPIResource(tarService, solrService)).build();
+    private static final OcflObjectVersionService ocflObjectVersionService = Mockito.mock(OcflObjectVersionService.class);
+    private static final ResourceExtension EXT = ResourceExtension.builder().addResource(new TarAPIResource(tarService, solrService, ocflObjectVersionService)).build();
 
     @AfterEach
     void tearDown() {
@@ -78,7 +80,7 @@ class TarAPIResourceTest {
     void createTar() {
         var entity = new TarDto();
         entity.setTarUuid("123");
-        entity.setArchivalDate(OffsetDateTime.now());
+        entity.setStagedDate(OffsetDateTime.now());
         entity.setVaultPath("vault-x");
 
         var ocflObjectDto = new OcflObjectDto();
@@ -121,7 +123,7 @@ class TarAPIResourceTest {
     void updateTar() {
         var entity = new TarDto();
         entity.setTarUuid("123");
-        entity.setArchivalDate(OffsetDateTime.now());
+        entity.setStagedDate(OffsetDateTime.now());
         entity.setVaultPath("vault-x");
 
         var ocflObjectDto = new OcflObjectDto();
@@ -178,6 +180,7 @@ class TarAPIResourceTest {
         var entity = new Tar();
         entity.setTarUuid("123");
         entity.setArchivalDate(OffsetDateTime.now());
+        entity.setStagedDate(OffsetDateTime.now());
         entity.setVaultPath("vault-x");
         entity.setOcflObjectVersions(
             List.of(new OcflObjectVersion("bagid", "objectversion", null, "ds", "pid", "version", "nbn", 2, 1, "other", "version", "client", "token", "otherpath", "{}", "filepid", OffsetDateTime.now())));
@@ -191,6 +194,7 @@ class TarAPIResourceTest {
         var entity = new Tar();
         entity.setTarUuid("123");
         entity.setArchivalDate(OffsetDateTime.now());
+        entity.setStagedDate(OffsetDateTime.now());
         entity.setVaultPath("vault-x");
         entity.setTarParts(List.of(new TarPart("0000", "md5", "value", null)));
 

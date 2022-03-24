@@ -20,7 +20,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><th scope="row">BAG ID</th><td>${ocflObjectVersion.bagId}</td></tr>
+                <tr><th scope="row">BAG ID</th><td>${ocflObjectVersion.id.bagId}</td></tr>
                 <tr><th scope="row">Object version</th><td>${ocflObjectVersion.objectVersion}</td></tr>
                 <tr><th scope="row">Data station</th><td>${ocflObjectVersion.datastation}</td></tr>
                 <tr><th scope="row">Dataverse PID</th><td>${ocflObjectVersion.dataversePid}</td></tr>
@@ -41,6 +41,7 @@
             <thead>
                 <tr>
                     <th scope="col">Version</th>
+                    <th scope="col">Staged date</td>
                     <th scope="col">Archival date</td>
                     <th scope="col">TAR</td>
                 </tr>
@@ -48,8 +49,9 @@
             <tbody>
                 <#list otherOcflObjectVersions as other>
                     <tr>
-                        <th scope="row">${other.versionMajor}.${other.versionMinor}</th>
-                        <td>${other.tar.archivalDate}</td>
+                        <th scope="row">${other.id.versionMajor}.${other.id.versionMinor}</th>
+                        <td>${other.tar.stagedDate}</td>
+                        <td><#if other.tar.archivalDate??>${other.tar.archivalDate}<#else>-</#if></td>
                         <td>${other.tar.tarUuid}</td>
                     </tr>
                 </#list>

@@ -16,27 +16,23 @@
 
 package nl.knaw.dans.catalog.db;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "ocfl_object_versions", uniqueConstraints = { @UniqueConstraint(columnNames = { "bag_id", "version_major", "version_minor" }) })
+@Table(name = "ocfl_object_versions")
 public class OcflObjectVersion {
-
-    @Id
-    @Column(name = "bag_id")
-    private String bagId;
+    @EmbeddedId
+    private OcflObjectVersionId id = new OcflObjectVersionId();
     @Column(name = "object_version", nullable = false)
     private String objectVersion;
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "tar_uuid", nullable = false)
     private Tar tar;
     @Column(name = "datastation", nullable = false)
@@ -47,10 +43,6 @@ public class OcflObjectVersion {
     private String dataversePidVersion;
     @Column(name = "nbn", nullable = false)
     private String nbn;
-    @Column(name = "version_major", nullable = false)
-    private int versionMajor;
-    @Column(name = "version_minor", nullable = false)
-    private int versionMinor;
     @Column(name = "other_id")
     private String otherId;
     @Column(name = "other_id_version")
@@ -69,18 +61,17 @@ public class OcflObjectVersion {
     private String filepidToLocalPath;
     @Column(name = "export_timestamp")
     private OffsetDateTime exportTimestamp;
-
     public OcflObjectVersion(String bagId, String objectVersion, Tar tar, String datastation, String dataversePid, String dataversePidVersion, String nbn, int versionMajor, int versionMinor,
         String otherId, String otherIdVersion, String swordClient, String swordToken, String ocflObjectPath, String metadata, String filepidToLocalPath, OffsetDateTime exportTimestamp) {
-        this.bagId = bagId;
+        this.id.setBagId(bagId);
+        this.id.setVersionMajor(versionMajor);
+        this.id.setVersionMinor(versionMinor);
         this.objectVersion = objectVersion;
         this.tar = tar;
         this.datastation = datastation;
         this.dataversePid = dataversePid;
         this.dataversePidVersion = dataversePidVersion;
         this.nbn = nbn;
-        this.versionMajor = versionMajor;
-        this.versionMinor = versionMinor;
         this.otherId = otherId;
         this.otherIdVersion = otherIdVersion;
         this.swordClient = swordClient;
@@ -90,9 +81,16 @@ public class OcflObjectVersion {
         this.filepidToLocalPath = filepidToLocalPath;
         this.exportTimestamp = exportTimestamp;
     }
-
     public OcflObjectVersion() {
 
+    }
+
+    public OcflObjectVersionId getId() {
+        return id;
+    }
+
+    public void setId(OcflObjectVersionId id) {
+        this.id = id;
     }
 
     public OffsetDateTime getExportTimestamp() {
@@ -101,22 +99,6 @@ public class OcflObjectVersion {
 
     public void setExportTimestamp(OffsetDateTime exportTimestamp) {
         this.exportTimestamp = exportTimestamp;
-    }
-
-    public int getVersionMajor() {
-        return versionMajor;
-    }
-
-    public void setVersionMajor(int versionMajor) {
-        this.versionMajor = versionMajor;
-    }
-
-    public int getVersionMinor() {
-        return versionMinor;
-    }
-
-    public void setVersionMinor(int versionMinor) {
-        this.versionMinor = versionMinor;
     }
 
     public String getMetadata() {
@@ -133,14 +115,6 @@ public class OcflObjectVersion {
 
     public void setFilepidToLocalPath(String filepidToLocalPath) {
         this.filepidToLocalPath = filepidToLocalPath;
-    }
-
-    public String getBagId() {
-        return bagId;
-    }
-
-    public void setBagId(String bagId) {
-        this.bagId = bagId;
     }
 
     public String getObjectVersion() {
@@ -234,14 +208,12 @@ public class OcflObjectVersion {
     @Override
     public String toString() {
         return "OcflObjectVersion{" +
-            "bagId='" + bagId + '\'' +
+            "id='" + id + '\'' +
             ", objectVersion='" + objectVersion + '\'' +
             ", datastation='" + datastation + '\'' +
             ", dataversePid='" + dataversePid + '\'' +
             ", dataversePidVersion='" + dataversePidVersion + '\'' +
             ", nbn='" + nbn + '\'' +
-            ", versionMajor=" + versionMajor +
-            ", versionMinor=" + versionMinor +
             ", otherId='" + otherId + '\'' +
             ", otherIdVersion='" + otherIdVersion + '\'' +
             ", swordClient='" + swordClient + '\'' +
