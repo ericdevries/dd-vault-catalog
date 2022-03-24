@@ -34,6 +34,8 @@ public class Tar {
     private String tarUuid;
     @Column(name = "vault_path")
     private String vaultPath;
+    @Column(name = "staged_date", nullable = false)
+    private OffsetDateTime stagedDate;
     @Column(name = "archival_date")
     private OffsetDateTime archivalDate;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "tar")
@@ -45,10 +47,18 @@ public class Tar {
 
     }
 
-    public Tar(String tarUuid, String vaultPath, OffsetDateTime archivalDate) {
+    public Tar(String tarUuid, String vaultPath, OffsetDateTime stagedDate) {
         this.tarUuid = tarUuid;
         this.vaultPath = vaultPath;
-        this.archivalDate = archivalDate;
+        this.stagedDate = stagedDate;
+    }
+
+    public OffsetDateTime getStagedDate() {
+        return stagedDate;
+    }
+
+    public void setStagedDate(OffsetDateTime stagedDate) {
+        this.stagedDate = stagedDate;
     }
 
     public String getTarUuid() {
@@ -96,6 +106,7 @@ public class Tar {
         return "Tar{" +
             "tarUuid='" + tarUuid + '\'' +
             ", vaultPath='" + vaultPath + '\'' +
+            ", stagedDate=" + stagedDate +
             ", archivalDate=" + archivalDate +
             ", tarParts=" + tarParts +
             ", ocflObjectVersions=" + ocflObjectVersions +

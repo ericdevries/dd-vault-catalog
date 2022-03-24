@@ -29,6 +29,5 @@ public interface TarMapper {
     @Mapping(source = "ocflObjectVersions", target = "ocflObjects")
     TarDto tarToTarDto(Tar tar);
 
-    Tar update(@MappingTarget Tar existingTar, Tar tar);
 }
 

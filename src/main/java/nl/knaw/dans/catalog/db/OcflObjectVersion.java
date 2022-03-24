@@ -16,7 +16,6 @@
 
 package nl.knaw.dans.catalog.db;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -24,11 +23,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "ocfl_object_versions", uniqueConstraints = { @UniqueConstraint(columnNames = { "bag_id", "version_major", "version_minor" }) })
+@Table(name = "ocfl_object_versions")
 public class OcflObjectVersion {
     @EmbeddedId
     private OcflObjectVersionId id = new OcflObjectVersionId();

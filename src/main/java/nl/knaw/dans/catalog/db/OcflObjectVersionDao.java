@@ -30,7 +30,7 @@ public class OcflObjectVersionDao extends AbstractDAO<OcflObjectVersion> {
     public List<OcflObjectVersion> findByNbn(String nbn) {
         var query = currentSession().createQuery(
             "from OcflObjectVersion where nbn = :nbn "
-                + "order by versionMajor desc, versionMinor desc", OcflObjectVersion.class);
+                + "order by id.versionMajor desc, id.versionMinor desc", OcflObjectVersion.class);
 
         query.setParameter("nbn", nbn);
 
