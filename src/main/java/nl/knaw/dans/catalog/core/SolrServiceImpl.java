@@ -26,6 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -65,8 +68,8 @@ public class SolrServiceImpl implements SolrService {
             doc.setField("ocfl_object_path", ocflObjectVersion.getOcflObjectPath());
             doc.setField("tar_part_name", ocflObjectVersion.getTar().getTarParts().stream().map(TarPart::getPartName).collect(Collectors.toList()));
 
-            doc.addField("tar_archival_timestamp", ocflObjectVersion.getTar().getArchivalDate());
-            doc.addField("export_timestamp", ocflObjectVersion.getExportTimestamp());
+            doc.addField("tar_archival_timestamp", formatDate(ocflObjectVersion.getTar().getArchivalDate()));
+            doc.addField("export_timestamp", formatDate(ocflObjectVersion.getExportTimestamp()));
 
             flattenMetadata(ocflObjectVersion.getMetadata())
                 .forEach(doc::addField);
@@ -86,8 +89,14 @@ public class SolrServiceImpl implements SolrService {
     }
 
     Map<String, String> flattenMetadata(String str) {
-        // TODO read metadata from json
-        //            doc.addField("metadata_dcterms_creator", transferItem.getMetadata().get("dcterms:creator"));
         return Map.of();
+    }
+
+    String formatDate(OffsetDateTime date) {
+        if (date == null) {
+            return null;
+        }
+
+        return date.format(DateTimeFormatter.ISO_DATE_TIME);
     }
 }

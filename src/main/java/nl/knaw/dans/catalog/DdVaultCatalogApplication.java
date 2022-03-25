@@ -27,6 +27,7 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.View;
 import io.dropwizard.views.ViewBundle;
+import nl.knaw.dans.catalog.cli.ReindexCommand;
 import nl.knaw.dans.catalog.core.OcflObjectVersionServiceImpl;
 import nl.knaw.dans.catalog.core.SolrServiceImpl;
 import nl.knaw.dans.catalog.core.TarServiceImpl;
@@ -42,13 +43,7 @@ import nl.knaw.dans.catalog.resource.web.ArchiveDetailResource;
 import javax.ws.rs.core.MediaType;
 
 public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfiguration> {
-    private final HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle = new HibernateBundle<>(OcflObjectVersion.class, Tar.class, TarPart.class) {
-
-        @Override
-        public PooledDataSourceFactory getDataSourceFactory(DdVaultCatalogConfiguration configuration) {
-            return configuration.getDatabase();
-        }
-    };
+    private final HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle = new DdVaultHibernateBundle();
 
     public static void main(final String[] args) throws Exception {
         new DdVaultCatalogApplication().run(args);
@@ -64,6 +59,8 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
         bootstrap.addBundle(hibernateBundle);
         bootstrap.addBundle(new ViewBundle<>());
         bootstrap.getObjectMapper().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        bootstrap.addCommand(new ReindexCommand(hibernateBundle));
     }
 
     @Override
