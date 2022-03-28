@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Solr managed schema - automatically generated - DO NOT EDIT -->
 <schema name="default-config" version="1.6">
   <uniqueKey>id</uniqueKey>
   <fieldType name="_nest_path_" class="solr.NestPathField" maxCharsForDocValues="-1" omitNorms="true" omitTermFreqAndPositions="true" stored="false" multiValued="false"/>
@@ -197,7 +196,6 @@
   <field name="datastation" type="text_general" multiValued="false" />
   <field name="dataverse_pid" type="text_general" multiValued="false"/>
   <field name="export_timestamp" type="pdate" multiValued="false"/>
-  <field name="metadata_dcterms_creator" type="text_general" />
   <field name="nbn" type="text_general" multiValued="false" required="true" />
   <field name="ocfl_object_path" type="text_general" multiValued="false" />
   <field name="sword_client" type="text_general" multiValued="false" />
@@ -206,7 +204,16 @@
   <field name="tar_id" type="text_general" multiValued="false" />
   <field name="tar_part_name" type="strings" multiValued="true" />
   <field name="tar_uuid" type="text_general" multiValued="false" />
-  <field name="author_name" type="text_general" multiValued="true"/>
-  <field name="author_affiliation" type="text_general" multiValued="true"/>
-</schema>
 
+  <field name="metadata_topic_classification" type="text_general" stored="false" indexed="true" />
+  <field name="metadata_author_name" type="text_general" stored="false" indexed="true" multiValued="true" />
+  <field name="metadata_author_affiliation" type="text_general" stored="false" indexed="true" multiValued="true"/>
+  <field name="metadata_citation_email" type="text_general" stored="false" indexed="true" />
+  <field name="metadata_distributor_name" type="text_general" stored="false" indexed="true" />
+  <field name="metadata_description" type="text_general" stored="false" indexed="true" />
+  <field name="metadata_related_publication" type="text_general" stored="false" indexed="true" />
+  <field name="metadata_title" type="text_general" stored="false" indexed="true" />
+  <field name="metadata_subject" type="text_general" stored="false" indexed="true" />
+  <field name="metadata_included_data_catalog" type="text_general" stored="false" indexed="true" />
+  <field name="metadata_dcterms_creator" type="text_general" stored="false" indexed="true" />
+</schema>

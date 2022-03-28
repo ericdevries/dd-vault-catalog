@@ -21,6 +21,7 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import net.sourceforge.argparse4j.inf.Namespace;
 import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
+import nl.knaw.dans.catalog.core.OcflObjectMetadataReaderImpl;
 import nl.knaw.dans.catalog.core.SolrServiceImpl;
 import nl.knaw.dans.catalog.db.TarDAO;
 import org.slf4j.Logger;
@@ -52,7 +53,8 @@ public class ReindexCommand extends ConfiguredCommand<DdVaultCatalogConfiguratio
         log.info("Configured Hibernate");
 
         var tarDao = new TarDAO(hibernateBundle.getSessionFactory());
-        var solrService = new SolrServiceImpl(configuration.getSolr());
+        var ocflObjectMetadataReader = new OcflObjectMetadataReaderImpl();
+        var solrService = new SolrServiceImpl(configuration.getSolr(), ocflObjectMetadataReader);
 
         log.info("Configured services");
 

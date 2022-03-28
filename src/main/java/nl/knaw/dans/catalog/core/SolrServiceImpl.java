@@ -16,6 +16,7 @@
 
 package nl.knaw.dans.catalog.core;
 
+import com.jayway.jsonpath.JsonPath;
 import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
 import nl.knaw.dans.catalog.db.Tar;
 import nl.knaw.dans.catalog.db.TarPart;
@@ -26,9 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,9 +38,11 @@ public class SolrServiceImpl implements SolrService {
     private static final Logger log = LoggerFactory.getLogger(SolrServiceImpl.class);
 
     private final HttpSolrClient solrClient;
+    private final OcflObjectMetadataReader ocflObjectMetadataReader;
 
-    public SolrServiceImpl(DdVaultCatalogConfiguration.SolrConfig solrConfig) {
+    public SolrServiceImpl(DdVaultCatalogConfiguration.SolrConfig solrConfig, OcflObjectMetadataReader ocflObjectMetadataReader) {
         solrClient = new HttpSolrClient.Builder(solrConfig.getUrl()).build();
+        this.ocflObjectMetadataReader = ocflObjectMetadataReader;
     }
 
     /**
@@ -71,8 +74,11 @@ public class SolrServiceImpl implements SolrService {
             doc.addField("tar_archival_timestamp", formatDate(ocflObjectVersion.getTar().getArchivalDate()));
             doc.addField("export_timestamp", formatDate(ocflObjectVersion.getExportTimestamp()));
 
-            flattenMetadata(ocflObjectVersion.getMetadata())
-                .forEach(doc::addField);
+            var metadata = ocflObjectMetadataReader.readMetadata(ocflObjectVersion.getMetadata());
+
+            for (var entry: metadata.entrySet()) {
+                doc.addField(entry.getKey(), entry.getValue());
+            }
 
             log.trace("Document generated: {}", doc);
             return doc;
@@ -86,10 +92,6 @@ public class SolrServiceImpl implements SolrService {
     @Override
     public List<Tar> searchArchives(String query) {
         return null;
-    }
-
-    Map<String, String> flattenMetadata(String str) {
-        return Map.of();
     }
 
     String formatDate(OffsetDateTime date) {

@@ -16,6 +16,8 @@
 
 package nl.knaw.dans.catalog.resource.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import io.dropwizard.testing.junit5.ResourceExtension;
 import nl.knaw.dans.catalog.core.OcflObjectVersionService;
@@ -77,7 +79,7 @@ class TarAPIResourceTest {
     }
 
     @Test
-    void createTar() {
+    void createTar() throws JsonProcessingException {
         var entity = new TarDto();
         entity.setTarUuid("123");
         entity.setStagedDate(OffsetDateTime.now());
@@ -94,7 +96,7 @@ class TarAPIResourceTest {
         ocflObjectDto.setOcflObjectPath("path/to/thing");
         ocflObjectDto.setSwordClient("PAR");
         ocflObjectDto.setNbn("nbn:version");
-        ocflObjectDto.setMetadata(Map.of("data1", "5", "data2", "6"));
+        ocflObjectDto.setMetadata(new ObjectMapper().writeValueAsString(Map.of("data1", "5", "data2", "6")));
         ocflObjectDto.setExportTimestamp(OffsetDateTime.now());
 
         var part = new TarPartDto();
@@ -120,7 +122,7 @@ class TarAPIResourceTest {
 
 
     @Test
-    void updateTar() {
+    void updateTar() throws JsonProcessingException {
         var entity = new TarDto();
         entity.setTarUuid("123");
         entity.setStagedDate(OffsetDateTime.now());
@@ -137,7 +139,7 @@ class TarAPIResourceTest {
         ocflObjectDto.setOcflObjectPath("path/to/thing");
         ocflObjectDto.setSwordClient("PAR");
         ocflObjectDto.setNbn("nbn:version");
-        ocflObjectDto.setMetadata(Map.of("data1", "5", "data2", "6"));
+        ocflObjectDto.setMetadata(new ObjectMapper().writeValueAsString(Map.of("data1", "5", "data2", "6")));
         ocflObjectDto.setExportTimestamp(OffsetDateTime.now());
 
         var part = new TarPartDto();
