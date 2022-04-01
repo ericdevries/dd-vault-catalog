@@ -203,17 +203,17 @@
   <field name="tar_id" type="text_general" multiValued="false" />
   <field name="tar_part_name" type="strings" multiValued="true" />
 
-  <field name="metadata_topic_classification" type="text_general" stored="true" indexed="true" multiValued="false" />
-  <field name="metadata_author_name" type="text_general" stored="true" indexed="true" multiValued="true" />
-  <field name="metadata_author_affiliation" type="text_general" stored="true" indexed="true" multiValued="true"/>
-  <field name="metadata_citation_email" type="text_general" stored="true" indexed="true" multiValued="false" />
-  <field name="metadata_distributor_name" type="text_general" stored="true" indexed="true" multiValued="false"  />
-  <field name="metadata_description" type="text_general" stored="true" indexed="true" multiValued="false" />
-  <field name="metadata_related_publication" type="text_general" stored="true" indexed="true" multiValued="false" />
-  <field name="metadata_title" type="text_general" stored="true" indexed="true" multiValued="false" />
-  <field name="metadata_subject" type="text_general" stored="true" indexed="true" multiValued="false" />
-  <field name="metadata_included_data_catalog" type="text_general" stored="true" indexed="true" multiValued="false" />
-  <field name="metadata_dcterms_creator" type="text_general" stored="true" indexed="true" multiValued="false" />
+  <field name="metadata_topic_classification" type="text_general" stored="false" indexed="true" multiValued="false" />
+  <field name="metadata_author_name" type="text_general" stored="false" indexed="true" multiValued="true" />
+  <field name="metadata_author_affiliation" type="text_general" stored="false" indexed="true" multiValued="true"/>
+  <field name="metadata_citation_email" type="text_general" stored="false" indexed="true" multiValued="false" />
+  <field name="metadata_distributor_name" type="text_general" stored="false" indexed="true" multiValued="false"  />
+  <field name="metadata_description" type="text_general" stored="false" indexed="true" multiValued="false" />
+  <field name="metadata_related_publication" type="text_general" stored="false" indexed="true" multiValued="false" />
+  <field name="metadata_title" type="text_general" stored="false" indexed="true" multiValued="false" />
+  <field name="metadata_subject" type="text_general" stored="false" indexed="true" multiValued="false" />
+  <field name="metadata_included_data_catalog" type="text_general" stored="false" indexed="true" multiValued="false" />
+  <field name="metadata_dcterms_creator" type="text_general" stored="false" indexed="true" multiValued="false" />
 
   <copyField source="datastation" dest="_text_" />
   <copyField source="dataverse_pid" dest="_text_" />
