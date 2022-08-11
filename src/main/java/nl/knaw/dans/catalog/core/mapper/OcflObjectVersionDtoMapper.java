@@ -25,7 +25,7 @@ import org.mapstruct.factory.Mappers;
 public interface OcflObjectVersionDtoMapper {
     OcflObjectVersionDtoMapper INSTANCE = Mappers.getMapper(OcflObjectVersionDtoMapper.class);
 
-    @Mapping(expression = "java(JsonMapper.toString(ocflObjectDto.getMetadata()))", target = "metadata")
+//    @Mapping(expression = "java(JsonMapper.toString(ocflObjectDto.getMetadata()))", target = "metadata")
     @Mapping(source = "bagId", target = "id.bagId")
     @Mapping(source = "versionMajor", target = "id.versionMajor")
     @Mapping(source = "versionMinor", target = "id.versionMinor")

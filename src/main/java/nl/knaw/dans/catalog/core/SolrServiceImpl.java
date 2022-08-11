@@ -26,17 +26,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SolrServiceImpl implements SolrService {
     private static final Logger log = LoggerFactory.getLogger(SolrServiceImpl.class);
 
     private final HttpSolrClient solrClient;
+    private final OcflObjectMetadataReader ocflObjectMetadataReader;
 
-    public SolrServiceImpl(DdVaultCatalogConfiguration.SolrConfig solrConfig) {
+    public SolrServiceImpl(DdVaultCatalogConfiguration.SolrConfig solrConfig, OcflObjectMetadataReader ocflObjectMetadataReader) {
         solrClient = new HttpSolrClient.Builder(solrConfig.getUrl()).build();
+        this.ocflObjectMetadataReader = ocflObjectMetadataReader;
     }
 
     /**
@@ -60,16 +63,24 @@ public class SolrServiceImpl implements SolrService {
             doc.setField("tar_id", ocflObjectVersion.getTar().getTarUuid());
             doc.setField("nbn", ocflObjectVersion.getNbn());
             doc.setField("dataverse_pid", ocflObjectVersion.getDataversePid());
+            doc.setField("datastation", ocflObjectVersion.getDatastation());
+
             doc.setField("sword_client", ocflObjectVersion.getSwordClient());
             doc.setField("sword_token", ocflObjectVersion.getSwordToken());
             doc.setField("ocfl_object_path", ocflObjectVersion.getOcflObjectPath());
             doc.setField("tar_part_name", ocflObjectVersion.getTar().getTarParts().stream().map(TarPart::getPartName).collect(Collectors.toList()));
 
-            doc.addField("tar_archival_timestamp", ocflObjectVersion.getTar().getArchivalDate());
-            doc.addField("export_timestamp", ocflObjectVersion.getExportTimestamp());
+            doc.setField("tar_archival_timestamp", formatDate(ocflObjectVersion.getTar().getArchivalDate()));
+            doc.setField("export_timestamp", formatDate(ocflObjectVersion.getExportTimestamp()));
 
-            flattenMetadata(ocflObjectVersion.getMetadata())
-                .forEach(doc::addField);
+            var metadata = ocflObjectMetadataReader.readMetadata(ocflObjectVersion.getMetadata());
+
+            for (var entry : metadata.entrySet()) {
+                doc.addField(entry.getKey(), entry.getValue());
+            }
+
+            doc.addField("_text_", ocflObjectVersion.getId().getBagId().replace("urn:uuid:", ""));
+            doc.addField("_text_", ocflObjectVersion.getNbn().replace("urn:nbn:nl:ui:", ""));
 
             log.trace("Document generated: {}", doc);
             return doc;
@@ -85,9 +96,11 @@ public class SolrServiceImpl implements SolrService {
         return null;
     }
 
-    Map<String, String> flattenMetadata(String str) {
-        // TODO read metadata from json
-        //            doc.addField("metadata_dcterms_creator", transferItem.getMetadata().get("dcterms:creator"));
-        return Map.of();
+    String formatDate(OffsetDateTime date) {
+        if (date == null) {
+            return null;
+        }
+
+        return date.format(DateTimeFormatter.ISO_DATE_TIME);
     }
 }
