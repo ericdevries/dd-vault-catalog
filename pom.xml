@@ -22,14 +22,14 @@
     <parent>
         <artifactId>dans-dropwizard-project</artifactId>
         <groupId>nl.knaw.dans.shared</groupId>
-        <version>7.4.0-SNAPSHOT</version>
+        <version>7.4.0</version>
     </parent>
 
     <groupId>nl.knaw.dans</groupId>
     <artifactId>dd-vault-catalog</artifactId>
     <version>0.0.4-SNAPSHOT</version>
 
-    <name>Dd Vault Catalog</name>
+    <name>DD Vault Catalog</name>
     <url>https://github.com/DANS-KNAW/dd-vault-catalog</url>
     <description>Catalog of the contents of the DANS Data Vault</description>
     <inceptionYear>2022</inceptionYear>
