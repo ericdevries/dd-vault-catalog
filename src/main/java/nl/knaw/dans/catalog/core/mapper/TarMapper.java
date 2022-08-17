@@ -19,7 +19,6 @@ import nl.knaw.dans.catalog.db.Tar;
 import nl.knaw.dans.openapi.api.TarDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(uses = { OcflObjectVersionMapper.class })
