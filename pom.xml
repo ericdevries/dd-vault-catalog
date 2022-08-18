@@ -23,7 +23,7 @@
     <parent>
         <artifactId>dans-dropwizard-project</artifactId>
         <groupId>nl.knaw.dans.shared</groupId>
-        <version>9.1.0-SNAPSHOT</version>
+        <version>9.1.0</version>
     </parent>
 
     <groupId>nl.knaw.dans</groupId>
@@ -35,7 +35,7 @@
     <description>Catalog of the contents of the DANS Data Vault</description>
     <inceptionYear>2022</inceptionYear>
     <scm>
-        <developerConnection>scm:git:https://github.com/DANS-KNAW/dd-vault-catalog</developerConnection>
+        <developerConnection>scm:git:https://github.com/DANS-KNAW/${project.artifactId}</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
