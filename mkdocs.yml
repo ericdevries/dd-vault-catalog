@@ -16,8 +16,7 @@
 
 site_name: dd-vault-catalog
 theme:
-  name: dans
-  disclaimer: false
+  name: readthedocs
 
 repo_name: DANS-KNAW/dd-vault-catalog
 repo_url: https://github.com/DANS-KNAW/dd-vault-catalog
