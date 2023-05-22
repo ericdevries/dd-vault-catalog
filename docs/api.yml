@@ -1,0 +1,296 @@
+openapi: 3.0.0
+info:
+  title: Vault Catalog Service API
+  version: 1.0.0
+  description: |
+    This document specifies the Vault Catalog Service API. It provides relational metadata about items in the vault catalog.
+    This API implements the operations ...
+
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+
+servers:
+  - url: 'http://localhost:20120'
+    description: Local machine running the Vault Catalog Service
+
+paths:
+  /:
+    get:
+      summary: Returns a description of the service.
+      description:
+        This is the starting place for navigating the Vault Catalog Service. It returns a description of the service.
+      responses:
+        200:
+          description: Description of the service
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: A plain text, human readable description of the service
+                example: DANS VAULT CATALOG SERVICE running v1.2.3
+
+  /search:
+    get:
+      summary: Returns the OCFL Objects for all items related to the given identifier.
+      description: |
+        The item fetched is specified by the given identifier. One of the query-parameters 'swordToken' or 'bagId' must be given, with an optional 'ocflObjectVersion' in combination with the 'bagId'. The results can contain more than one OCFL Object.
+
+      parameters: [
+        {
+          name: "swordToken",
+          in: query,
+          description: "The SWORD token of the OCFL object",
+          schema: {
+            type: string
+          },
+          example: "sword:016526b1-c0ae-4237-854c-1f4d0b84d25a"
+        },
+        {
+          name: "bagId",
+          in: query,
+          description: "The bag id of the OCFL object",
+          schema: {
+            type: string
+          },
+          example: "urn:uuid:016526b1-c0ae-4237-854c-1f4d0b84d25a"
+        },
+        {
+          name: "ocflObjectVersion",
+          in: query,
+          description: "OCFL object version number, can be used in combination with bagId",
+          schema: {
+            type: string
+          },
+          example: "1"
+        },
+      ]
+
+      responses:
+        200:
+          description: OCFL Objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ocflObjectArrayOk"
+        400:
+          description: The query parameter was not supported. One of 'swordToken' or 'bagId' must be given.
+        404:
+          description: Not Found.
+        500:
+          $ref: '#/components/responses/Unavailable'
+
+  /ocfl-object:
+    put:
+      summary: PUT a new OCFL Object to the Catalog, or extend an existing one
+      description: |
+      requestBody:
+        description: Optional description in *Markdown*
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: "#/components/schemas/minimalOcflObject"
+                - $ref: "#/components/schemas/completeOcflObject"
+          application/xml:
+
+      responses:
+        201:
+          description: The object has been created
+        400:
+          description: The OcflObject was syntactically incorrect, for instance not all required fields were provided.
+        401:
+          description: Unauthorized
+        409:
+          description: Conflict. The described OCFL Object already exists, and has conflicting properties
+        500:
+          $ref: '#/components/responses/Unavailable'
+
+
+
+components:
+  responses:
+    Unavailable:
+      description: Service is unavailable because of an error.
+    FileNotFound:
+      description: The item could not be found.
+
+  schemas:
+    tar:
+      type: object
+      example:
+        result:
+          - tar:
+            vault-path: theVault
+            tar-uuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
+            archival-date:  2023-05-02T18:56:51.582Z
+            tar_parts: ["part01", "part02"]
+      properties:
+        tar:
+          required:
+            - tar-uuid
+            - vault-path
+            - archival-date
+    tar_part:
+      type: object
+      example:
+        tar_par:
+          part_name: part01
+          tar_uuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
+          checksum_algorithm: BLAKE-256
+          checksum_value: 716f6e863f744b9ac22c97ec7b76ea5f5908bc5b2f67c61510bfc4751384ea7a
+      properties:
+        tar_part:
+          required:
+            - part_name
+            - tar_uuid
+            - checksum_algorithm
+            - checkum_value
+          properties:
+            part_name:
+              type: string
+            tar_uuid:
+              type: string
+            checksum_algorithm:
+              type: string
+            checksum_value:
+              type: string
+    ocflObjectArrayOk:
+      type: object
+      example:
+        result:
+          - ocfl-object:
+              bag-id: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
+              object-version: 2
+              dataverse-pid: https://doi.org/10.17026/test-x6f-kf66
+              nbn: urn:nbn:nl:ui:13-00-1haq
+              sword-token: sword:016526b1-c0ae-4237-854c-1f4d0b84d25a
+              data-supplier: REPO1
+              tars: ["3778ab38-5461-45ec-b393-6466fd314125", "3c52cce1-5407-43d1-9c3d-a05274965b3c"]
+      properties:
+        result:
+          type: array
+          items:
+            type: object
+            properties:
+              ocfl-object:
+                properties:
+                  bag-id:
+                    type: string
+                    format: "uuid"
+                  object-version:
+                    type: integer
+                  sword-token:
+                    type: string
+                    format: "uuid"
+                  dataverse-pid:
+                    type: string
+                    format: "doi"
+                  nbn:
+                    type: string
+                    format: "urn"
+                  data-supplier:
+                    type: string
+                  tars:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+    minimalOcflObject:
+      type: object
+      example:
+        ocfl-object:
+          bag-id: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
+          object-version: 1
+          nbn: urn:nbn:nl:ui:13-00-1haq
+          sword-token: sword:016526b1-c0ae-4237-854c-1f4d0b84d25a
+          data-supplier: REPO1
+      properties:
+        ocfl-object:
+          required:
+            - bag-id
+            - object-version
+            - sword-token
+            - nbn
+            - data-supplier
+          properties:
+            bag-id:
+              type: string
+              format: "uuid"
+            object-version:
+              type: integer
+            sword-token:
+              type: string
+              format: "uuid"
+            nbn:
+              type: string
+              format: "urn"
+            data-supplier:
+              type: string
+    completeOcflObject:
+      type: object
+      example:
+        ocfl-object:
+          bag-id: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
+          object-version: 1
+          nbn: urn:nbn:nl:ui:13-00-1haq
+          sword-token: sword:016526b1-c0ae-4237-854c-1f4d0b84d25a
+          data-supplier: REPO1
+          tar-uuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
+          ocfl-object-path: 40/59/4b/6d-8378-4260-b96b-13b57beadf7c
+          datastation: DS_Archaeology
+          dataverse-pid: https://doi.org/10.17026/XXXXX
+          dataverse-pid-version: V1.0
+          other-id: REPO1:31998
+          other-id-version: 3.2
+          export-timestamp: 2023-04-09T11:56:58.607Z
+      properties:
+        ocfl-object:
+          required:
+            - bag-id
+            - object-version
+            - sword-token
+            - nbn
+            - data-supplier
+            - tar-uuid
+            - ocfl-object-path
+            - export-timestamp
+          properties:
+            bag-id:
+              type: string
+              format: "uuid"
+            object-version:
+              type: integer
+            sword-token:
+              type: string
+              format: UUID
+              description: |
+                sword-token is a required property. It can be empty upon creation, but it can not be overwritten in a subsequent PUT action
+            nbn:
+              type: string
+              format: "urn"
+            data-supplier:
+              type: string
+            tar-uuid:
+              type: string
+              format: "uuid"
+            dataverse-pid:
+              type: string
+            dateverse-pid-version:
+              type: string
+            other-id:
+              type: string
+            other-id-version:
+              type: string
+            ocfl-object-path:
+              type: string
+            metadata:
+              type: object
+              format: "json-ld"
+            filepid-to-local-path:
+              type: string
+            export-timestamp:
+              type: string
+              format: "datetime"
+                    
