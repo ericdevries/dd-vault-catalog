@@ -11,7 +11,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0
 
 servers:
-  - url: 'http://localhost:20120'
+  - url: 'http://localhost:20305'
     description: Local machine running the Vault Catalog Service
 
 paths:
