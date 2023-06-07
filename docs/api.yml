@@ -11,7 +11,7 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0
 
 servers:
-  - url: 'http://localhost:20120'
+  - url: 'http://localhost:20305'
     description: Local machine running the Vault Catalog Service
 
 paths:
@@ -36,35 +36,25 @@ paths:
       description: |
         The item fetched is specified by the given identifier. One of the query-parameters 'swordToken' or 'bagId' must be given, with an optional 'ocflObjectVersion' in combination with the 'bagId'. The results can contain more than one OCFL Object.
 
-      parameters: [
-        {
-          name: "swordToken",
-          in: query,
-          description: "The SWORD token of the OCFL object",
-          schema: {
+      parameters:
+        - name: "swordToken"
+          in: query
+          description: "The SWORD token of the OCFL object"
+          schema:
             type: string
-          },
           example: "sword:016526b1-c0ae-4237-854c-1f4d0b84d25a"
-        },
-        {
-          name: "bagId",
-          in: query,
-          description: "The bag id of the OCFL object",
-          schema: {
+        - name: "bagId"
+          in: query
+          description: "The bag id of the OCFL object"
+          schema:
             type: string
-          },
           example: "urn:uuid:016526b1-c0ae-4237-854c-1f4d0b84d25a"
-        },
-        {
-          name: "ocflObjectVersion",
-          in: query,
-          description: "OCFL object version number, can be used in combination with bagId",
-          schema: {
+        - name: "ocflObjectVersion"
+          in: query
+          description: "OCFL object version number, can be used in combination with bagId"
+          schema:
             type: string
-          },
           example: "1"
-        },
-      ]
 
       responses:
         200:
@@ -80,12 +70,13 @@ paths:
         500:
           $ref: '#/components/responses/Unavailable'
 
-  /ocfl-object:
+  /ocflObject:
     put:
       summary: PUT a new OCFL Object to the Catalog, or extend an existing one
       description: |
       requestBody:
-        description: Optional description in *Markdown*
+        description: When extending an existing OCFL Object in the Catalog, it is not possible to update properties 
+              that were set previously. All pre-existing properties must match the newly sent properties.
         required: true
         content:
           application/json:
@@ -107,8 +98,6 @@ paths:
         500:
           $ref: '#/components/responses/Unavailable'
 
-
-
 components:
   responses:
     Unavailable:
@@ -122,51 +111,51 @@ components:
       example:
         result:
           - tar:
-            vault-path: theVault
-            tar-uuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
-            archival-date:  2023-05-02T18:56:51.582Z
-            tar_parts: ["part01", "part02"]
+            vaultPath: theVault
+            tarUuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
+            archivalDate:  2023-05-02T18:56:51.582Z
+            tarParts: ["part01", "part02"]
       properties:
         tar:
           required:
-            - tar-uuid
-            - vault-path
-            - archival-date
-    tar_part:
+            - tarUuid
+            - vaultPath
+            - archivalDate
+    tarPart:
       type: object
       example:
-        tar_par:
-          part_name: part01
-          tar_uuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
-          checksum_algorithm: BLAKE-256
-          checksum_value: 716f6e863f744b9ac22c97ec7b76ea5f5908bc5b2f67c61510bfc4751384ea7a
+        tarPart:
+          partName: part01
+          tarUuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
+          checksumAlgorithm: BLAKE-256
+          checksumValue: 716f6e863f744b9ac22c97ec7b76ea5f5908bc5b2f67c61510bfc4751384ea7a
       properties:
-        tar_part:
+        tarPart:
           required:
-            - part_name
-            - tar_uuid
-            - checksum_algorithm
-            - checkum_value
+            - partName
+            - tarUuid
+            - checksumAlgorithm
+            - checkumValue
           properties:
-            part_name:
+            partName:
               type: string
-            tar_uuid:
+            tarUuid:
               type: string
-            checksum_algorithm:
+            checksumAlgorithm:
               type: string
-            checksum_value:
+            checksumValue:
               type: string
     ocflObjectArrayOk:
       type: object
       example:
         result:
-          - ocfl-object:
-              bag-id: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
-              object-version: 2
-              dataverse-pid: https://doi.org/10.17026/test-x6f-kf66
+          - ocflObject:
+              bagId: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
+              objectVersion: 2
+              dataversePid: https://doi.org/10.17026/test-x6f-kf66
               nbn: urn:nbn:nl:ui:13-00-1haq
-              sword-token: sword:016526b1-c0ae-4237-854c-1f4d0b84d25a
-              data-supplier: REPO1
+              swordToken: sword:016526b1-c0ae-4237-854c-1f4d0b84d25a
+              dataSupplier: REPO1
               tars: ["3778ab38-5461-45ec-b393-6466fd314125", "3c52cce1-5407-43d1-9c3d-a05274965b3c"]
       properties:
         result:
@@ -174,23 +163,23 @@ components:
           items:
             type: object
             properties:
-              ocfl-object:
+              ocflObject:
                 properties:
-                  bag-id:
+                  bagId:
                     type: string
                     format: "uuid"
-                  object-version:
+                  objectVersion:
                     type: integer
-                  sword-token:
+                  swordToken:
                     type: string
                     format: "uuid"
-                  dataverse-pid:
+                  dataversePid:
                     type: string
                     format: "doi"
                   nbn:
                     type: string
                     format: "urn"
-                  data-supplier:
+                  dataSupplier:
                     type: string
                   tars:
                     type: array
@@ -200,97 +189,97 @@ components:
     minimalOcflObject:
       type: object
       example:
-        ocfl-object:
-          bag-id: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
-          object-version: 1
+        ocflObject:
+          bagId: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
+          objectVersion: 1
           nbn: urn:nbn:nl:ui:13-00-1haq
-          sword-token: sword:016526b1-c0ae-4237-854c-1f4d0b84d25a
-          data-supplier: REPO1
+          swordToken: sword:016526b1-c0ae-4237-854c-1f4d0b84d25a
+          dataSupplier: REPO1
       properties:
-        ocfl-object:
+        ocflObject:
           required:
-            - bag-id
-            - object-version
-            - sword-token
+            - bagId
+            - objectVersion
+            - swordToken
             - nbn
-            - data-supplier
+            - dataSupplier
           properties:
-            bag-id:
+            bagId:
               type: string
               format: "uuid"
-            object-version:
+            objectVersion:
               type: integer
-            sword-token:
+            swordToken:
               type: string
               format: "uuid"
             nbn:
               type: string
               format: "urn"
-            data-supplier:
+            dataSupplier:
               type: string
     completeOcflObject:
       type: object
       example:
-        ocfl-object:
-          bag-id: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
-          object-version: 1
+        ocflObject:
+          bagId: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
+          objectVersion: 1
           nbn: urn:nbn:nl:ui:13-00-1haq
-          sword-token: sword:016526b1-c0ae-4237-854c-1f4d0b84d25a
-          data-supplier: REPO1
-          tar-uuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
-          ocfl-object-path: 40/59/4b/6d-8378-4260-b96b-13b57beadf7c
+          swordToken: sword:016526b1-c0ae-4237-854c-1f4d0b84d25a
+          dataSupplier: REPO1
+          tarUuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
+          ocflObjectPath: 40/59/4b/6d-8378-4260-b96b-13b57beadf7c
           datastation: DS_Archaeology
-          dataverse-pid: https://doi.org/10.17026/XXXXX
-          dataverse-pid-version: V1.0
-          other-id: REPO1:31998
-          other-id-version: 3.2
-          export-timestamp: 2023-04-09T11:56:58.607Z
+          dataversePid: https://doi.org/10.17026/XXXXX
+          dataversePidVersion: V1.0
+          otherId: REPO1:31998
+          otherIdVersion: 3.2
+          exportTimestamp: 2023-04-09T11:56:58.607Z
       properties:
-        ocfl-object:
+        ocflObject:
           required:
-            - bag-id
-            - object-version
-            - sword-token
+            - bagId
+            - objectVersion
+            - swordToken
             - nbn
-            - data-supplier
-            - tar-uuid
-            - ocfl-object-path
-            - export-timestamp
+            - dataSupplier
+            - tarUuid
+            - ocflObjectPath
+            - exportTimestamp
           properties:
-            bag-id:
+            bagId:
               type: string
               format: "uuid"
-            object-version:
+            objectVersion:
               type: integer
-            sword-token:
+            swordToken:
               type: string
               format: UUID
               description: |
-                sword-token is a required property. It can be empty upon creation, but it can not be overwritten in a subsequent PUT action
+                swordToken is a required property. It can be empty upon creation, but it can not be overwritten in a subsequent PUT action
             nbn:
               type: string
               format: "urn"
-            data-supplier:
+            dataSupplier:
               type: string
-            tar-uuid:
+            tarUuid:
               type: string
               format: "uuid"
-            dataverse-pid:
+            dataversePid:
               type: string
-            dateverse-pid-version:
+            dateversePidVersion:
               type: string
-            other-id:
+            otherId:
               type: string
-            other-id-version:
+            otherIdVersion:
               type: string
-            ocfl-object-path:
+            ocflObjectPath:
               type: string
             metadata:
               type: object
               format: "json-ld"
-            filepid-to-local-path:
+            filePidToLocalPath:
               type: string
-            export-timestamp:
+            exportTimestamp:
               type: string
               format: "datetime"
                     
