@@ -30,61 +30,91 @@ paths:
                 description: A plain text, human readable description of the service
                 example: DANS VAULT CATALOG SERVICE running v1.2.3
 
-  /search:
+
+  /ocflObject/bagId/{bagId}:
     get:
-      summary: Returns the OCFL Objects for all items related to the given identifier.
-      description: |
-        The item fetched is specified by the given identifier. One of the query-parameters 'swordToken' or 'bagId' must be given, with an optional 'ocflObjectVersion' in combination with the 'bagId'. The results can contain more than one OCFL Object.
-
+      tags:
+        - ocflObjectVersion
       parameters:
-        - name: "swordToken"
-          in: query
-          description: "The SWORD token of the OCFL object"
+        - name: bagId
+          in: path
+          required: true
           schema:
             type: string
-          example: "sword:016526b1-c0ae-4237-854c-1f4d0b84d25a"
-        - name: "bagId"
-          in: query
-          description: "The bag id of the OCFL object"
-          schema:
-            type: string
-          example: "urn:uuid:016526b1-c0ae-4237-854c-1f4d0b84d25a"
-        - name: "ocflObjectVersion"
-          in: query
-          description: "OCFL object version number, can be used in combination with bagId"
-          schema:
-            type: string
-          example: "1"
-
       responses:
         200:
-          description: OCFL Objects
+          description: OCFL Object Version
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ocflObjectArrayOk"
-        400:
-          description: The query parameter was not supported. One of 'swordToken' or 'bagId' must be given.
-        404:
-          description: Not Found.
-        500:
-          $ref: '#/components/responses/Unavailable'
+                $ref: "#/components/schemas/ocflObjectVersionArray"
 
-  /ocflObject:
+  /ocflObject/swordToken/{swordToken}:
+    get:
+      tags:
+        - ocflObjectVersion
+      parameters:
+        - name: swordToken
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OCFL Object Version
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ocflObjectVersionArray"
+
+  /ocflObject/bagId/{bagId}/version/{versionNumber}:
+    get:
+      tags:
+        - ocflObjectVersion
+      parameters:
+        - name: bagId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: versionNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OCFL Object Version
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ocflObjectVersion"
+
     put:
+      tags:
+        - ocflObjectVersion
       summary: PUT a new OCFL Object to the Catalog, or extend an existing one
       description: |
       requestBody:
-        description: When extending an existing OCFL Object in the Catalog, it is not possible to update properties 
-              that were set previously. All pre-existing properties must match the newly sent properties.
+        description: When extending an existing OCFL Object in the Catalog, it is not possible to update properties
+          that were set previously. All pre-existing properties must match the newly sent properties.
         required: true
         content:
           application/json:
             schema:
               oneOf:
-                - $ref: "#/components/schemas/minimalOcflObject"
-                - $ref: "#/components/schemas/completeOcflObject"
-          application/xml:
+                - $ref: "#/components/schemas/ocflObjectVersion"
+      parameters:
+        - name: bagId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: versionNumber
+          in: path
+          required: true
+          schema:
+            type: string
 
       responses:
         201:
@@ -97,7 +127,68 @@ paths:
           description: Conflict. The described OCFL Object already exists, and has conflicting properties
         500:
           $ref: '#/components/responses/Unavailable'
-
+  /tar:
+    post:
+      tags:
+        - tar
+      description: Adds a new archive
+      operationId: addArchive
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tar'
+        required: true
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tar'
+  /tar/{id}:
+    get:
+      tags:
+        - tar
+      description: Get archive details
+      operationId: getArchiveById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tar'
+    put:
+      tags:
+        - tar
+      description: Updates an existing archive
+      operationId: updateArchive
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tar'
+        required: true
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tar'
 components:
   responses:
     Unavailable:
@@ -108,6 +199,12 @@ components:
   schemas:
     tar:
       type: object
+      required:
+        - tarUuid
+        - vaultPath
+        - archivalDate
+        - tarParts
+        - ocflObjectVersions
       example:
         result:
           - tar:
@@ -115,12 +212,25 @@ components:
             tarUuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
             archivalDate:  2023-05-02T18:56:51.582Z
             tarParts: ["part01", "part02"]
+            ocflObjectVersions: []
       properties:
-        tar:
-          required:
-            - tarUuid
-            - vaultPath
-            - archivalDate
+        vaultPath:
+          type: string
+        tarUuid:
+          type: string
+        archivalDate:
+          type: string
+          format: date-time
+        tarParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/tarPart'
+        ocflObjectVersions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ocflObjectVersion'
+
+
     tarPart:
       type: object
       example:
@@ -145,11 +255,11 @@ components:
               type: string
             checksumValue:
               type: string
-    ocflObjectArrayOk:
+    ocflObjectVersionArray:
       type: object
       example:
         result:
-          - ocflObject:
+          - ocflObjectVersion:
               bagId: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
               objectVersion: 2
               dataversePid: https://doi.org/10.17026/test-x6f-kf66
@@ -163,7 +273,7 @@ components:
           items:
             type: object
             properties:
-              ocflObject:
+              ocflObjectVersion:
                 properties:
                   bagId:
                     type: string
@@ -186,41 +296,10 @@ components:
                     items:
                       type: string
                       format: uuid
-    minimalOcflObject:
+    ocflObjectVersion:
       type: object
       example:
-        ocflObject:
-          bagId: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
-          objectVersion: 1
-          nbn: urn:nbn:nl:ui:13-00-1haq
-          swordToken: sword:016526b1-c0ae-4237-854c-1f4d0b84d25a
-          dataSupplier: REPO1
-      properties:
-        ocflObject:
-          required:
-            - bagId
-            - objectVersion
-            - swordToken
-            - nbn
-            - dataSupplier
-          properties:
-            bagId:
-              type: string
-              format: "uuid"
-            objectVersion:
-              type: integer
-            swordToken:
-              type: string
-              format: "uuid"
-            nbn:
-              type: string
-              format: "urn"
-            dataSupplier:
-              type: string
-    completeOcflObject:
-      type: object
-      example:
-        ocflObject:
+        ocflObjectVersion:
           bagId: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
           objectVersion: 1
           nbn: urn:nbn:nl:ui:13-00-1haq
@@ -235,16 +314,10 @@ components:
           otherIdVersion: 3.2
           exportTimestamp: 2023-04-09T11:56:58.607Z
       properties:
-        ocflObject:
+        ocflObjectVersion:
           required:
             - bagId
             - objectVersion
-            - swordToken
-            - nbn
-            - dataSupplier
-            - tarUuid
-            - ocflObjectPath
-            - exportTimestamp
           properties:
             bagId:
               type: string
@@ -254,8 +327,6 @@ components:
             swordToken:
               type: string
               format: UUID
-              description: |
-                swordToken is a required property. It can be empty upon creation, but it can not be overwritten in a subsequent PUT action
             nbn:
               type: string
               format: "urn"
@@ -281,5 +352,4 @@ components:
               type: string
             exportTimestamp:
               type: string
-              format: "datetime"
-                    
+              format: date-time
