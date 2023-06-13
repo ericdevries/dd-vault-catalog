@@ -43,7 +43,7 @@ paths:
             type: string
       responses:
         200:
-          description: OCFL Object Version
+          description: OCFL Object Version array
           content:
             application/json:
               schema:
@@ -61,7 +61,7 @@ paths:
             type: string
       responses:
         200:
-          description: OCFL Object Version
+          description: OCFL Object Version array
           content:
             application/json:
               schema:
@@ -84,7 +84,7 @@ paths:
             type: string
       responses:
         200:
-          description: OCFL Object Version
+          description: Single OCFL Object Version
           content:
             application/json:
               schema:
