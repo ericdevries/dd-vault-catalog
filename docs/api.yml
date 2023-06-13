@@ -1,0 +1,355 @@
+openapi: 3.0.0
+info:
+  title: Vault Catalog Service API
+  version: 1.0.0
+  description: |
+    This document specifies the Vault Catalog Service API. It provides relational metadata about items in the vault catalog.
+    This API implements the operations ...
+
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+
+servers:
+  - url: 'http://localhost:20305'
+    description: Local machine running the Vault Catalog Service
+
+paths:
+  /:
+    get:
+      summary: Returns a description of the service.
+      description:
+        This is the starting place for navigating the Vault Catalog Service. It returns a description of the service.
+      responses:
+        200:
+          description: Description of the service
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: A plain text, human readable description of the service
+                example: DANS VAULT CATALOG SERVICE running v1.2.3
+
+
+  /ocflObject/bagId/{bagId}:
+    get:
+      tags:
+        - ocflObjectVersion
+      parameters:
+        - name: bagId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OCFL Object Version array
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ocflObjectVersionArray"
+
+  /ocflObject/swordToken/{swordToken}:
+    get:
+      tags:
+        - ocflObjectVersion
+      parameters:
+        - name: swordToken
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OCFL Object Version array
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ocflObjectVersionArray"
+
+  /ocflObject/bagId/{bagId}/version/{versionNumber}:
+    get:
+      tags:
+        - ocflObjectVersion
+      parameters:
+        - name: bagId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: versionNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Single OCFL Object Version
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ocflObjectVersion"
+
+    put:
+      tags:
+        - ocflObjectVersion
+      summary: PUT a new OCFL Object to the Catalog, or extend an existing one
+      description: |
+      requestBody:
+        description: When extending an existing OCFL Object in the Catalog, it is not possible to update properties
+          that were set previously. All pre-existing properties must match the newly sent properties.
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: "#/components/schemas/ocflObjectVersion"
+      parameters:
+        - name: bagId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: versionNumber
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        201:
+          description: The object has been created
+        400:
+          description: The OcflObject was syntactically incorrect, for instance not all required fields were provided.
+        401:
+          description: Unauthorized
+        409:
+          description: Conflict. The described OCFL Object already exists, and has conflicting properties
+        500:
+          $ref: '#/components/responses/Unavailable'
+  /tar:
+    post:
+      tags:
+        - tar
+      description: Adds a new archive
+      operationId: addArchive
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tar'
+        required: true
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tar'
+  /tar/{id}:
+    get:
+      tags:
+        - tar
+      description: Get archive details
+      operationId: getArchiveById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tar'
+    put:
+      tags:
+        - tar
+      description: Updates an existing archive
+      operationId: updateArchive
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tar'
+        required: true
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tar'
+components:
+  responses:
+    Unavailable:
+      description: Service is unavailable because of an error.
+    FileNotFound:
+      description: The item could not be found.
+
+  schemas:
+    tar:
+      type: object
+      required:
+        - tarUuid
+        - vaultPath
+        - archivalDate
+        - tarParts
+        - ocflObjectVersions
+      example:
+        result:
+          - tar:
+            vaultPath: theVault
+            tarUuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
+            archivalDate:  2023-05-02T18:56:51.582Z
+            tarParts: ["part01", "part02"]
+            ocflObjectVersions: []
+      properties:
+        vaultPath:
+          type: string
+        tarUuid:
+          type: string
+        archivalDate:
+          type: string
+          format: date-time
+        tarParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/tarPart'
+        ocflObjectVersions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ocflObjectVersion'
+
+
+    tarPart:
+      type: object
+      example:
+        tarPart:
+          partName: part01
+          tarUuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
+          checksumAlgorithm: BLAKE-256
+          checksumValue: 716f6e863f744b9ac22c97ec7b76ea5f5908bc5b2f67c61510bfc4751384ea7a
+      properties:
+        tarPart:
+          required:
+            - partName
+            - tarUuid
+            - checksumAlgorithm
+            - checkumValue
+          properties:
+            partName:
+              type: string
+            tarUuid:
+              type: string
+            checksumAlgorithm:
+              type: string
+            checksumValue:
+              type: string
+    ocflObjectVersionArray:
+      type: object
+      example:
+        result:
+          - ocflObjectVersion:
+              bagId: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
+              objectVersion: 2
+              dataversePid: https://doi.org/10.17026/test-x6f-kf66
+              nbn: urn:nbn:nl:ui:13-00-1haq
+              swordToken: sword:016526b1-c0ae-4237-854c-1f4d0b84d25a
+              dataSupplier: REPO1
+              tars: ["3778ab38-5461-45ec-b393-6466fd314125", "3c52cce1-5407-43d1-9c3d-a05274965b3c"]
+      properties:
+        result:
+          type: array
+          items:
+            type: object
+            properties:
+              ocflObjectVersion:
+                properties:
+                  bagId:
+                    type: string
+                    format: "uuid"
+                  objectVersion:
+                    type: integer
+                  swordToken:
+                    type: string
+                    format: "uuid"
+                  dataversePid:
+                    type: string
+                    format: "doi"
+                  nbn:
+                    type: string
+                    format: "urn"
+                  dataSupplier:
+                    type: string
+                  tars:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+    ocflObjectVersion:
+      type: object
+      example:
+        ocflObjectVersion:
+          bagId: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
+          objectVersion: 1
+          nbn: urn:nbn:nl:ui:13-00-1haq
+          swordToken: sword:016526b1-c0ae-4237-854c-1f4d0b84d25a
+          dataSupplier: REPO1
+          tarUuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
+          ocflObjectPath: 40/59/4b/6d-8378-4260-b96b-13b57beadf7c
+          datastation: DS_Archaeology
+          dataversePid: https://doi.org/10.17026/XXXXX
+          dataversePidVersion: V1.0
+          otherId: REPO1:31998
+          otherIdVersion: 3.2
+          exportTimestamp: 2023-04-09T11:56:58.607Z
+      properties:
+        ocflObjectVersion:
+          required:
+            - bagId
+            - objectVersion
+          properties:
+            bagId:
+              type: string
+              format: "uuid"
+            objectVersion:
+              type: integer
+            swordToken:
+              type: string
+              format: UUID
+            nbn:
+              type: string
+              format: "urn"
+            dataSupplier:
+              type: string
+            tarUuid:
+              type: string
+              format: "uuid"
+            dataversePid:
+              type: string
+            dateversePidVersion:
+              type: string
+            otherId:
+              type: string
+            otherIdVersion:
+              type: string
+            ocflObjectPath:
+              type: string
+            metadata:
+              type: object
+              format: "json-ld"
+            filePidToLocalPath:
+              type: string
+            exportTimestamp:
+              type: string
+              format: date-time
