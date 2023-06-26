@@ -15,27 +15,23 @@
  */
 package nl.knaw.dans.catalog.resource.mappers;
 
-import nl.knaw.dans.catalog.api.TarDto;
-import nl.knaw.dans.catalog.api.TarParameterDto;
-import nl.knaw.dans.catalog.core.domain.TarParameters;
-import nl.knaw.dans.catalog.db.TarEntity;
+import nl.knaw.dans.catalog.api.CreateOcflObjectVersionRequestDto;
+import nl.knaw.dans.catalog.api.OcflObjectVersionDto;
+import nl.knaw.dans.catalog.core.domain.OcflObjectVersionParameters;
+import nl.knaw.dans.catalog.db.OcflObjectVersionEntity;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Mapper
-public interface TarMapper {
-    TarMapper INSTANCE = Mappers.getMapper(TarMapper.class);
+public interface OcflObjectVersionMapper {
+    OcflObjectVersionMapper INSTANCE = Mappers.getMapper(OcflObjectVersionMapper.class);
 
-    @Mapping(source = "ocflObjectVersions", target = "versions")
-    TarParameters convert(TarDto tarDto);
+    OcflObjectVersionParameters convert(CreateOcflObjectVersionRequestDto versionDto);
 
-    @Mapping(source = "ocflObjectVersions", target = "versions")
-    TarParameters convert(TarParameterDto tarParameterDto);
-
-    TarDto convert(TarEntity tar);
+    OcflObjectVersionDto convert(OcflObjectVersionEntity version);
 
     default UUID map(String value) {
         if (value == null) {
@@ -49,5 +45,14 @@ public interface TarMapper {
             return null;
         }
         return value.toString();
+    }
+
+    default Map<String, Object> map(Object value) {
+        if (value instanceof Map) {
+            return (Map<String, Object>) value;
+        }
+        else {
+            return Map.of();
+        }
     }
 }

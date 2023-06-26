@@ -17,11 +17,9 @@ package nl.knaw.dans.catalog.db;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.knaw.dans.catalog.core.OcflObjectVersionFactory;
-import nl.knaw.dans.catalog.core.domain.OcflObjectVersion;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionId;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionParameters;
 import nl.knaw.dans.catalog.core.exception.OcflObjectVersionAlreadyExistsException;
-import nl.knaw.dans.catalog.core.exception.OcflObjectVersionIllegalArgumentException;
 
 public class OcflObjectVersionEntityFactory implements OcflObjectVersionFactory {
     private final ObjectMapper objectMapper;
@@ -31,7 +29,7 @@ public class OcflObjectVersionEntityFactory implements OcflObjectVersionFactory 
     }
 
     @Override
-    public OcflObjectVersion create(OcflObjectVersionId id, OcflObjectVersionParameters parameters) throws OcflObjectVersionAlreadyExistsException, OcflObjectVersionIllegalArgumentException {
+    public OcflObjectVersionEntity create(OcflObjectVersionId id, OcflObjectVersionParameters parameters) throws OcflObjectVersionAlreadyExistsException{
         var result =  OcflObjectVersionEntity.builder()
             .objectMapper(objectMapper)
             .bagId(id.getBagId())

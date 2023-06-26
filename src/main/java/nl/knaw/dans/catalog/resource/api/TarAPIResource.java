@@ -17,28 +17,24 @@
 package nl.knaw.dans.catalog.resource.api;
 
 import io.dropwizard.hibernate.UnitOfWork;
+import lombok.extern.slf4j.Slf4j;
+import nl.knaw.dans.catalog.api.TarParameterDto;
 import nl.knaw.dans.catalog.core.UseCases;
-import nl.knaw.dans.catalog.core.domain.TarParameters;
 import nl.knaw.dans.catalog.core.exception.OcflObjectVersionAlreadyInTarException;
 import nl.knaw.dans.catalog.core.exception.OcflObjectVersionNotFoundException;
 import nl.knaw.dans.catalog.core.exception.TarAlreadyExistsException;
 import nl.knaw.dans.catalog.core.exception.TarNotFoundException;
+import nl.knaw.dans.catalog.resource.TarApi;
 import nl.knaw.dans.catalog.resource.mappers.TarMapper;
-import nl.knaw.dans.openapi.api.TarDto;
-import nl.knaw.dans.openapi.api.TarParameterDto;
-import nl.knaw.dans.openapi.server.TarApi;
-import org.mapstruct.factory.Mappers;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 @Path("/api/tar")
+@Slf4j
 public class TarAPIResource implements TarApi {
-    private static final Logger log = LoggerFactory.getLogger(TarAPIResource.class);
-    private final TarMapper tarMapper = Mappers.getMapper(TarMapper.class);
+    private final TarMapper tarMapper = TarMapper.INSTANCE;
     private final UseCases useCases;
 
     public TarAPIResource(UseCases useCases) {
@@ -47,12 +43,12 @@ public class TarAPIResource implements TarApi {
 
     @Override
     @UnitOfWork
-    public TarDto addArchive(TarParameterDto tarDto) {
+    public Response addArchive(TarParameterDto tarDto) {
         log.info("Received new TAR {}, storing in database", tarDto);
 
         try {
             var result = useCases.createTar(tarDto.getTarUuid(), tarMapper.convert(tarDto));
-            return tarMapper.convert(result);
+            return Response.ok(tarMapper.convert(result)).status(201).build();
         }
         catch (OcflObjectVersionAlreadyInTarException | TarAlreadyExistsException e) {
             log.error(e.getMessage(), e);
@@ -70,22 +66,25 @@ public class TarAPIResource implements TarApi {
 
     @Override
     @UnitOfWork
-    public TarDto getArchiveById(String id) {
+    public Response getArchiveById(String id) {
         log.debug("Fetching TAR with id {}", id);
-        return useCases.getTarById(id)
+        var result = useCases.getTarById(id)
             .map(tarMapper::convert)
             .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
 
+        return Response.ok(result).build();
     }
 
     @Override
     @UnitOfWork
-    public TarDto updateArchive(String id, TarParameterDto tarDto) {
+    public Response updateArchive(String id, TarParameterDto tarDto) {
         log.info("Received existing TAR {}, ID is {}, storing in database", tarDto, id);
 
         try {
             var result = useCases.updateTar(id, tarMapper.convert(tarDto));
-            return tarMapper.convert(result);
+            var response = tarMapper.convert(result);
+
+            return Response.ok(response).build();
         }
         catch (OcflObjectVersionAlreadyInTarException e) {
             log.error(e.getMessage(), e);

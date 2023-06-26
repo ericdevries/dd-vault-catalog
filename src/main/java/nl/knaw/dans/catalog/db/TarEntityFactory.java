@@ -16,9 +16,6 @@
 package nl.knaw.dans.catalog.db;
 
 import nl.knaw.dans.catalog.core.TarFactory;
-import nl.knaw.dans.catalog.core.domain.OcflObjectVersion;
-import nl.knaw.dans.catalog.core.domain.Tar;
-import nl.knaw.dans.catalog.core.domain.TarPart;
 import nl.knaw.dans.catalog.core.domain.TarPartParameters;
 
 import java.time.OffsetDateTime;
@@ -27,10 +24,9 @@ import java.util.stream.Collectors;
 
 public class TarEntityFactory implements TarFactory {
     @Override
-    public Tar create(String id, String vaultPath, OffsetDateTime archivalDate, List<TarPartParameters> tarParts, List<OcflObjectVersion> ocflObjectVersions) {
+    public TarEntity create(String id, String vaultPath, OffsetDateTime archivalDate, List<TarPartParameters> tarParts, List<OcflObjectVersionEntity> ocflObjectVersions) {
         var parts = tarParts.stream()
             .map(this::createTarPart)
-            .map(i -> (TarPartEntity) i)
             .collect(Collectors.toList());
 
         return TarEntity.builder()
@@ -38,12 +34,12 @@ public class TarEntityFactory implements TarFactory {
             .vaultPath(vaultPath)
             .archivalDate(archivalDate)
             .tarParts(parts)
-            .ocflObjectVersions(ocflObjectVersions.stream().map(i -> (OcflObjectVersionEntity) i).collect(Collectors.toList()))
+            .ocflObjectVersions(ocflObjectVersions)
             .build();
     }
 
     @Override
-    public TarPart createTarPart(TarPartParameters item) {
+    public TarPartEntity createTarPart(TarPartParameters item) {
         return TarPartEntity.builder()
             .partName(item.getPartName())
             .checksumValue(item.getChecksumValue())

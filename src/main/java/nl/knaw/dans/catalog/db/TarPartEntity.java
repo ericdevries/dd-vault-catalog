@@ -17,7 +17,6 @@
 package nl.knaw.dans.catalog.db;
 
 import lombok.*;
-import nl.knaw.dans.catalog.core.domain.TarPart;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -30,7 +29,7 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TarPartEntity implements TarPart {
+public class TarPartEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

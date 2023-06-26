@@ -15,17 +15,17 @@
  */
 package nl.knaw.dans.catalog.core;
 
-import nl.knaw.dans.catalog.core.domain.OcflObjectVersion;
-import nl.knaw.dans.catalog.core.domain.Tar;
-import nl.knaw.dans.catalog.core.domain.TarPart;
 import nl.knaw.dans.catalog.core.domain.TarPartParameters;
+import nl.knaw.dans.catalog.db.OcflObjectVersionEntity;
+import nl.knaw.dans.catalog.db.TarEntity;
+import nl.knaw.dans.catalog.db.TarPartEntity;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface TarFactory {
-    Tar create(String id, String vaultPath, OffsetDateTime archivalDate, List<TarPartParameters> tarParts, List<OcflObjectVersion> ocflObjectVersions);
+    TarEntity create(String id, String vaultPath, OffsetDateTime archivalDate, List<TarPartParameters> tarParts, List<OcflObjectVersionEntity> ocflObjectVersions);
 
-    TarPart createTarPart(TarPartParameters tarPartParameters);
+    TarPartEntity createTarPart(TarPartParameters tarPartParameters);
 
 }

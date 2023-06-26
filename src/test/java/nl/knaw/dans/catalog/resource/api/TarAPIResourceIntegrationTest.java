@@ -22,14 +22,14 @@ import io.dropwizard.testing.ResourceHelpers;
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import nl.knaw.dans.catalog.DdVaultCatalogApplication;
 import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
-import nl.knaw.dans.openapi.api.TarDto;
-import nl.knaw.dans.openapi.api.TarPartDto;
+import nl.knaw.dans.catalog.api.*;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -60,7 +60,7 @@ class TarAPIResourceIntegrationTest {
     // TODO should we really accept empty tars?
     public void createEmptyTar_should_return_200() throws Exception {
         var client = new JerseyClientBuilder().build();
-        var entity = new TarDto()
+        var entity = new TarParameterDto()
             .archivalDate(OffsetDateTime.now())
             .vaultPath("test")
             .tarUuid(UUID.randomUUID().toString());
@@ -72,7 +72,7 @@ class TarAPIResourceIntegrationTest {
             .request()
             .post(Entity.json(str))) {
 
-            assertEquals(200, response.getStatus());
+            assertEquals(201, response.getStatus());
         }
     }
 
@@ -80,17 +80,17 @@ class TarAPIResourceIntegrationTest {
     public void createTar_with_tarParts_should_return_200() throws Exception {
         var client = new JerseyClientBuilder().build();
 
-        var part1 = new TarPartDto()
+        var part1 = new TarPartParameterDto()
             .partName("part1")
             .checksumAlgorithm("MD5")
             .checksumValue("secret");
 
-        var part2 = new TarPartDto()
+        var part2 = new TarPartParameterDto()
             .partName("part2")
             .checksumAlgorithm("MD5")
             .checksumValue("even more secret");
 
-        var entity = new TarDto()
+        var entity = new TarParameterDto()
             .archivalDate(OffsetDateTime.now())
             .vaultPath("test")
             .tarUuid(UUID.randomUUID().toString())
@@ -103,13 +103,87 @@ class TarAPIResourceIntegrationTest {
             .request()
             .post(Entity.json(str))) {
 
-            assertEquals(200, response.getStatus());
+            assertEquals(201, response.getStatus());
 
             var data = response.readEntity(String.class);
             System.out.println("DATA: " + data);
         }
     }
 
+    @Test
+    public void createTar_with_unknown_ocflObjectVersions_should_return_404() throws Exception {
+        var client = new JerseyClientBuilder().build();
+
+        var part1 = new TarPartParameterDto()
+            .partName("part1")
+            .checksumAlgorithm("MD5")
+            .checksumValue("secret");
+
+        var ocfl1 = new OcflObjectVersionRefDto()
+            .bagId(UUID.randomUUID())
+            .objectVersion(1);
+
+        var entity = new TarParameterDto()
+            .archivalDate(OffsetDateTime.now())
+            .vaultPath("test")
+            .tarUuid(UUID.randomUUID().toString())
+            .ocflObjectVersions(List.of(ocfl1))
+            .tarParts(List.of(part1));
+
+        var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
+
+        try (var response = client.target(
+                String.format("http://localhost:%d/api/tar", SUPPORT.getLocalPort()))
+            .request()
+            .post(Entity.json(str))) {
+
+            assertEquals(404, response.getStatus());
+        }
+    }
+
+    @Test
+    public void createTar_with_ocflObjectVersions_should_return_201() throws Exception {
+        var client = new JerseyClientBuilder().build();
+
+        var part1 = new TarPartParameterDto()
+            .partName("part1")
+            .checksumAlgorithm("MD5")
+            .checksumValue("secret");
+
+        var version = createOcflVersion(client, new CreateOcflObjectVersionRequestDto()
+            .otherId("random id"));
+
+        var entity = new TarParameterDto()
+            .archivalDate(OffsetDateTime.now())
+            .vaultPath("test")
+            .tarUuid(UUID.randomUUID().toString())
+            .ocflObjectVersions(List.of(new OcflObjectVersionRefDto().bagId(version.getBagId()).objectVersion(version.getObjectVersion())))
+            .tarParts(List.of(part1));
+
+        var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
+
+        try (var response = client.target(
+                String.format("http://localhost:%d/api/tar", SUPPORT.getLocalPort()))
+            .request()
+            .post(Entity.json(str))) {
+
+            assertEquals(201, response.getStatus());
+        }
+
+        var response = client.target(
+                String.format("http://localhost:%d/api/tar/%s", SUPPORT.getLocalPort(), entity.getTarUuid()))
+            .request()
+            .get(String.class);
+
+        System.out.println("RESPONSE: " + response);
+//
+//        var response = client.target(
+//                String.format("http://localhost:%d/api/tar/%s", SUPPORT.getLocalPort(), entity.getTarUuid()))
+//            .request()
+//            .get(TarDto.class);
+//
+//        assertEquals(response.getTarUuid(), entity.getTarUuid());
+    }
     //    private static final TarService tarService = Mockito.mock(TarService.class);
 //    private static final SolrService solrService = Mockito.mock(SolrService.class);
 //    private static final OcflObjectVersionService ocflObjectVersionService = Mockito.mock(OcflObjectVersionService.class);
@@ -268,4 +342,20 @@ class TarAPIResourceIntegrationTest {
 //        var response = EXT.target("/api/tar/").request().post(Entity.json(entity));
 //        assertEquals(422, response.getStatusInfo().getStatusCode());
 //    }
+
+    OcflObjectVersionDto createOcflVersion(Client client, CreateOcflObjectVersionRequestDto dto) throws Exception {
+        var str = SUPPORT.getObjectMapper().writeValueAsString(dto);
+        var bagId = UUID.randomUUID().toString();
+        var version = 1;
+
+        try (var response = client.target(
+                String.format("http://localhost:%d/api/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version))
+            .request()
+            .put(Entity.json(str))) {
+
+            return new OcflObjectVersionDto()
+                .bagId(UUID.fromString(bagId))
+                .objectVersion(version);
+        }
+    }
 }

@@ -15,14 +15,13 @@
  */
 package nl.knaw.dans.catalog.core;
 
-import nl.knaw.dans.catalog.core.domain.OcflObjectVersion;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionId;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionParameters;
 import nl.knaw.dans.catalog.core.exception.OcflObjectVersionAlreadyExistsException;
-import nl.knaw.dans.catalog.core.exception.OcflObjectVersionIllegalArgumentException;
+import nl.knaw.dans.catalog.db.OcflObjectVersionEntity;
 
 public interface OcflObjectVersionFactory {
-    OcflObjectVersion create(OcflObjectVersionId id, OcflObjectVersionParameters parameters)
-        throws OcflObjectVersionAlreadyExistsException, OcflObjectVersionIllegalArgumentException;
+    OcflObjectVersionEntity create(OcflObjectVersionId id, OcflObjectVersionParameters parameters)
+        throws OcflObjectVersionAlreadyExistsException;
 
 }

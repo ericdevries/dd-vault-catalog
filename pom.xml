@@ -176,13 +176,14 @@
                             <generateApiTests>false</generateApiTests>
                             <modelNameSuffix>Dto</modelNameSuffix>
                             <configOptions>
-                                <apiPackage>nl.knaw.dans.openapi.server</apiPackage>
-                                <modelPackage>nl.knaw.dans.openapi.api</modelPackage>
-                                <invokerPackage>nl.knaw.dans.openapi</invokerPackage>
+                                <apiPackage>nl.knaw.dans.catalog.resource</apiPackage>
+                                <modelPackage>nl.knaw.dans.catalog.api</modelPackage>
+                                <invokerPackage>nl.knaw.dans.catalog.api</invokerPackage>
                                 <sourceFolder>src/gen/java/main</sourceFolder>
                                 <dateLibrary>java8</dateLibrary>
                                 <delegatePattern>true</delegatePattern>
                                 <interfaceOnly>true</interfaceOnly>
+                                <returnResponse>true</returnResponse>
                             </configOptions>
                         </configuration>
                     </execution>

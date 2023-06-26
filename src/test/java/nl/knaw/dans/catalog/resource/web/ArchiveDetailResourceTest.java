@@ -15,22 +15,8 @@
  */
 package nl.knaw.dans.catalog.resource.web;
 
-import com.codahale.metrics.MetricRegistry;
-import freemarker.template.Configuration;
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
-import io.dropwizard.testing.junit5.ResourceExtension;
-import io.dropwizard.views.ViewMessageBodyWriter;
-import io.dropwizard.views.freemarker.FreemarkerViewRenderer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.time.OffsetDateTime;
-import java.util.List;
 
 @ExtendWith(DropwizardExtensionsSupport.class)
 class ArchiveDetailResourceTest {

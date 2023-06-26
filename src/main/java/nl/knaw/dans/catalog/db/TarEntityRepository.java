@@ -17,7 +17,6 @@ package nl.knaw.dans.catalog.db;
 
 import io.dropwizard.hibernate.AbstractDAO;
 import nl.knaw.dans.catalog.core.TarRepository;
-import nl.knaw.dans.catalog.core.domain.Tar;
 import org.hibernate.SessionFactory;
 
 import java.util.ArrayList;
@@ -30,24 +29,27 @@ public class TarEntityRepository extends AbstractDAO<TarEntity> implements TarRe
     }
 
     @Override
-    public Optional<Tar> getTarById(String id) {
+    public Optional<TarEntity> getTarById(String id) {
         return query("from TarEntity where tarUuid = :id")
             .setParameter("id", id)
-            .uniqueResultOptional()
-            .map(i -> i);
+            .uniqueResultOptional();
     }
 
     @Override
-    public Tar save(Tar tar) {
-        if (tar instanceof TarEntity) {
-            return persist((TarEntity) tar);
+    public TarEntity save(TarEntity tar) {
+        for (var version : tar.getOcflObjectVersions()) {
+            version.setTar(tar);
         }
 
-        throw new IllegalArgumentException("Tar is not an instance of TarEntity");
+        for (var part : tar.getTarParts()) {
+            part.setTar(tar);
+        }
+
+        return persist(tar);
     }
 
     @Override
-    public List<Tar> findAll() {
+    public List<TarEntity> findAll() {
         return new ArrayList<>(list(query("from TarEntity")));
     }
 }

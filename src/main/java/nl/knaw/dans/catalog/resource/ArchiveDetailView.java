@@ -17,17 +17,17 @@
 package nl.knaw.dans.catalog.resource;
 
 import io.dropwizard.views.View;
-import nl.knaw.dans.catalog.core.domain.OcflObjectVersion;
+import nl.knaw.dans.catalog.db.OcflObjectVersionEntity;
 
 public class ArchiveDetailView extends View {
-    private final OcflObjectVersion transferItem;
+    private final OcflObjectVersionEntity transferItem;
 
-    protected ArchiveDetailView(OcflObjectVersion transferItem) {
+    protected ArchiveDetailView(OcflObjectVersionEntity transferItem) {
         super("transfer-item.ftl");
         this.transferItem = transferItem;
     }
 
-    public OcflObjectVersion getTransferItem() {
+    public OcflObjectVersionEntity getTransferItem() {
         return transferItem;
     }
 }

@@ -15,9 +15,9 @@
  */
 package nl.knaw.dans.catalog.core;
 
-import nl.knaw.dans.catalog.core.domain.OcflObjectVersion;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionId;
 import nl.knaw.dans.catalog.core.exception.OcflObjectVersionNotFoundException;
+import nl.knaw.dans.catalog.db.OcflObjectVersionEntity;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,17 +25,18 @@ import java.util.Optional;
 
 public interface OcflObjectVersionRepository {
 
-    Optional<OcflObjectVersion> findByBagIdAndVersion(String bagId, int version);
+    Optional<OcflObjectVersionEntity> findByBagIdAndVersion(String bagId, int version);
 
-    Optional<OcflObjectVersion> findLatestByBagId(String bagId);
+    Optional<OcflObjectVersionEntity> findLatestByBagId(String bagId);
 
-    List<OcflObjectVersion> findAllByBagId(String bagId);
+    List<OcflObjectVersionEntity> findAllByBagId(String bagId);
+    List<OcflObjectVersionEntity> findAll();
 
-    List<OcflObjectVersion> findAllBySwordToken(String swordToken);
+    List<OcflObjectVersionEntity> findAllBySwordToken(String swordToken);
 
-    void save(OcflObjectVersion ocflObjectVersion);
+    OcflObjectVersionEntity save(OcflObjectVersionEntity ocflObjectVersion);
 
-    List<OcflObjectVersion> findAll(Collection<OcflObjectVersionId> versions) throws OcflObjectVersionNotFoundException;
+    List<OcflObjectVersionEntity> findAll(Collection<OcflObjectVersionId> versions) throws OcflObjectVersionNotFoundException;
 
-    Optional<OcflObjectVersion> findByNbn(String nbn);
+    Optional<OcflObjectVersionEntity> findByNbn(String nbn);
 }

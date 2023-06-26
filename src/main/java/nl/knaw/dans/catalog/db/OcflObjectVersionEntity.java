@@ -18,7 +18,6 @@ package nl.knaw.dans.catalog.db;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
-import nl.knaw.dans.catalog.core.domain.OcflObjectVersion;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionId;
 import org.hibernate.Hibernate;
 
@@ -35,7 +34,7 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OcflObjectVersionEntity implements OcflObjectVersion {
+public class OcflObjectVersionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,18 +73,17 @@ public class OcflObjectVersionEntity implements OcflObjectVersion {
     @Column(name = "export_timestamp")
     private OffsetDateTime exportTimestamp;
 
+    @Transient
     private ObjectMapper objectMapper;
 
     public OcflObjectVersionId getId() {
         return new OcflObjectVersionId(bagId, objectVersion);
     }
 
-    @Override
     public String getMetadataString() {
         return metadata;
     }
 
-    @Override
     // TODO this is not efficient
     public Map<String, Object> getMetadata() {
         try {
@@ -103,7 +101,6 @@ public class OcflObjectVersionEntity implements OcflObjectVersion {
     }
 
 
-    @Override
     public OffsetDateTime getExportTimestamp() {
         return exportTimestamp;
     }

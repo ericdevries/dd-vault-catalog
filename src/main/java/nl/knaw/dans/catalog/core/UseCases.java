@@ -17,8 +17,12 @@ package nl.knaw.dans.catalog.core;
 
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
-import nl.knaw.dans.catalog.core.domain.*;
+import nl.knaw.dans.catalog.core.domain.OcflObjectVersionId;
+import nl.knaw.dans.catalog.core.domain.OcflObjectVersionParameters;
+import nl.knaw.dans.catalog.core.domain.TarParameters;
 import nl.knaw.dans.catalog.core.exception.*;
+import nl.knaw.dans.catalog.db.OcflObjectVersionEntity;
+import nl.knaw.dans.catalog.db.TarEntity;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -40,16 +44,16 @@ public class UseCases {
         this.searchIndex = searchIndex;
     }
 
-    public Collection<OcflObjectVersion> findOcflObjectVersionByBagId(String bagId) {
+    public Collection<OcflObjectVersionEntity> findOcflObjectVersionByBagId(String bagId) {
         return ocflObjectVersionRepository.findAllByBagId(bagId);
     }
 
-    public Collection<OcflObjectVersion> findOcflObjectVersionBySwordToken(String swordToken) {
+    public Collection<OcflObjectVersionEntity> findOcflObjectVersionBySwordToken(String swordToken) {
         return ocflObjectVersionRepository.findAllBySwordToken(swordToken);
     }
 
     @UnitOfWork
-    public OcflObjectVersion createOcflObjectVersion(OcflObjectVersionId id, OcflObjectVersionParameters params) throws OcflObjectVersionAlreadyExistsException, OcflObjectVersionIllegalArgumentException {
+    public OcflObjectVersionEntity createOcflObjectVersion(OcflObjectVersionId id, OcflObjectVersionParameters params) throws OcflObjectVersionAlreadyExistsException {
         var existingOcflObjectVersion = ocflObjectVersionRepository.findByBagIdAndVersion(id.getBagId(), id.getObjectVersion());
 
         if (existingOcflObjectVersion.isPresent()) {
@@ -66,7 +70,7 @@ public class UseCases {
     }
 
     @UnitOfWork
-    public Tar createTar(String id, TarParameters params) throws TarAlreadyExistsException, OcflObjectVersionNotFoundException, OcflObjectVersionAlreadyInTarException {
+    public TarEntity createTar(String id, TarParameters params) throws TarAlreadyExistsException, OcflObjectVersionNotFoundException, OcflObjectVersionAlreadyInTarException {
         var existingTar = tarRepository.getTarById(id);
 
         if (existingTar.isPresent()) {
@@ -88,17 +92,17 @@ public class UseCases {
 
         var tar = tarFactory.create(id, params.getVaultPath(), params.getArchivalDate(), params.getTarParts(), ocflObjectVersions);
         var result = tarRepository.save(tar);
-        searchIndex.indexTar(tar);
+        searchIndex.indexTar(result);
         return result;
     }
 
     @UnitOfWork
-    public Optional<Tar> getTarById(String id) {
+    public Optional<TarEntity> getTarById(String id) {
         return tarRepository.getTarById(id);
     }
 
     @UnitOfWork
-    public Tar updateTar(String id, TarParameters params) throws TarNotFoundException, OcflObjectVersionNotFoundException, OcflObjectVersionAlreadyInTarException {
+    public TarEntity updateTar(String id, TarParameters params) throws TarNotFoundException, OcflObjectVersionNotFoundException, OcflObjectVersionAlreadyInTarException {
         var tar = tarRepository.getTarById(id)
             .orElseThrow(() -> new TarNotFoundException(
                 String.format("Tar with id %s not found", id)
@@ -130,7 +134,7 @@ public class UseCases {
     }
 
     @UnitOfWork
-    public OcflObjectVersion getOcflObjectVersionByNbn(String nbn) throws OcflObjectVersionNotFoundException {
+    public OcflObjectVersionEntity getOcflObjectVersionByNbn(String nbn) throws OcflObjectVersionNotFoundException {
         return ocflObjectVersionRepository.findByNbn(nbn)
             .orElseThrow(() -> new OcflObjectVersionNotFoundException(
                 String.format("OcflObjectVersion with NBN %s not found", nbn)

@@ -16,9 +16,6 @@
 package nl.knaw.dans.catalog.db;
 
 import lombok.*;
-import nl.knaw.dans.catalog.core.domain.OcflObjectVersion;
-import nl.knaw.dans.catalog.core.domain.Tar;
-import nl.knaw.dans.catalog.core.domain.TarPart;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -36,7 +33,7 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TarEntity implements Tar {
+public class TarEntity {
     @Id
     @Column(name = "tar_uuid", nullable = false)
     private String tarUuid;
@@ -51,28 +48,22 @@ public class TarEntity implements Tar {
     @ToString.Exclude
     private List<OcflObjectVersionEntity> ocflObjectVersions;
 
-    @Override
-    public List<TarPart> getTarParts() {
+    public List<TarPartEntity> getTarParts() {
         return new ArrayList<>(tarParts);
     }
 
-    @Override
-    public void setTarParts(List<TarPart> tarParts) {
+    public void setTarParts(List<TarPartEntity> tarParts) {
         this.tarParts = tarParts.stream()
-            .map(item -> (TarPartEntity) item)
             .peek(item -> item.setTar(this))
             .collect(Collectors.toList());
     }
 
-    @Override
-    public List<OcflObjectVersion> getOcflObjectVersions() {
+    public List<OcflObjectVersionEntity> getOcflObjectVersions() {
         return new ArrayList<>(ocflObjectVersions);
     }
 
-    @Override
-    public void setOcflObjectVersions(List<OcflObjectVersion> ocflObjectVersions) {
+    public void setOcflObjectVersions(List<OcflObjectVersionEntity> ocflObjectVersions) {
         this.ocflObjectVersions = ocflObjectVersions.stream()
-            .map(item -> (OcflObjectVersionEntity) item)
             .peek(item -> item.setTar(this))
             .collect(Collectors.toList());
     }

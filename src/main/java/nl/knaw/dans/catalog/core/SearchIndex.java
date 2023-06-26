@@ -15,9 +15,9 @@
  */
 package nl.knaw.dans.catalog.core;
 
-import nl.knaw.dans.catalog.core.domain.Tar;
+import nl.knaw.dans.catalog.db.TarEntity;
 
 public interface SearchIndex {
 
-    void indexTar(Tar tar);
+    void indexTar(TarEntity tar);
 }

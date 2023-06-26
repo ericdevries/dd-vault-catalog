@@ -17,23 +17,23 @@
 package nl.knaw.dans.catalog.resource.view;
 
 import io.dropwizard.views.View;
-import nl.knaw.dans.catalog.core.domain.OcflObjectVersion;
+import nl.knaw.dans.catalog.db.OcflObjectVersionEntity;
 
 import java.util.List;
 
 public class ArchiveDetailView extends View {
-    private final List<OcflObjectVersion> ocflObjectVersions;
+    private final List<OcflObjectVersionEntity> ocflObjectVersions;
 
-    public ArchiveDetailView(List<OcflObjectVersion> ocflObjectVersions) {
+    public ArchiveDetailView(List<OcflObjectVersionEntity> ocflObjectVersions) {
         super("ocfl-object-version.ftl");
         this.ocflObjectVersions = ocflObjectVersions;
     }
 
-    public OcflObjectVersion getOcflObjectVersion() {
+    public OcflObjectVersionEntity getOcflObjectVersion() {
         return ocflObjectVersions.get(0);
     }
 
-    public List<OcflObjectVersion> getOtherOcflObjectVersions() {
+    public List<OcflObjectVersionEntity> getOtherOcflObjectVersions() {
         return ocflObjectVersions;
     }
 
