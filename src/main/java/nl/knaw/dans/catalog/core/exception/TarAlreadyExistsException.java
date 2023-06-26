@@ -13,25 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.catalog.db;
+package nl.knaw.dans.catalog.core.exception;
 
-import io.dropwizard.hibernate.AbstractDAO;
-import org.hibernate.SessionFactory;
-
-import java.util.Optional;
-
-public class TransferItemDao extends AbstractDAO<TransferItemModel> {
-
-    public TransferItemDao(SessionFactory sessionFactory) {
-        super(sessionFactory);
-    }
-
-    public Optional<TransferItemModel> findByNbn(String nbn) {
-        var query = currentSession().createQuery(
-            "from TransferItemModel where nbn = :nbn", TransferItemModel.class);
-
-        query.setParameter("nbn", nbn);
-
-        return query.uniqueResultOptional();
+public class TarAlreadyExistsException extends Throwable {
+    public TarAlreadyExistsException(String id) {
+        super(String.format("Tar with id %s already exists", id));
     }
 }

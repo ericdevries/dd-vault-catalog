@@ -13,18 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.knaw.dans.catalog.core.exception;
 
-package nl.knaw.dans.catalog.core;
+public class OcflObjectVersionIllegalArgumentException extends Exception {
 
-import nl.knaw.dans.catalog.db.Tar;
-import org.apache.solr.client.solrj.SolrServerException;
-
-import java.io.IOException;
-import java.util.List;
-
-public interface SolrService {
-
-    void indexArchive(Tar tar) throws SolrServerException, IOException;
-
-    List<Tar> searchArchives(String query);
+    public OcflObjectVersionIllegalArgumentException(String msg) {
+        super(msg);
+    }
 }

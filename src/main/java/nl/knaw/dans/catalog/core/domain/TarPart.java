@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.knaw.dans.catalog.core.domain;
 
-package nl.knaw.dans.catalog.resource;
+public interface TarPart {
 
-import io.dropwizard.views.View;
-import nl.knaw.dans.catalog.core.domain.OcflObjectVersion;
+    String getPartName();
 
-public class ArchiveDetailView extends View {
-    private final OcflObjectVersion transferItem;
+    String getChecksumAlgorithm();
 
-    protected ArchiveDetailView(OcflObjectVersion transferItem) {
-        super("transfer-item.ftl");
-        this.transferItem = transferItem;
-    }
+    String getChecksumValue();
 
-    public OcflObjectVersion getTransferItem() {
-        return transferItem;
-    }
+    Tar getTar();
+
+
 }
+

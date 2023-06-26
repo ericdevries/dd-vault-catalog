@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.catalog.db;
+package nl.knaw.dans.catalog.core;
 
-import io.dropwizard.hibernate.AbstractDAO;
-import org.hibernate.SessionFactory;
+import nl.knaw.dans.catalog.core.domain.Tar;
 
 import java.util.List;
+import java.util.Optional;
 
-public class TarPartDao extends AbstractDAO<TarPart> {
+public interface TarRepository {
 
-    public TarPartDao(SessionFactory sessionFactory) {
-        super(sessionFactory);
-    }
+    Optional<Tar> getTarById(String id);
 
-    public List<TarPart> findAll() {
-        return currentSession().createQuery("from TarPart", TarPart.class)
-            .list();
-    }
+    Tar save(Tar tar);
 
+    List<Tar> findAll();
 }

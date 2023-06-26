@@ -13,21 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.knaw.dans.catalog.core.domain;
 
-package nl.knaw.dans.catalog.resource;
+import lombok.Value;
 
-import io.dropwizard.views.View;
-import nl.knaw.dans.catalog.core.domain.OcflObjectVersion;
-
-public class ArchiveDetailView extends View {
-    private final OcflObjectVersion transferItem;
-
-    protected ArchiveDetailView(OcflObjectVersion transferItem) {
-        super("transfer-item.ftl");
-        this.transferItem = transferItem;
-    }
-
-    public OcflObjectVersion getTransferItem() {
-        return transferItem;
-    }
+@Value
+public class OcflObjectVersionId {
+    String bagId;
+    int objectVersion;
 }

@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.knaw.dans.catalog.core.domain;
 
-package nl.knaw.dans.catalog.resource;
+import lombok.Builder;
+import lombok.Value;
 
-import io.dropwizard.views.View;
-import nl.knaw.dans.catalog.core.domain.OcflObjectVersion;
+import java.time.OffsetDateTime;
+import java.util.Map;
 
-public class ArchiveDetailView extends View {
-    private final OcflObjectVersion transferItem;
-
-    protected ArchiveDetailView(OcflObjectVersion transferItem) {
-        super("transfer-item.ftl");
-        this.transferItem = transferItem;
-    }
-
-    public OcflObjectVersion getTransferItem() {
-        return transferItem;
-    }
+@Value
+@Builder
+public class OcflObjectVersionParameters {
+    String swordToken;
+    String nbn;
+    String dataSupplier;
+    String dataversePid;
+    String dataversePidVersion;
+    String otherId;
+    String otherIdVersion;
+    String ocflObjectPath;
+    Map<String, Object> metadata;
+    String filePidToLocalPath;
+    OffsetDateTime exportTimestamp;
 }

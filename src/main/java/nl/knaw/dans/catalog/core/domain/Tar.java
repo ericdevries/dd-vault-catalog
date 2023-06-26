@@ -13,25 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.knaw.dans.catalog.core.domain;
 
-package nl.knaw.dans.catalog.db;
+import java.time.OffsetDateTime;
+import java.util.List;
 
-import io.dropwizard.hibernate.AbstractDAO;
-import org.hibernate.SessionFactory;
+public interface Tar {
 
-import java.util.Optional;
+    String getVaultPath();
 
-public class TarModelDAO extends AbstractDAO<TarModel> {
+    void setVaultPath(String tarPath);
 
-    public TarModelDAO(SessionFactory sessionFactory) {
-        super(sessionFactory);
-    }
+    String getTarUuid();
 
-    public Optional<TarModel> findById(String id) {
-        return Optional.ofNullable(get(id));
-    }
+    void setTarUuid(String tarUuid);
 
-    public TarModel save(TarModel tar) {
-        return persist(tar);
-    }
+    OffsetDateTime getArchivalDate();
+
+    void setArchivalDate(OffsetDateTime archivalDate);
+
+    List<TarPart> getTarParts();
+
+    void setTarParts(List<TarPart> tarParts);
+
+    List<OcflObjectVersion> getOcflObjectVersions();
+
+    void setOcflObjectVersions(List<OcflObjectVersion> ocflObjectVersions);
 }

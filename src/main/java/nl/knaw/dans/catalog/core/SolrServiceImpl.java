@@ -17,8 +17,8 @@
 package nl.knaw.dans.catalog.core;
 
 import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
-import nl.knaw.dans.catalog.db.Tar;
-import nl.knaw.dans.catalog.db.TarPart;
+import nl.knaw.dans.catalog.core.domain.Tar;
+import nl.knaw.dans.catalog.core.domain.TarPart;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.common.SolrInputDocument;
@@ -28,72 +28,82 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.stream.Collectors;
 
-public class SolrServiceImpl implements SolrService {
+public class SolrServiceImpl implements SearchIndex {
     private static final Logger log = LoggerFactory.getLogger(SolrServiceImpl.class);
 
     private final HttpSolrClient solrClient;
     private final OcflObjectMetadataReader ocflObjectMetadataReader;
 
     public SolrServiceImpl(DdVaultCatalogConfiguration.SolrConfig solrConfig, OcflObjectMetadataReader ocflObjectMetadataReader) {
-        solrClient = new HttpSolrClient.Builder(solrConfig.getUrl()).build();
-        this.ocflObjectMetadataReader = ocflObjectMetadataReader;
+        if (solrConfig != null) {
+            solrClient = new HttpSolrClient.Builder(solrConfig.getUrl()).build();
+            this.ocflObjectMetadataReader = ocflObjectMetadataReader;
+        }
+        else {
+            solrClient = null;
+            this.ocflObjectMetadataReader = null;
+        }
     }
 
     /**
      * ## ids bag_id: string tar_id: string nbn: string dataverse_pid: string sword_client: string sword_token: string ocfl_object_path: string tar_part_name: string
-     *
-     *
+     * <p>
+     * <p>
      * ## timestamps tar_archival_date export_timestamp
-     *
+     * <p>
      * ## text fields filepid_to_local_path
-     *
+     * <p>
      * ## int fields version_major version_minor
      */
     @Override
-    public void indexArchive(Tar tar) throws SolrServerException, IOException {
-        var documents = tar.getOcflObjectVersions().stream().map(ocflObjectVersion -> {
-            var doc = new SolrInputDocument();
-            var id = String.format("%s/%s.%s", ocflObjectVersion.getId().getBagId(), ocflObjectVersion.getId().getVersionMajor(), ocflObjectVersion.getId().getVersionMinor());
+    public void indexTar(Tar tar) {
+        if (solrClient == null) {
+            log.warn("Solr is not configured, skipping indexing of tar {}", tar.getTarUuid());
+            return;
+        }
 
-            doc.setField("id", id);
-            doc.setField("bag_id", ocflObjectVersion.getId().getBagId());
-            doc.setField("tar_id", ocflObjectVersion.getTar().getTarUuid());
-            doc.setField("nbn", ocflObjectVersion.getNbn());
-            doc.setField("dataverse_pid", ocflObjectVersion.getDataversePid());
-            doc.setField("datastation", ocflObjectVersion.getDatastation());
+        try {
+            var documents = tar.getOcflObjectVersions().stream().map(ocflObjectVersion -> {
+                var doc = new SolrInputDocument();
+                var id = String.format("%s/%s", ocflObjectVersion.getId().getBagId(), ocflObjectVersion.getId().getObjectVersion());
 
-            doc.setField("sword_client", ocflObjectVersion.getSwordClient());
-            doc.setField("sword_token", ocflObjectVersion.getSwordToken());
-            doc.setField("ocfl_object_path", ocflObjectVersion.getOcflObjectPath());
-            doc.setField("tar_part_name", ocflObjectVersion.getTar().getTarParts().stream().map(TarPart::getPartName).collect(Collectors.toList()));
+                doc.setField("id", id);
+                doc.setField("bag_id", ocflObjectVersion.getId().getBagId());
+                doc.setField("tar_id", ocflObjectVersion.getTar().getTarUuid());
+                doc.setField("nbn", ocflObjectVersion.getNbn());
+                doc.setField("dataverse_pid", ocflObjectVersion.getDataversePid());
+                doc.setField("datastation", ocflObjectVersion.getDataSupplier());
 
-            doc.setField("tar_archival_timestamp", formatDate(ocflObjectVersion.getTar().getArchivalDate()));
-            doc.setField("export_timestamp", formatDate(ocflObjectVersion.getExportTimestamp()));
+//            doc.setField("sword_client", ocflObjectVersion.getsw());
+                doc.setField("sword_token", ocflObjectVersion.getSwordToken());
+                doc.setField("ocfl_object_path", ocflObjectVersion.getOcflObjectPath());
+                doc.setField("tar_part_name", ocflObjectVersion.getTar().getTarParts().stream().map(TarPart::getPartName).collect(Collectors.toList()));
 
-            var metadata = ocflObjectMetadataReader.readMetadata(ocflObjectVersion.getMetadata());
+                doc.setField("tar_archival_timestamp", formatDate(ocflObjectVersion.getTar().getArchivalDate()));
+                doc.setField("export_timestamp", formatDate(ocflObjectVersion.getExportTimestamp()));
 
-            for (var entry : metadata.entrySet()) {
-                doc.addField(entry.getKey(), entry.getValue());
-            }
+                var metadata = ocflObjectMetadataReader.readMetadata(ocflObjectVersion.getMetadataString());
 
-            doc.addField("_text_", ocflObjectVersion.getId().getBagId().replace("urn:uuid:", ""));
-            doc.addField("_text_", ocflObjectVersion.getNbn().replace("urn:nbn:nl:ui:", ""));
+                for (var entry : metadata.entrySet()) {
+                    doc.addField(entry.getKey(), entry.getValue());
+                }
 
-            log.trace("Document generated: {}", doc);
-            return doc;
-        }).collect(Collectors.toList());
+                doc.addField("_text_", ocflObjectVersion.getId().getBagId().replace("urn:uuid:", ""));
+                doc.addField("_text_", ocflObjectVersion.getNbn().replace("urn:nbn:nl:ui:", ""));
 
-        log.debug("Indexing document with ID {}", tar.getTarUuid());
-        solrClient.add(documents);
-        solrClient.commit();
-    }
+                log.trace("Document generated: {}", doc);
+                return doc;
+            }).collect(Collectors.toList());
 
-    @Override
-    public List<Tar> searchArchives(String query) {
-        return null;
+            log.debug("Indexing document with ID {}", tar.getTarUuid());
+            solrClient.add(documents);
+            solrClient.commit();
+        }
+        catch (SolrServerException | IOException e) {
+            log.error("Error indexing tar {}", tar.getTarUuid(), e);
+        }
     }
 
     String formatDate(OffsetDateTime date) {
@@ -103,4 +113,5 @@ public class SolrServiceImpl implements SolrService {
 
         return date.format(DateTimeFormatter.ISO_DATE_TIME);
     }
+
 }

@@ -15,12 +15,9 @@
  */
 package nl.knaw.dans.catalog.core;
 
-import nl.knaw.dans.catalog.db.TransferItemModel;
+import nl.knaw.dans.catalog.core.domain.Tar;
 
-import java.util.Optional;
+public interface SearchIndex {
 
-public interface TransferItemService {
-
-    Optional<TransferItemModel> findByNbn(String id);
-
+    void indexTar(Tar tar);
 }

@@ -15,23 +15,14 @@
  */
 package nl.knaw.dans.catalog.core;
 
-import io.dropwizard.hibernate.UnitOfWork;
-import nl.knaw.dans.catalog.db.TransferItemDao;
-import nl.knaw.dans.catalog.db.TransferItemModel;
+import nl.knaw.dans.catalog.core.domain.OcflObjectVersion;
+import nl.knaw.dans.catalog.core.domain.OcflObjectVersionId;
+import nl.knaw.dans.catalog.core.domain.OcflObjectVersionParameters;
+import nl.knaw.dans.catalog.core.exception.OcflObjectVersionAlreadyExistsException;
+import nl.knaw.dans.catalog.core.exception.OcflObjectVersionIllegalArgumentException;
 
-import java.util.Optional;
-
-public class TransferItemServiceImpl implements TransferItemService {
-    private final TransferItemDao transferItemDao;
-
-    public TransferItemServiceImpl(TransferItemDao transferItemDao) {
-        this.transferItemDao = transferItemDao;
-    }
-
-    @Override
-    @UnitOfWork
-    public Optional<TransferItemModel> findByNbn(String id) {
-        return transferItemDao.findByNbn(id);
-    }
+public interface OcflObjectVersionFactory {
+    OcflObjectVersion create(OcflObjectVersionId id, OcflObjectVersionParameters parameters)
+        throws OcflObjectVersionAlreadyExistsException, OcflObjectVersionIllegalArgumentException;
 
 }

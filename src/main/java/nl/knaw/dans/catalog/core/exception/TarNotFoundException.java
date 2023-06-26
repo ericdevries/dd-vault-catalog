@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.knaw.dans.catalog.core.exception;
 
-package nl.knaw.dans.catalog.core;
-
-import nl.knaw.dans.catalog.db.Tar;
-
-import java.util.Optional;
-
-public interface TarService {
-
-    Optional<Tar> get(String id);
-
-    Tar saveTar(Tar tar);
+public class TarNotFoundException extends Exception {
+    public TarNotFoundException(String msg) {
+        super(msg);
+    }
 }

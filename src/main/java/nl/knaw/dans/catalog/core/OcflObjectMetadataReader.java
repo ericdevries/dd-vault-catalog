@@ -15,9 +15,56 @@
  */
 package nl.knaw.dans.catalog.core;
 
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public interface OcflObjectMetadataReader {
+public class OcflObjectMetadataReader {
+    public Map<String, Object> readMetadata(String json) {
+        var result = new HashMap<String, Object>();
+        var config = Configuration.defaultConfiguration().addOptions(Option.SUPPRESS_EXCEPTIONS);
+        var doc = JsonPath.using(config).parse(json);
 
-    Map<String, Object> readMetadata(String json);
+        result.put("metadata_topic_classification",
+            readField(doc, "$['ore:describes']['citation:Topic Classification']['topicClassification:Term']"));
+        result.put("metadata_citation_email",
+            readField(doc, "$['ore:describes']['citation:Contact']['datasetContact:E-mail']"));
+        result.put("metadata_distributor_name",
+            readField(doc, "$['ore:describes']['citation:Distributor']['distributor:Name']"));
+        result.put("metadata_description",
+            readField(doc, "$['ore:describes']['citation:Description']['dsDescription:Text']"));
+        result.put("metadata_related_publication",
+            readField(doc, "$['ore:describes']['Related Publication']['Citation']"));
+        result.put("metadata_title",
+            readField(doc, "$['ore:describes']['Title']"));
+        result.put("metadata_subject",
+            readField(doc, "$['ore:describes']['Subject']"));
+        result.put("metadata_included_data_catalog",
+            readField(doc, "$['ore:describes']['schema:includedInDataCatalog']"));
+        result.put("metadata_dcterms_creator",
+            readField(doc, "$['dcterms:creator']"));
+
+        List<String> authorNames = doc.read("$['ore:describes']['Author'][*]['author:Name']");
+        result.put("metadata_author_name", authorNames.toArray(String[]::new));
+
+        List<String> authorAffiliations = doc.read("$['ore:describes']['Author'][*]['author:Affiliation']");
+        result.put("metadata_author_affiliation", authorAffiliations.toArray(String[]::new));
+
+        return result;
+    }
+
+    String readField(DocumentContext doc, String jsonPath) {
+        var result = doc.read(jsonPath);
+
+        if (result != null) {
+            return result.toString();
+        }
+
+        return null;
+    }
 }

@@ -16,39 +16,37 @@
 
 package nl.knaw.dans.catalog.resource.web;
 
-import nl.knaw.dans.catalog.core.OcflObjectVersionService;
+import lombok.extern.slf4j.Slf4j;
+import nl.knaw.dans.catalog.core.UseCases;
+import nl.knaw.dans.catalog.core.exception.OcflObjectVersionNotFoundException;
 import nl.knaw.dans.catalog.resource.view.ArchiveDetailView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
+@Slf4j
 @Path("/nbn/{id}")
 @Produces(MediaType.TEXT_HTML)
 public class ArchiveDetailResource {
-    private static final Logger log = LoggerFactory.getLogger(ArchiveDetailResource.class);
 
-    private final OcflObjectVersionService ocflObjectVersionService;
+    private final UseCases useCases;
 
-    public ArchiveDetailResource(OcflObjectVersionService ocflObjectVersionService) {
-        this.ocflObjectVersionService = ocflObjectVersionService;
+    public ArchiveDetailResource(UseCases useCases) {
+        this.useCases = useCases;
     }
 
     @GET
     public ArchiveDetailView get(@PathParam("id") String id) {
         log.debug("Received request for page with NBN {}", id);
-        var items = ocflObjectVersionService.findByNbn(id);
-
-        if (items.size() == 0) {
+        try {
+            var version = useCases.getOcflObjectVersionByNbn(id);
+            // TODO this should be a list from the db
+            return new ArchiveDetailView(List.of(version));
+        }
+        catch (OcflObjectVersionNotFoundException e) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
-
-        return new ArchiveDetailView(items);
     }
 }

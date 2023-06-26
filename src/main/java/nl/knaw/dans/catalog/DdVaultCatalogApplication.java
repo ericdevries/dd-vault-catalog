@@ -17,6 +17,7 @@
 package nl.knaw.dans.catalog;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.dropwizard.Application;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
@@ -27,12 +28,11 @@ import io.dropwizard.setup.Environment;
 import io.dropwizard.views.View;
 import io.dropwizard.views.ViewBundle;
 import nl.knaw.dans.catalog.cli.ReindexCommand;
-import nl.knaw.dans.catalog.core.OcflObjectMetadataReaderImpl;
-import nl.knaw.dans.catalog.core.OcflObjectVersionServiceImpl;
-import nl.knaw.dans.catalog.core.SolrServiceImpl;
-import nl.knaw.dans.catalog.core.TarServiceImpl;
-import nl.knaw.dans.catalog.db.OcflObjectVersionDao;
-import nl.knaw.dans.catalog.db.TarDAO;
+import nl.knaw.dans.catalog.core.*;
+import nl.knaw.dans.catalog.db.OcflObjectVersionEntityFactory;
+import nl.knaw.dans.catalog.db.OcflObjectVersionEntityRepository;
+import nl.knaw.dans.catalog.db.TarEntityFactory;
+import nl.knaw.dans.catalog.db.TarEntityRepository;
 import nl.knaw.dans.catalog.resource.api.TarAPIResource;
 import nl.knaw.dans.catalog.resource.view.ErrorView;
 import nl.knaw.dans.catalog.resource.web.ArchiveDetailResource;
@@ -62,18 +62,10 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
 
     @Override
     public void run(final DdVaultCatalogConfiguration configuration, final Environment environment) {
-        var tarDao = new TarDAO(hibernateBundle.getSessionFactory());
-        var ocflObjectVersionDao = new OcflObjectVersionDao(hibernateBundle.getSessionFactory());
-        var tarService = new UnitOfWorkAwareProxyFactory(hibernateBundle).create(TarServiceImpl.class, TarDAO.class, tarDao);
-        var ocflObjectMetadataReader = new OcflObjectMetadataReaderImpl();
+        var useCases = UseCasesBuilder.build(configuration, environment.getObjectMapper(), hibernateBundle);
 
-        var ocflObjectVersionService = new UnitOfWorkAwareProxyFactory(hibernateBundle)
-            .create(OcflObjectVersionServiceImpl.class, OcflObjectVersionDao.class, ocflObjectVersionDao);
-
-        var solrService = new SolrServiceImpl(configuration.getSolr(), ocflObjectMetadataReader);
-
-        environment.jersey().register(new TarAPIResource(tarService, solrService, ocflObjectVersionService));
-        environment.jersey().register(new ArchiveDetailResource(ocflObjectVersionService));
+        environment.jersey().register(new TarAPIResource(useCases));
+        environment.jersey().register(new ArchiveDetailResource(useCases));
         environment.jersey().register(new ErrorEntityWriter<ErrorMessage, View>(MediaType.TEXT_HTML_TYPE, View.class) {
 
             @Override
@@ -81,5 +73,35 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
                 return new ErrorView(errorMessage);
             }
         });
+    }
+
+
+    UseCases getUseCases(DdVaultCatalogConfiguration configuration, Environment environment) {
+        var ocflObjectMetadataReader = new OcflObjectMetadataReader();
+        var searchIndex = new SolrServiceImpl(configuration.getSolr(), ocflObjectMetadataReader);
+
+        var oclfObjectFactory = new OcflObjectVersionEntityFactory(environment.getObjectMapper());
+        var ocflObjectVersionRepository = new OcflObjectVersionEntityRepository(hibernateBundle.getSessionFactory());
+
+        var tarRepository = new TarEntityRepository(hibernateBundle.getSessionFactory());
+        var tarFactory = new TarEntityFactory();
+
+        return new UnitOfWorkAwareProxyFactory(hibernateBundle)
+            .create(UseCases.class,
+                new Class[]{
+                    OcflObjectVersionRepository.class,
+                    OcflObjectVersionFactory.class,
+                    TarRepository.class,
+                    TarFactory.class,
+                    SearchIndex.class,
+                },
+                new Object[]{
+                    ocflObjectVersionRepository,
+                    oclfObjectFactory,
+                    tarRepository,
+                    tarFactory,
+                    searchIndex
+                }
+            );
     }
 }

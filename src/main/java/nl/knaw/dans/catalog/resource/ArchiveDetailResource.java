@@ -16,34 +16,34 @@
 
 package nl.knaw.dans.catalog.resource;
 
-import nl.knaw.dans.catalog.core.TransferItemService;
+import lombok.extern.slf4j.Slf4j;
+import nl.knaw.dans.catalog.core.UseCases;
+import nl.knaw.dans.catalog.core.exception.OcflObjectVersionNotFoundException;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+@Slf4j
 @Path("/nbn/{id}")
 @Produces(MediaType.TEXT_HTML)
 public class ArchiveDetailResource {
-    private final TransferItemService transferItemService;
 
-    public ArchiveDetailResource(TransferItemService transferItemService) {
-        this.transferItemService = transferItemService;
+    private final UseCases useCases;
+
+    public ArchiveDetailResource(UseCases useCases) {
+        this.useCases = useCases;
     }
 
     @GET
     public ArchiveDetailView get(@PathParam("id") String id) {
-        var transferItem = transferItemService.findByNbn(id);
-
-        if (transferItem.isEmpty()) {
+        try {
+            var item = useCases.getOcflObjectVersionByNbn(id);
+            return new ArchiveDetailView(item);
+        }
+        catch (OcflObjectVersionNotFoundException e) {
+            log.error(e.getMessage(), e);
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
-
-        return new ArchiveDetailView(transferItem.get());
     }
-
 }

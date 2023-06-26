@@ -17,7 +17,7 @@
 package nl.knaw.dans.catalog.resource.view;
 
 import io.dropwizard.views.View;
-import nl.knaw.dans.catalog.db.OcflObjectVersion;
+import nl.knaw.dans.catalog.core.domain.OcflObjectVersion;
 
 import java.util.List;
 

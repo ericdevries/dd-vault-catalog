@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.catalog.core;
+package nl.knaw.dans.catalog.core.exception;
 
-import nl.knaw.dans.catalog.db.OcflObjectVersion;
-
-import java.util.List;
-import java.util.Optional;
-
-public interface OcflObjectVersionService {
-
-    List<OcflObjectVersion> findByNbn(String id);
-
-    Optional<OcflObjectVersion> findByBagIdAndVersion(String bagId, int versionMajor, int versionMinor);
+public class OcflObjectVersionNotFoundException extends Exception {
+    public OcflObjectVersionNotFoundException(String msg) {
+        super(msg);
+    }
 }

@@ -13,38 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nl.knaw.dans.catalog.db;
 
 import io.dropwizard.hibernate.AbstractDAO;
+import nl.knaw.dans.catalog.core.TarRepository;
+import nl.knaw.dans.catalog.core.domain.Tar;
 import org.hibernate.SessionFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class TarDAO extends AbstractDAO<Tar> {
-
-    public TarDAO(SessionFactory sessionFactory) {
+public class TarEntityRepository extends AbstractDAO<TarEntity> implements TarRepository {
+    public TarEntityRepository(SessionFactory sessionFactory) {
         super(sessionFactory);
     }
 
-    public Optional<Tar> findById(String id) {
-        return Optional.ofNullable(get(id));
+    @Override
+    public Optional<Tar> getTarById(String id) {
+        return query("from TarEntity where tarUuid = :id")
+            .setParameter("id", id)
+            .uniqueResultOptional()
+            .map(i -> i);
     }
 
+    @Override
     public Tar save(Tar tar) {
-        return persist(tar);
+        if (tar instanceof TarEntity) {
+            return persist((TarEntity) tar);
+        }
+
+        throw new IllegalArgumentException("Tar is not an instance of TarEntity");
     }
 
-    public Tar merge(Tar tar) {
-        return (Tar) currentSession().merge(tar);
-    }
-
-    public void evict(Tar tar) {
-        currentSession().evict(tar);
-    }
-
+    @Override
     public List<Tar> findAll() {
-        return currentSession().createQuery("from Tar", Tar.class).list();
+        return new ArrayList<>(list(query("from TarEntity")));
     }
 }
