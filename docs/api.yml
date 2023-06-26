@@ -47,7 +47,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ocflObjectVersionArray"
+                type: array
+                items:
+                  $ref: '#/components/schemas/OcflObjectVersion'
 
   /ocflObject/swordToken/{swordToken}:
     get:
@@ -65,7 +67,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ocflObjectVersionArray"
+                type: array
+                items:
+                  $ref: '#/components/schemas/OcflObjectVersion'
 
   /ocflObject/bagId/{bagId}/version/{versionNumber}:
     get:
@@ -88,7 +92,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ocflObjectVersion"
+                $ref: "#/components/schemas/OcflObjectVersion"
 
     put:
       tags:
@@ -103,7 +107,7 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: "#/components/schemas/ocflObjectVersion"
+                - $ref: "#/components/schemas/OcflObjectVersion"
       parameters:
         - name: bagId
           in: path
@@ -137,7 +141,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/tar'
+              $ref: '#/components/schemas/Tar'
         required: true
       responses:
         default:
@@ -145,7 +149,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/tar'
+                $ref: '#/components/schemas/Tar'
+
   /tar/{id}:
     get:
       tags:
@@ -164,7 +169,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/tar'
+                $ref: '#/components/schemas/Tar'
     put:
       tags:
         - tar
@@ -180,7 +185,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/tar'
+              $ref: '#/components/schemas/Tar'
         required: true
       responses:
         default:
@@ -188,7 +193,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/tar'
+                $ref: '#/components/schemas/Tar'
+
 components:
   responses:
     Unavailable:
@@ -197,7 +203,7 @@ components:
       description: The item could not be found.
 
   schemas:
-    tar:
+    Tar:
       type: object
       required:
         - tarUuid
@@ -206,13 +212,11 @@ components:
         - tarParts
         - ocflObjectVersions
       example:
-        result:
-          - tar:
-            vaultPath: theVault
-            tarUuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
-            archivalDate:  2023-05-02T18:56:51.582Z
-            tarParts: ["part01", "part02"]
-            ocflObjectVersions: []
+        vaultPath: theVault
+        tarUuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
+        archivalDate:  2023-05-02T18:56:51.582Z
+        tarParts: ["part01", "part02"]
+        ocflObjectVersions: []
       properties:
         vaultPath:
           type: string
@@ -224,132 +228,85 @@ components:
         tarParts:
           type: array
           items:
-            $ref: '#/components/schemas/tarPart'
+            $ref: '#/components/schemas/TarPart'
         ocflObjectVersions:
           type: array
           items:
-            $ref: '#/components/schemas/ocflObjectVersion'
+            $ref: '#/components/schemas/OcflObjectVersion'
 
+    TarPart:
+      type: object
+      example:
+        partName: part01
+        tarUuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
+        checksumAlgorithm: BLAKE-256
+        checksumValue: 716f6e863f744b9ac22c97ec7b76ea5f5908bc5b2f67c61510bfc4751384ea7a
+      required:
+        - partName
+        - tarUuid
+        - checksumAlgorithm
+        - checkumValue
+      properties:
+        partName:
+          type: string
+        tarUuid:
+          type: string
+        checksumAlgorithm:
+          type: string
+        checksumValue:
+          type: string
 
-    tarPart:
+    OcflObjectVersion:
       type: object
       example:
-        tarPart:
-          partName: part01
-          tarUuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
-          checksumAlgorithm: BLAKE-256
-          checksumValue: 716f6e863f744b9ac22c97ec7b76ea5f5908bc5b2f67c61510bfc4751384ea7a
+        bagId: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
+        objectVersion: 1
+        nbn: urn:nbn:nl:ui:13-00-1haq
+        swordToken: sword:016526b1-c0ae-4237-854c-1f4d0b84d25a
+        dataSupplier: REPO1
+        tarUuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
+        ocflObjectPath: 40/59/4b/6d-8378-4260-b96b-13b57beadf7c
+        datastation: DS_Archaeology
+        dataversePid: https://doi.org/10.17026/XXXXX
+        dataversePidVersion: V1.0
+        otherId: REPO1:31998
+        otherIdVersion: 3.2
+        exportTimestamp: 2023-04-09T11:56:58.607Z
+      required:
+        - bagId
+        - objectVersion
       properties:
-        tarPart:
-          required:
-            - partName
-            - tarUuid
-            - checksumAlgorithm
-            - checkumValue
-          properties:
-            partName:
-              type: string
-            tarUuid:
-              type: string
-            checksumAlgorithm:
-              type: string
-            checksumValue:
-              type: string
-    ocflObjectVersionArray:
-      type: object
-      example:
-        result:
-          - ocflObjectVersion:
-              bagId: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
-              objectVersion: 2
-              dataversePid: https://doi.org/10.17026/test-x6f-kf66
-              nbn: urn:nbn:nl:ui:13-00-1haq
-              swordToken: sword:016526b1-c0ae-4237-854c-1f4d0b84d25a
-              dataSupplier: REPO1
-              tars: ["3778ab38-5461-45ec-b393-6466fd314125", "3c52cce1-5407-43d1-9c3d-a05274965b3c"]
-      properties:
-        result:
-          type: array
-          items:
-            type: object
-            properties:
-              ocflObjectVersion:
-                properties:
-                  bagId:
-                    type: string
-                    format: "uuid"
-                  objectVersion:
-                    type: integer
-                  swordToken:
-                    type: string
-                    format: "uuid"
-                  dataversePid:
-                    type: string
-                    format: "doi"
-                  nbn:
-                    type: string
-                    format: "urn"
-                  dataSupplier:
-                    type: string
-                  tars:
-                    type: array
-                    items:
-                      type: string
-                      format: uuid
-    ocflObjectVersion:
-      type: object
-      example:
-        ocflObjectVersion:
-          bagId: urn:uuid:40594b6d-8378-4260-b96b-13b57beadf7c
-          objectVersion: 1
-          nbn: urn:nbn:nl:ui:13-00-1haq
-          swordToken: sword:016526b1-c0ae-4237-854c-1f4d0b84d25a
-          dataSupplier: REPO1
-          tarUuid: e102df56-14ca-48a6-a74a-0fc1ae1c14de
-          ocflObjectPath: 40/59/4b/6d-8378-4260-b96b-13b57beadf7c
-          datastation: DS_Archaeology
-          dataversePid: https://doi.org/10.17026/XXXXX
-          dataversePidVersion: V1.0
-          otherId: REPO1:31998
-          otherIdVersion: 3.2
-          exportTimestamp: 2023-04-09T11:56:58.607Z
-      properties:
-        ocflObjectVersion:
-          required:
-            - bagId
-            - objectVersion
-          properties:
-            bagId:
-              type: string
-              format: "uuid"
-            objectVersion:
-              type: integer
-            swordToken:
-              type: string
-              format: UUID
-            nbn:
-              type: string
-              format: "urn"
-            dataSupplier:
-              type: string
-            tarUuid:
-              type: string
-              format: "uuid"
-            dataversePid:
-              type: string
-            dateversePidVersion:
-              type: string
-            otherId:
-              type: string
-            otherIdVersion:
-              type: string
-            ocflObjectPath:
-              type: string
-            metadata:
-              type: object
-              format: "json-ld"
-            filePidToLocalPath:
-              type: string
-            exportTimestamp:
-              type: string
-              format: date-time
+        bagId:
+          type: string
+          format: "uuid"
+        objectVersion:
+          type: integer
+        swordToken:
+          type: string
+          format: UUID
+        nbn:
+          type: string
+          format: "urn"
+        dataSupplier:
+          type: string
+        tarUuid:
+          type: string
+          format: "uuid"
+        dataversePid:
+          type: string
+        dateversePidVersion:
+          type: string
+        otherId:
+          type: string
+        otherIdVersion:
+          type: string
+        ocflObjectPath:
+          type: string
+        metadata:
+          type: object
+          format: "json-ld"
+        filePidToLocalPath:
+          type: string
+        exportTimestamp:
+          type: string
+          format: date-time
