@@ -16,7 +16,7 @@
 package nl.knaw.dans.catalog.resource.api;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.knaw.dans.catalog.api.CreateOcflObjectVersionRequestDto;
+import nl.knaw.dans.catalog.api.OcflObjectVersionParametersDto;
 import nl.knaw.dans.catalog.core.UseCases;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionId;
 import nl.knaw.dans.catalog.core.exception.OcflObjectVersionAlreadyExistsException;
@@ -40,7 +40,7 @@ public class OcflObjectApiResource implements OcflObjectApi {
     }
 
     @Override
-    public Response createOcflObjectVersion(String bagId, Integer versionNumber, CreateOcflObjectVersionRequestDto createOcflObjectVersionRequestDto) {
+    public Response createOcflObjectVersion(String bagId, Integer versionNumber, OcflObjectVersionParametersDto createOcflObjectVersionRequestDto) {
         try {
             var result = useCases.createOcflObjectVersion(
                 new OcflObjectVersionId(bagId, versionNumber),

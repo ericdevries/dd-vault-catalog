@@ -15,8 +15,8 @@
  */
 package nl.knaw.dans.catalog.resource.mappers;
 
-import nl.knaw.dans.catalog.api.CreateOcflObjectVersionRequestDto;
 import nl.knaw.dans.catalog.api.OcflObjectVersionDto;
+import nl.knaw.dans.catalog.api.OcflObjectVersionParametersDto;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionParameters;
 import nl.knaw.dans.catalog.db.OcflObjectVersionEntity;
 import org.mapstruct.Mapper;
@@ -29,7 +29,7 @@ import java.util.UUID;
 public interface OcflObjectVersionMapper {
     OcflObjectVersionMapper INSTANCE = Mappers.getMapper(OcflObjectVersionMapper.class);
 
-    OcflObjectVersionParameters convert(CreateOcflObjectVersionRequestDto versionDto);
+    OcflObjectVersionParameters convert(OcflObjectVersionParametersDto versionDto);
 
     @Mapping(source = "tar.tarUuid", target = "tarUuid")
     OcflObjectVersionDto convert(OcflObjectVersionEntity version);

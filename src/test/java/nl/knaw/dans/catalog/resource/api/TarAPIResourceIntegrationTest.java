@@ -154,7 +154,7 @@ class TarAPIResourceIntegrationTest {
             .checksumAlgorithm("MD5")
             .checksumValue("secret");
 
-        var version = createOcflVersion(client, new CreateOcflObjectVersionRequestDto()
+        var version = createOcflVersion(client, new OcflObjectVersionParametersDto()
             .otherId("random id"));
 
         var entity = new TarParameterDto()
@@ -189,7 +189,7 @@ class TarAPIResourceIntegrationTest {
             .containsOnly(expected);
     }
 
-    OcflObjectVersionDto createOcflVersion(Client client, CreateOcflObjectVersionRequestDto dto) throws Exception {
+    OcflObjectVersionDto createOcflVersion(Client client, OcflObjectVersionParametersDto dto) throws Exception {
         var str = SUPPORT.getObjectMapper().writeValueAsString(dto);
         var bagId = UUID.randomUUID().toString();
         var version = 1;

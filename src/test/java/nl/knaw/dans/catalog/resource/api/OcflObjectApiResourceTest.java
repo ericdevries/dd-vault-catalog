@@ -56,7 +56,7 @@ class OcflObjectApiResourceTest {
     @Test
     public void createOcflVersion_should_return_201() throws Exception {
         var client = new JerseyClientBuilder().build();
-        var entity = new CreateOcflObjectVersionRequestDto()
+        var entity = new OcflObjectVersionParametersDto()
             .dataSupplier("test")
             .exportTimestamp(OffsetDateTime.now())
             .nbn("someNbn");
@@ -84,7 +84,7 @@ class OcflObjectApiResourceTest {
     @Test
     public void createOcflVersion_should_return_409_if_version_already_exists() throws Exception {
         var client = new JerseyClientBuilder().build();
-        var entity = new CreateOcflObjectVersionRequestDto()
+        var entity = new OcflObjectVersionParametersDto()
             .dataSupplier("test")
             .nbn("someNbn");
 
@@ -110,7 +110,7 @@ class OcflObjectApiResourceTest {
     @Test
     public void getOcflVersion_should_return_existing_item_after_unassignment_from_tar() throws Exception {
         var client = new JerseyClientBuilder().build();
-        var entity = new CreateOcflObjectVersionRequestDto()
+        var entity = new OcflObjectVersionParametersDto()
             .dataSupplier("test")
             .nbn("someNbn");
 
