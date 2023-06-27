@@ -24,7 +24,6 @@ import nl.knaw.dans.catalog.resource.view.ArchiveDetailView;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 @Slf4j
 @Path("/nbn/{id}")
@@ -41,9 +40,8 @@ public class ArchiveDetailResource {
     public ArchiveDetailView get(@PathParam("id") String id) {
         log.debug("Received request for page with NBN {}", id);
         try {
-            var version = useCases.getOcflObjectVersionByNbn(id);
-            // TODO this should be a list from the db
-            return new ArchiveDetailView(List.of(version));
+            var version = useCases.findOcflObjectVersionsByNbn(id);
+            return new ArchiveDetailView(version);
         }
         catch (OcflObjectVersionNotFoundException e) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);

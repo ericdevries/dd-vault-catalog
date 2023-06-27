@@ -23,7 +23,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @ToString
 @Getter
@@ -43,19 +42,26 @@ public class TarEntity {
     private OffsetDateTime archivalDate;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "tar")
     @ToString.Exclude
-    private List<TarPartEntity> tarParts;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "tar")
+    private List<TarPartEntity> tarParts = new ArrayList<>();
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "tar")
     @ToString.Exclude
-    private List<OcflObjectVersionEntity> ocflObjectVersions;
+    private List<OcflObjectVersionEntity> ocflObjectVersions = new ArrayList<>();
 
     public List<TarPartEntity> getTarParts() {
         return new ArrayList<>(tarParts);
     }
 
     public void setTarParts(List<TarPartEntity> tarParts) {
-        this.tarParts = tarParts.stream()
-            .peek(item -> item.setTar(this))
-            .collect(Collectors.toList());
+        if (this.tarParts == null) {
+            this.tarParts = new ArrayList<>();
+        }
+
+        this.tarParts.clear();
+
+        for (var part : tarParts) {
+            part.setTar(this);
+            this.tarParts.add(part);
+        }
     }
 
     public List<OcflObjectVersionEntity> getOcflObjectVersions() {
@@ -63,9 +69,20 @@ public class TarEntity {
     }
 
     public void setOcflObjectVersions(List<OcflObjectVersionEntity> ocflObjectVersions) {
-        this.ocflObjectVersions = ocflObjectVersions.stream()
-            .peek(item -> item.setTar(this))
-            .collect(Collectors.toList());
+        if (this.ocflObjectVersions == null) {
+            this.ocflObjectVersions = new ArrayList<>();
+        }
+
+        for (var version : this.ocflObjectVersions) {
+            version.setTar(null);
+        }
+
+        this.ocflObjectVersions.clear();
+
+        for (var version : ocflObjectVersions) {
+            version.setTar(this);
+            this.ocflObjectVersions.add(version);
+        }
     }
 
     @Override

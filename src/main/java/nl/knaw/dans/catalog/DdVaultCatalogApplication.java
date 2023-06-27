@@ -56,7 +56,7 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
 
     @Override
     public void run(final DdVaultCatalogConfiguration configuration, final Environment environment) {
-        var useCases = UseCasesBuilder.build(configuration, environment.getObjectMapper(), hibernateBundle);
+        var useCases = UseCasesBuilder.build(configuration, hibernateBundle);
 
         environment.jersey().register(new TarAPIResource(useCases));
         environment.jersey().register(new OcflObjectApiResource(useCases));

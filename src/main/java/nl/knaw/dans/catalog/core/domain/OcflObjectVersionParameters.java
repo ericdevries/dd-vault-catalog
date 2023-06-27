@@ -19,7 +19,6 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.time.OffsetDateTime;
-import java.util.Map;
 
 @Value
 @Builder
@@ -32,7 +31,7 @@ public class OcflObjectVersionParameters {
     String otherId;
     String otherIdVersion;
     String ocflObjectPath;
-    Map<String, Object> metadata;
+    String metadata;
     String filePidToLocalPath;
     OffsetDateTime exportTimestamp;
 }

@@ -38,5 +38,5 @@ public interface OcflObjectVersionRepository {
 
     List<OcflObjectVersionEntity> findAll(Collection<OcflObjectVersionId> versions) throws OcflObjectVersionNotFoundException;
 
-    Optional<OcflObjectVersionEntity> findByNbn(String nbn);
+    List<OcflObjectVersionEntity> findByNbn(String nbn);
 }

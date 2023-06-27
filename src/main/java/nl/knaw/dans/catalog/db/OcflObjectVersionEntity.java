@@ -15,15 +15,12 @@
  */
 package nl.knaw.dans.catalog.db;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionId;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
-import java.util.Map;
 import java.util.Objects;
 
 @Entity
@@ -73,33 +70,9 @@ public class OcflObjectVersionEntity {
     @Column(name = "export_timestamp")
     private OffsetDateTime exportTimestamp;
 
-    @Transient
-    private ObjectMapper objectMapper;
-
     public OcflObjectVersionId getId() {
         return new OcflObjectVersionId(bagId, objectVersion);
     }
-
-    public String getMetadataString() {
-        return metadata;
-    }
-
-    // TODO this is not efficient
-    public Map<String, Object> getMetadata() {
-        try {
-            return new ObjectMapper().readValue(metadata, new TypeReference<>() {
-            });
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return Map.of();
-        }
-    }
-
-    void setMetadata(Map<String, Object> metadata) {
-        this.metadata = metadata == null ? null : new ObjectMapper().valueToTree(metadata).toString();
-    }
-
 
     public OffsetDateTime getExportTimestamp() {
         return exportTimestamp;

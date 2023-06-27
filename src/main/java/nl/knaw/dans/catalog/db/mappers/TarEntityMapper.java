@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.catalog.core;
+package nl.knaw.dans.catalog.db.mappers;
 
-import nl.knaw.dans.catalog.core.domain.OcflObjectVersionId;
-import nl.knaw.dans.catalog.core.domain.OcflObjectVersionParameters;
-import nl.knaw.dans.catalog.core.exception.OcflObjectVersionAlreadyExistsException;
-import nl.knaw.dans.catalog.db.OcflObjectVersionEntity;
+import nl.knaw.dans.catalog.core.domain.TarParameters;
+import nl.knaw.dans.catalog.core.domain.TarPartParameters;
+import nl.knaw.dans.catalog.db.TarEntity;
+import nl.knaw.dans.catalog.db.TarPartEntity;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-public interface OcflObjectVersionFactory {
-    OcflObjectVersionEntity create(OcflObjectVersionId id, OcflObjectVersionParameters parameters)
-        throws OcflObjectVersionAlreadyExistsException;
+@Mapper
+public interface TarEntityMapper {
+
+    TarEntityMapper INSTANCE = Mappers.getMapper(TarEntityMapper.class);
+
+    TarEntity convert(TarParameters parameters);
+
+    TarPartEntity convert(TarPartParameters parameters);
+
 
 }

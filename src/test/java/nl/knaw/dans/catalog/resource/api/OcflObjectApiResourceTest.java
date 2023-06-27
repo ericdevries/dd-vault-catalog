@@ -15,13 +15,12 @@
  */
 package nl.knaw.dans.catalog.resource.api;
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.dropwizard.testing.DropwizardTestSupport;
 import io.dropwizard.testing.ResourceHelpers;
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import nl.knaw.dans.catalog.DdVaultCatalogApplication;
 import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
-import nl.knaw.dans.catalog.api.CreateOcflObjectVersionRequestDto;
+import nl.knaw.dans.catalog.api.*;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,9 +28,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.ws.rs.client.Entity;
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(DropwizardExtensionsSupport.class)
 class OcflObjectApiResourceTest {
@@ -44,7 +46,6 @@ class OcflObjectApiResourceTest {
     @BeforeAll
     public static void beforeClass() throws Exception {
         SUPPORT.before();
-        SUPPORT.getObjectMapper().registerModule(new JavaTimeModule());
     }
 
     @AfterAll
@@ -57,6 +58,7 @@ class OcflObjectApiResourceTest {
         var client = new JerseyClientBuilder().build();
         var entity = new CreateOcflObjectVersionRequestDto()
             .dataSupplier("test")
+            .exportTimestamp(OffsetDateTime.now())
             .nbn("someNbn");
 
         var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
@@ -71,7 +73,11 @@ class OcflObjectApiResourceTest {
 
             assertEquals(201, response.getStatus());
 
-            System.out.println(response.readEntity(String.class));
+            var dto = response.readEntity(OcflObjectVersionDto.class);
+
+            assertEquals(1, dto.getObjectVersion());
+            assertEquals("test", dto.getDataSupplier());
+            assertNull(dto.getTarUuid());
         }
     }
 
@@ -98,6 +104,66 @@ class OcflObjectApiResourceTest {
             try (var conflicted = client.target(url).request().put(Entity.json(str))) {
                 assertEquals(409, conflicted.getStatus());
             }
+        }
+    }
+
+    @Test
+    public void getOcflVersion_should_return_existing_item_after_unassignment_from_tar() throws Exception {
+        var client = new JerseyClientBuilder().build();
+        var entity = new CreateOcflObjectVersionRequestDto()
+            .dataSupplier("test")
+            .nbn("someNbn");
+
+        var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
+
+        var bagId = UUID.randomUUID().toString();
+        var version = 1;
+
+        var url = String.format("http://localhost:%d/api/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version);
+
+        // creating ocfl object
+        try (var response = client.target(url).request().put(Entity.json(str))) {
+            assertEquals(201, response.getStatus());
+        }
+
+        var tar = new TarParameterDto()
+            .tarUuid(UUID.randomUUID().toString())
+            .vaultPath("somePath")
+            .archivalDate(OffsetDateTime.now())
+            .ocflObjectVersions(List.of(new OcflObjectVersionRefDto().objectVersion(version).bagId(UUID.fromString(bagId))));
+
+        // creating tar
+        var apiUrl = String.format("http://localhost:%d/api/tar/", SUPPORT.getLocalPort());
+        try (var response = client.target(apiUrl).request().post(Entity.json(tar))) {
+            assertEquals(201, response.getStatus());
+
+            var tarResponse = response.readEntity(TarDto.class);
+            assertEquals(bagId, tarResponse.getOcflObjectVersions().get(0).getBagId().toString());
+        }
+
+        // see if the ocfl object version is bound to the tar
+        try (var response = client.target(url).request().get()) {
+            assertEquals(200, response.getStatus());
+
+            var ocflResponse = response.readEntity(OcflObjectVersionDto.class);
+            assertEquals(tar.getTarUuid(), ocflResponse.getTarUuid().toString());
+            assertEquals(bagId, ocflResponse.getBagId().toString());
+        }
+
+        // updating tar, but without the ocfl object
+        try (var response = client.target(apiUrl + tar.getTarUuid()).request().put(Entity.json(tar.ocflObjectVersions(List.of())))) {
+            assertEquals(200, response.getStatus());
+            var tarResponse = response.readEntity(TarDto.class);
+            assertEquals(0, tarResponse.getOcflObjectVersions().size());
+        }
+
+        // now verify the ocfl object version is still there, not bound to a TAR
+        try (var response = client.target(url).request().get()) {
+            assertEquals(200, response.getStatus());
+
+            var ocflResponse = response.readEntity(OcflObjectVersionDto.class);
+            assertNull(ocflResponse.getTarUuid());
+            assertEquals(bagId, ocflResponse.getBagId().toString());
         }
     }
 }

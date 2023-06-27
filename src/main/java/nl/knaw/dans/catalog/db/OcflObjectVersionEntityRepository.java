@@ -93,9 +93,13 @@ public class OcflObjectVersionEntityRepository extends AbstractDAO<OcflObjectVer
     }
 
     @Override
-    public Optional<OcflObjectVersionEntity> findByNbn(String nbn) {
-        return query("from OcflObjectVersionEntity where nbn = :nbn order by objectVersion desc limit 1")
-            .setParameter("nbn", nbn)
-            .uniqueResultOptional();
+    public List<OcflObjectVersionEntity> findByNbn(String nbn) {
+        return new ArrayList<>(
+            list(
+                query(
+                    "from OcflObjectVersionEntity where nbn = :nbn order by objectVersion desc"
+                ).setParameter("nbn", nbn)
+            )
+        );
     }
 }

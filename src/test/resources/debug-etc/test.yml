@@ -25,14 +25,10 @@ database:
 # See https://www.dropwizard.io/en/latest/manual/configuration.html#logging
 #
 logging:
-  level: INFO
+  level: off
   loggers:
     "nl.knaw.dans":
-      level: TRACE
+      level: off
   appenders:
     - type: console
       logFormat: "%-5p [%d{ISO8601}] [%t] %c: %m%n%rEx"
-
-    - type: file
-      archive: false
-      currentLogFilename: data/dd-vault-catalog.log

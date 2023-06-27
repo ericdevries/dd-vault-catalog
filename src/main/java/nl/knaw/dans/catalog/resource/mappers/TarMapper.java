@@ -17,15 +17,15 @@ package nl.knaw.dans.catalog.resource.mappers;
 
 import nl.knaw.dans.catalog.api.TarDto;
 import nl.knaw.dans.catalog.api.TarParameterDto;
+import nl.knaw.dans.catalog.api.TarPartDto;
 import nl.knaw.dans.catalog.core.domain.TarParameters;
 import nl.knaw.dans.catalog.db.TarEntity;
+import nl.knaw.dans.catalog.db.TarPartEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import java.util.UUID;
-
-@Mapper
+@Mapper(uses = {OcflObjectVersionMapper.class})
 public interface TarMapper {
     TarMapper INSTANCE = Mappers.getMapper(TarMapper.class);
 
@@ -37,17 +37,7 @@ public interface TarMapper {
 
     TarDto convert(TarEntity tar);
 
-    default UUID map(String value) {
-        if (value == null) {
-            return null;
-        }
-        return UUID.fromString(value);
-    }
+    @Mapping(source = "tar.tarUuid", target = "tarUuid")
+    TarPartDto convert(TarPartEntity tarPart);
 
-    default String map(UUID value) {
-        if (value == null) {
-            return null;
-        }
-        return value.toString();
-    }
 }

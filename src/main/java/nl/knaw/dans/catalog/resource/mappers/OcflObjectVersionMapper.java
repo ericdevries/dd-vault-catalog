@@ -20,9 +20,9 @@ import nl.knaw.dans.catalog.api.OcflObjectVersionDto;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionParameters;
 import nl.knaw.dans.catalog.db.OcflObjectVersionEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import java.util.Map;
 import java.util.UUID;
 
 @Mapper
@@ -31,28 +31,28 @@ public interface OcflObjectVersionMapper {
 
     OcflObjectVersionParameters convert(CreateOcflObjectVersionRequestDto versionDto);
 
+    @Mapping(source = "tar.tarUuid", target = "tarUuid")
     OcflObjectVersionDto convert(OcflObjectVersionEntity version);
 
-    default UUID map(String value) {
+    default UUID mapUuid(String value) {
         if (value == null) {
             return null;
         }
         return UUID.fromString(value);
     }
 
-    default String map(UUID value) {
+    default String mapUuid(UUID value) {
         if (value == null) {
             return null;
         }
         return value.toString();
     }
 
-    default Map<String, Object> map(Object value) {
-        if (value instanceof Map) {
-            return (Map<String, Object>) value;
+    default String mapDefaultObject(Object value) {
+        if (value == null) {
+            return null;
         }
-        else {
-            return Map.of();
-        }
+
+        return value.toString();
     }
 }

@@ -15,41 +15,30 @@
  */
 package nl.knaw.dans.catalog;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
 import nl.knaw.dans.catalog.core.*;
-import nl.knaw.dans.catalog.db.OcflObjectVersionEntityFactory;
 import nl.knaw.dans.catalog.db.OcflObjectVersionEntityRepository;
-import nl.knaw.dans.catalog.db.TarEntityFactory;
 import nl.knaw.dans.catalog.db.TarEntityRepository;
 
 public class UseCasesBuilder {
 
-    public static UseCases build(DdVaultCatalogConfiguration configuration, ObjectMapper objectMapper, HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle) {
+    public static UseCases build(DdVaultCatalogConfiguration configuration, HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle) {
         var ocflObjectMetadataReader = new OcflObjectMetadataReader();
         var searchIndex = new SolrServiceImpl(configuration.getSolr(), ocflObjectMetadataReader);
-
-        var oclfObjectFactory = new OcflObjectVersionEntityFactory(objectMapper);
         var ocflObjectVersionRepository = new OcflObjectVersionEntityRepository(hibernateBundle.getSessionFactory());
-
         var tarRepository = new TarEntityRepository(hibernateBundle.getSessionFactory());
-        var tarFactory = new TarEntityFactory();
 
         return new UnitOfWorkAwareProxyFactory(hibernateBundle)
             .create(UseCases.class,
                 new Class[]{
                     OcflObjectVersionRepository.class,
-                    OcflObjectVersionFactory.class,
                     TarRepository.class,
-                    TarFactory.class,
                     SearchIndex.class,
                 },
                 new Object[]{
                     ocflObjectVersionRepository,
-                    oclfObjectFactory,
                     tarRepository,
-                    tarFactory,
                     searchIndex
                 }
             );

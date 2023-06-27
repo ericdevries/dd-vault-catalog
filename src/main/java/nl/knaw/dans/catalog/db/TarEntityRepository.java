@@ -17,11 +17,13 @@ package nl.knaw.dans.catalog.db;
 
 import io.dropwizard.hibernate.AbstractDAO;
 import nl.knaw.dans.catalog.core.TarRepository;
+import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class TarEntityRepository extends AbstractDAO<TarEntity> implements TarRepository {
     public TarEntityRepository(SessionFactory sessionFactory) {
@@ -30,9 +32,10 @@ public class TarEntityRepository extends AbstractDAO<TarEntity> implements TarRe
 
     @Override
     public Optional<TarEntity> getTarById(String id) {
-        return query("from TarEntity where tarUuid = :id")
+        return query("from TarEntity t where tarUuid = :id")
             .setParameter("id", id)
-            .uniqueResultOptional();
+            .uniqueResultOptional()
+            .map(this::initializeChildren);
     }
 
     @Override
@@ -50,6 +53,29 @@ public class TarEntityRepository extends AbstractDAO<TarEntity> implements TarRe
 
     @Override
     public List<TarEntity> findAll() {
-        return new ArrayList<>(list(query("from TarEntity")));
+        return list(query("from TarEntity"))
+            .stream().map(this::initializeChildren)
+            .collect(Collectors.toList());
+    }
+
+    void evict(TarEntity tar) {
+        currentSession().evict(tar);
+        currentSession().flush();
+    }
+
+    void delete(TarEntity tar) {
+        currentSession().delete(tar);
+        currentSession().flush();
+    }
+
+    List<TarPartEntity> findAllParts() {
+        return currentSession().createQuery("from TarPartEntity", TarPartEntity.class).list();
+    }
+
+    TarEntity initializeChildren(TarEntity entity) {
+        Hibernate.initialize(entity.getTarParts());
+        Hibernate.initialize(entity.getOcflObjectVersions());
+
+        return entity;
     }
 }

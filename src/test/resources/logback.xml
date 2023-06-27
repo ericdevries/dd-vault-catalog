@@ -29,5 +29,4 @@
     </root>
 
     <logger name="nl.knaw.dans" level="${LOG_LEVEL:-off}"/>
-
 </configuration>

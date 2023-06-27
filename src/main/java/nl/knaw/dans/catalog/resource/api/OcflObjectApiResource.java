@@ -27,6 +27,7 @@ import nl.knaw.dans.catalog.resource.mappers.OcflObjectVersionMapper;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.util.stream.Collectors;
 
 @Path("/api/ocflObject")
 @Slf4j
@@ -40,7 +41,6 @@ public class OcflObjectApiResource implements OcflObjectApi {
     }
 
     @Override
-    @UnitOfWork
     public Response createOcflObjectVersion(String bagId, Integer versionNumber, CreateOcflObjectVersionRequestDto createOcflObjectVersionRequestDto) {
         try {
             var result = useCases.createOcflObjectVersion(
@@ -59,16 +59,33 @@ public class OcflObjectApiResource implements OcflObjectApi {
 
     @Override
     public Response getOcflObjectByBagIdAndVersionNumber(String bagId, Integer versionNumber) {
-        return null;
+        var result = useCases.findOcflObjectVersionByBagIdAndVersion(bagId, versionNumber)
+            .map(ocflObjectVersionMapper::convert)
+            .orElseThrow(() -> new WebApplicationException(
+                String.format("No ocfl object version found for bagId %s and version %d", bagId, versionNumber),
+                Response.Status.NOT_FOUND
+            ));
+
+        return Response.ok(result).build();
     }
 
     @Override
     public Response getOcflObjectsByBagId(String bagId) {
-        return null;
+        var results = useCases.findOcflObjectVersionsByBagId(bagId)
+            .stream()
+            .map(ocflObjectVersionMapper::convert)
+            .collect(Collectors.toList());
+
+        return Response.ok(results).build();
     }
 
     @Override
     public Response getOcflObjectsBySwordToken(String swordToken) {
-        return null;
+        var results = useCases.findOcflObjectVersionsBySwordToken(swordToken)
+            .stream()
+            .map(ocflObjectVersionMapper::convert)
+            .collect(Collectors.toList());
+
+        return Response.ok(results).build();
     }
 }

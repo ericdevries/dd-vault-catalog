@@ -20,7 +20,7 @@ import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
 import nl.knaw.dans.catalog.db.TarEntity;
 import nl.knaw.dans.catalog.db.TarPartEntity;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.Http2SolrClient;
 import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +33,12 @@ import java.util.stream.Collectors;
 public class SolrServiceImpl implements SearchIndex {
     private static final Logger log = LoggerFactory.getLogger(SolrServiceImpl.class);
 
-    private final HttpSolrClient solrClient;
+    private final Http2SolrClient solrClient;
     private final OcflObjectMetadataReader ocflObjectMetadataReader;
 
     public SolrServiceImpl(DdVaultCatalogConfiguration.SolrConfig solrConfig, OcflObjectMetadataReader ocflObjectMetadataReader) {
         if (solrConfig != null) {
-            solrClient = new HttpSolrClient.Builder(solrConfig.getUrl()).build();
+            solrClient = new Http2SolrClient.Builder(solrConfig.getUrl()).build();
             this.ocflObjectMetadataReader = ocflObjectMetadataReader;
         }
         else {
@@ -84,7 +84,7 @@ public class SolrServiceImpl implements SearchIndex {
                 doc.setField("tar_archival_timestamp", formatDate(ocflObjectVersion.getTar().getArchivalDate()));
                 doc.setField("export_timestamp", formatDate(ocflObjectVersion.getExportTimestamp()));
 
-                var metadata = ocflObjectMetadataReader.readMetadata(ocflObjectVersion.getMetadataString());
+                var metadata = ocflObjectMetadataReader.readMetadata(ocflObjectVersion.getMetadata());
 
                 for (var entry : metadata.entrySet()) {
                     doc.addField(entry.getKey(), entry.getValue());

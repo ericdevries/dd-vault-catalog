@@ -50,7 +50,7 @@ public class ReindexCommand extends ConfiguredCommand<DdVaultCatalogConfiguratio
 
         log.info("Configured Hibernate");
 
-        var useCases = UseCasesBuilder.build(configuration, bootstrap.getObjectMapper(), hibernateBundle);
+        var useCases = UseCasesBuilder.build(configuration, hibernateBundle);
 
         log.info("Configured services");
 
