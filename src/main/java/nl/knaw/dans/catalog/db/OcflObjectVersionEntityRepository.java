@@ -40,13 +40,6 @@ public class OcflObjectVersionEntityRepository extends AbstractDAO<OcflObjectVer
     }
 
     @Override
-    public Optional<OcflObjectVersionEntity> findLatestByBagId(String bagId) {
-        return query("from OcflObjectVersionEntity where bagId = :bagId order by objectVersion desc limit 1")
-            .setParameter("bagId", bagId)
-            .uniqueResultOptional();
-    }
-
-    @Override
     public List<OcflObjectVersionEntity> findAllByBagId(String bagId) {
         return new ArrayList<>(
             query("from OcflObjectVersionEntity where bagId = :bagId order by objectVersion desc limit 1")

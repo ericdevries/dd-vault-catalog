@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package nl.knaw.dans.catalog.core;
+package nl.knaw.dans.catalog.client;
 
 import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
+import nl.knaw.dans.catalog.core.SearchIndex;
 import nl.knaw.dans.catalog.db.TarEntity;
 import nl.knaw.dans.catalog.db.TarPartEntity;
 import org.apache.solr.client.solrj.SolrServerException;

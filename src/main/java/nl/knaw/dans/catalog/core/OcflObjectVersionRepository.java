@@ -27,9 +27,8 @@ public interface OcflObjectVersionRepository {
 
     Optional<OcflObjectVersionEntity> findByBagIdAndVersion(String bagId, int version);
 
-    Optional<OcflObjectVersionEntity> findLatestByBagId(String bagId);
-
     List<OcflObjectVersionEntity> findAllByBagId(String bagId);
+
     List<OcflObjectVersionEntity> findAll();
 
     List<OcflObjectVersionEntity> findAllBySwordToken(String swordToken);
