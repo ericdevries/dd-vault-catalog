@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
 public class DefaultApiResource implements DefaultApi {
 
     @Override
-    public Response rootGet() {
+    public Response getInfo() {
         // TODO figure out what the version means, and where to get it from
         return Response.ok("DANS VAULT CATALOG SERVICE running v1.2.3").build();
     }

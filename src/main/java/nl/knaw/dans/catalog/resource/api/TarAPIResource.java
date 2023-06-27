@@ -50,11 +50,11 @@ public class TarAPIResource implements TarApi {
             return Response.ok(converted).status(201).build();
         }
         catch (OcflObjectVersionAlreadyInTarException | TarAlreadyExistsException e) {
-            log.error(e.getMessage(), e);
+            log.error(e.getMessage());
             throw new WebApplicationException(e.getMessage(), Response.Status.CONFLICT);
         }
         catch (OcflObjectVersionNotFoundException e) {
-            log.error(e.getMessage(), e);
+            log.error(e.getMessage());
             throw new WebApplicationException(e.getMessage(), Response.Status.NOT_FOUND);
         }
         catch (Throwable e) {
@@ -84,11 +84,11 @@ public class TarAPIResource implements TarApi {
             return Response.ok(response).build();
         }
         catch (OcflObjectVersionAlreadyInTarException e) {
-            log.error(e.getMessage(), e);
+            log.error(e.getMessage());
             throw new WebApplicationException(e.getMessage(), Response.Status.CONFLICT);
         }
         catch (TarNotFoundException | OcflObjectVersionNotFoundException e) {
-            log.error(e.getMessage(), e);
+            log.error(e.getMessage());
             throw new WebApplicationException(e.getMessage(), Response.Status.NOT_FOUND);
         }
     }

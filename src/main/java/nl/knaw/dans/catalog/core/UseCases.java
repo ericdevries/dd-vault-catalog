@@ -58,6 +58,8 @@ public class UseCases {
     public List<OcflObjectVersionEntity> findOcflObjectVersionsByNbn(String nbn) throws OcflObjectVersionNotFoundException {
         var results = ocflObjectVersionRepository.findByNbn(nbn);
 
+        log.info("Found {} OCFL object versions for NBN {}", results.size(), nbn);
+
         if (results.size() == 0) {
             throw new OcflObjectVersionNotFoundException(
                 String.format("No OCFL object versions found for NBN %s", nbn)
@@ -95,6 +97,7 @@ public class UseCases {
             .exportTimestamp(parameters.getExportTimestamp())
             .build();
 
+        log.info("Creating new OCFL object version with bagId {} and version {}: {}", id.getBagId(), id.getObjectVersion(), ocflObjectVersion);
         return ocflObjectVersionRepository.save(ocflObjectVersion);
     }
 
@@ -103,6 +106,7 @@ public class UseCases {
         var existingTar = tarRepository.getTarById(id);
 
         if (existingTar.isPresent()) {
+            log.debug("Found existing tar with id {}: {}", id, existingTar.get());
             throw new TarAlreadyExistsException(id);
         }
 
@@ -119,11 +123,16 @@ public class UseCases {
             }
         }
 
+        log.info("Successfully found all OCFL object versions for TAR {}", id);
+
         var tar = tarEntityMapper.convert(params);
         tar.setTarUuid(id);
         tar.setOcflObjectVersions(ocflObjectVersions);
 
+        log.info("Saving new TAR {}", tar);
         var result = tarRepository.save(tar);
+
+        log.info("Indexing TAR in search index: {}", tar);
         searchIndex.indexTar(result);
 
         return result;
@@ -141,6 +150,7 @@ public class UseCases {
                 String.format("Tar with id %s not found", id)
             ));
 
+        log.info("Found existing tar with id {}: {}", id, tar);
         var ocflObjectVersions = ocflObjectVersionRepository.findAll(params.getVersions());
 
         // check if all ocfl object versions are not already in a tar
@@ -159,8 +169,10 @@ public class UseCases {
         tar.setTarParts(parts);
         tar.setOcflObjectVersions(ocflObjectVersions);
 
+        log.info("Updating TAR {}", tar);
         var result = tarRepository.save(tar);
 
+        log.info("Reindexing TAR in search index: {}", tar);
         searchIndex.indexTar(result);
 
         return result;

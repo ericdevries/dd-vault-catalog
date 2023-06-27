@@ -20,6 +20,7 @@ paths:
       summary: Returns a description of the service.
       description:
         This is the starting place for navigating the Vault Catalog Service. It returns a description of the service.
+      operationId: getInfo
       responses:
         200:
           description: Description of the service

@@ -51,7 +51,7 @@ public class OcflObjectApiResource implements OcflObjectApi {
             return Response.ok(response).status(201).build();
         }
         catch (OcflObjectVersionAlreadyExistsException e) {
-            log.error(e.getMessage(), e);
+            log.error(e.getMessage());
             throw new WebApplicationException(e.getMessage(), Response.Status.CONFLICT);
         }
     }
