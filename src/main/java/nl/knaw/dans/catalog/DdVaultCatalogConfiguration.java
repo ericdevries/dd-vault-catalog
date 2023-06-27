@@ -18,10 +18,12 @@ package nl.knaw.dans.catalog;
 
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
+import lombok.Data;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+@Data
 public class DdVaultCatalogConfiguration extends Configuration {
     @Valid
     @NotNull
@@ -30,31 +32,8 @@ public class DdVaultCatalogConfiguration extends Configuration {
     @Valid
     private SolrConfig solr;
 
-    public SolrConfig getSolr() {
-        return solr;
-    }
-
-    public void setSolr(SolrConfig solr) {
-        this.solr = solr;
-    }
-
-    public DataSourceFactory getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(DataSourceFactory database) {
-        this.database = database;
-    }
-
+    @Data
     public static class SolrConfig {
         private String url;
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
     }
 }
