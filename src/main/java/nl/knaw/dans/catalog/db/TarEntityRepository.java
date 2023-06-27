@@ -20,7 +20,6 @@ import nl.knaw.dans.catalog.core.TarRepository;
 import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

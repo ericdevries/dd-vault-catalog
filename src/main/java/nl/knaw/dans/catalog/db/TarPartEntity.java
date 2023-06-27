@@ -20,6 +20,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tar_parts")
@@ -33,7 +34,7 @@ public class TarPartEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @Column(name = "part_name")
     private String partName;
     @Column(name = "checksum_algorithm")
@@ -49,7 +50,7 @@ public class TarPartEntity {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         TarPartEntity that = (TarPartEntity) o;
-        return id == that.id;
+        return Objects.equals(id, that.id);
     }
 
     @Override

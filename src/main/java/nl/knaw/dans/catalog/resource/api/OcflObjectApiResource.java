@@ -15,7 +15,6 @@
  */
 package nl.knaw.dans.catalog.resource.api;
 
-import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.catalog.api.CreateOcflObjectVersionRequestDto;
 import nl.knaw.dans.catalog.core.UseCases;

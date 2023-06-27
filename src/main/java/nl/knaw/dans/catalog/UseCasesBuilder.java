@@ -19,7 +19,10 @@ import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
 import nl.knaw.dans.catalog.client.OcflObjectMetadataReader;
 import nl.knaw.dans.catalog.client.SolrServiceImpl;
-import nl.knaw.dans.catalog.core.*;
+import nl.knaw.dans.catalog.core.OcflObjectVersionRepository;
+import nl.knaw.dans.catalog.core.SearchIndex;
+import nl.knaw.dans.catalog.core.TarRepository;
+import nl.knaw.dans.catalog.core.UseCases;
 import nl.knaw.dans.catalog.db.OcflObjectVersionEntityRepository;
 import nl.knaw.dans.catalog.db.TarEntityRepository;
 

@@ -175,7 +175,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/dd-vault-catalog.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/docs/api.yml</inputSpec>
                             <generatorName>jaxrs-spec</generatorName>
                             <generateModelTests>false</generateModelTests>
                             <generateApiTests>false</generateApiTests>

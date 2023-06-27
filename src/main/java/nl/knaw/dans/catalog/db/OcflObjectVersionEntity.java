@@ -35,7 +35,7 @@ public class OcflObjectVersionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     @Column(name = "bag_id", nullable = false)
     private String bagId;
     @Column(name = "object_version", nullable = false)
