@@ -24,7 +24,7 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "ocfl_object_versions")
+@Table(name = "ocfl_object_versions", uniqueConstraints = {@UniqueConstraint(columnNames = {"bag_id", "object_version"})})
 @Getter
 @Setter
 @ToString
