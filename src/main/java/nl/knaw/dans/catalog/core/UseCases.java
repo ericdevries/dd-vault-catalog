@@ -23,6 +23,7 @@ import nl.knaw.dans.catalog.core.domain.TarParameters;
 import nl.knaw.dans.catalog.core.exception.*;
 import nl.knaw.dans.catalog.db.OcflObjectVersionEntity;
 import nl.knaw.dans.catalog.db.TarEntity;
+import nl.knaw.dans.catalog.db.mappers.OcflObjectVersionEntityMapper;
 import nl.knaw.dans.catalog.db.mappers.TarEntityMapper;
 
 import java.util.Collection;
@@ -37,6 +38,7 @@ public class UseCases {
     private final SearchIndex searchIndex;
 
     private final TarEntityMapper tarEntityMapper = TarEntityMapper.INSTANCE;
+    private final OcflObjectVersionEntityMapper ocflObjectVersionEntityMapper = OcflObjectVersionEntityMapper.INSTANCE;
 
     public UseCases(OcflObjectVersionRepository ocflObjectVersionRepository, TarRepository tarRepository, SearchIndex searchIndex) {
         this.ocflObjectVersionRepository = ocflObjectVersionRepository;
@@ -82,20 +84,9 @@ public class UseCases {
             throw new OcflObjectVersionAlreadyExistsException(id.getBagId(), id.getObjectVersion());
         }
 
-        var ocflObjectVersion = OcflObjectVersionEntity.builder()
-            .bagId(id.getBagId())
-            .objectVersion(id.getObjectVersion())
-            .swordToken(parameters.getSwordToken())
-            .nbn(parameters.getNbn())
-            .dataSupplier(parameters.getDataSupplier())
-            .dataversePid(parameters.getDataversePid())
-            .dataversePidVersion(parameters.getDataversePidVersion())
-            .otherId(parameters.getOtherId())
-            .otherIdVersion(parameters.getOtherIdVersion())
-            .ocflObjectPath(parameters.getOcflObjectPath())
-            .filePidToLocalPath(parameters.getFilePidToLocalPath())
-            .exportTimestamp(parameters.getExportTimestamp())
-            .build();
+        var ocflObjectVersion = ocflObjectVersionEntityMapper.convert(parameters);
+        ocflObjectVersion.setObjectVersion(id.getObjectVersion());
+        ocflObjectVersion.setBagId(id.getBagId());
 
         log.info("Creating new OCFL object version with bagId {} and version {}: {}", id.getBagId(), id.getObjectVersion(), ocflObjectVersion);
         return ocflObjectVersionRepository.save(ocflObjectVersion);

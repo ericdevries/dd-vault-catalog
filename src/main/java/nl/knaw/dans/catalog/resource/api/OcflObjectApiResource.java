@@ -15,6 +15,7 @@
  */
 package nl.knaw.dans.catalog.resource.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.catalog.api.OcflObjectVersionParametersDto;
 import nl.knaw.dans.catalog.core.UseCases;
@@ -42,9 +43,10 @@ public class OcflObjectApiResource implements OcflObjectApi {
     @Override
     public Response createOcflObjectVersion(String bagId, Integer versionNumber, OcflObjectVersionParametersDto createOcflObjectVersionRequestDto) {
         try {
+            var parameters = ocflObjectVersionMapper.convert(createOcflObjectVersionRequestDto);
             var result = useCases.createOcflObjectVersion(
                 new OcflObjectVersionId(bagId, versionNumber),
-                ocflObjectVersionMapper.convert(createOcflObjectVersionRequestDto)
+                parameters
             );
 
             var response = ocflObjectVersionMapper.convert(result);

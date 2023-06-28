@@ -15,6 +15,9 @@
  */
 package nl.knaw.dans.catalog.resource.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.testing.DropwizardTestSupport;
 import io.dropwizard.testing.ResourceHelpers;
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
@@ -30,6 +33,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import javax.ws.rs.client.Entity;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,9 +60,18 @@ class OcflObjectApiResourceTest {
     @Test
     public void createOcflVersion_should_return_201() throws Exception {
         var client = new JerseyClientBuilder().build();
+        var metadata = getMetadata();
         var entity = new OcflObjectVersionParametersDto()
-            .dataSupplier("test")
             .exportTimestamp(OffsetDateTime.now())
+            .swordToken(UUID.randomUUID())
+            .dataSupplier("data supplier")
+            .dataversePid("dataversePid")
+            .dataversePidVersion("dataversePidVersion")
+            .otherId("otherId")
+            .otherIdVersion("otherIdVersion")
+            .ocflObjectPath("ocflObjectPath")
+            .metadata(metadata)
+            .filePidToLocalPath("filePidToLocalPath")
             .nbn("someNbn");
 
         var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
@@ -75,8 +88,17 @@ class OcflObjectApiResourceTest {
 
             var dto = response.readEntity(OcflObjectVersionDto.class);
 
-            assertEquals(1, dto.getObjectVersion());
-            assertEquals("test", dto.getDataSupplier());
+            assertEquals(version, dto.getObjectVersion());
+            assertEquals("data supplier", dto.getDataSupplier());
+            assertEquals("dataversePid", dto.getDataversePid());
+            assertEquals("dataversePidVersion", dto.getDataversePidVersion());
+            assertEquals("otherId", dto.getOtherId());
+            assertEquals("otherIdVersion", dto.getOtherIdVersion());
+            assertEquals("ocflObjectPath", dto.getOcflObjectPath());
+            assertEquals(metadata, dto.getMetadata());
+            assertEquals("filePidToLocalPath", dto.getFilePidToLocalPath());
+            assertEquals("someNbn", dto.getNbn());
+            assertEquals(bagId, dto.getBagId().toString());
             assertNull(dto.getTarUuid());
         }
     }
@@ -165,5 +187,51 @@ class OcflObjectApiResourceTest {
             assertNull(ocflResponse.getTarUuid());
             assertEquals(bagId, ocflResponse.getBagId().toString());
         }
+    }
+
+    @Test
+    public void createOcflVersion_should_record_SkeletonRecord_property() throws Exception {
+        var client = new JerseyClientBuilder().build();
+        var entity = new OcflObjectVersionParametersDto()
+            .dataSupplier("test")
+            .skeletonRecord(true)
+            .nbn("someNbn");
+
+        var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
+        var bagId = UUID.randomUUID().toString();
+        var version = 1;
+
+        var url = String.format("http://localhost:%d/api/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version);
+
+        // creating ocfl object
+        try (var response = client.target(url).request().put(Entity.json(str))) {
+            assertEquals(201, response.getStatus());
+
+            var responseEntity = response.readEntity(OcflObjectVersionDto.class);
+            assertEquals(true, responseEntity.getSkeletonRecord());
+        }
+
+        // verify it also returns true on the next request
+        try (var response = client.target(url).request().get()) {
+            var responseEntity = response.readEntity(OcflObjectVersionDto.class);
+            assertEquals(true, responseEntity.getSkeletonRecord());
+        }
+    }
+
+    Map<String, Object> getMetadata() throws JsonProcessingException {
+        var str = "{\n" +
+            "  \"dcterms:modified\": \"2021-11-17\",\n" +
+            "  \"dcterms:creator\": \"DANS Archaeology Data Station (dev)\",\n" +
+            "  \"@type\": \"ore:ResourceMap\",\n" +
+            "  \"@id\": \"https://dar.dans.knaw.nl/api/datasets/export?exporter=OAI_ORE&persistentId=doi:10.5072/DAR/KXTEQT\",\n" +
+            "  \"ore:describes\": {\n" +
+            "    \"citation:Topic Classification\": {\n" +
+            "      \"topicClassification:Term\": \"Public health\"\n" +
+            "    }\n" +
+            "  }\n" +
+            "}";
+
+        return new ObjectMapper().readValue(str, new TypeReference<>() {
+        });
     }
 }

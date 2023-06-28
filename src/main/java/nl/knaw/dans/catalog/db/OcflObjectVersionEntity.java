@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package nl.knaw.dans.catalog.db;
 
 import lombok.*;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionId;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
@@ -31,6 +34,9 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@TypeDefs({
+    @TypeDef(name = "string", defaultForType = java.lang.String.class, typeClass = org.hibernate.type.TextType.class)
+})
 public class OcflObjectVersionEntity {
 
     @Id
@@ -55,8 +61,6 @@ public class OcflObjectVersionEntity {
     private String otherId;
     @Column(name = "other_id_version")
     private String otherIdVersion;
-    @Column(name = "sword_client")
-    private String swordClient;
     @Column(name = "sword_token")
     private String swordToken;
     @Column(name = "ocfl_object_path")
@@ -69,6 +73,8 @@ public class OcflObjectVersionEntity {
     private String filePidToLocalPath;
     @Column(name = "export_timestamp")
     private OffsetDateTime exportTimestamp;
+    @Column(name = "skeleton_record", nullable = false, columnDefinition = "boolean default false")
+    private boolean skeletonRecord = false;
 
     public OcflObjectVersionId getId() {
         return new OcflObjectVersionId(bagId, objectVersion);

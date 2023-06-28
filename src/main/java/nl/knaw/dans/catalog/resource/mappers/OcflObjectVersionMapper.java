@@ -15,6 +15,9 @@
  */
 package nl.knaw.dans.catalog.resource.mappers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.knaw.dans.catalog.api.OcflObjectVersionDto;
 import nl.knaw.dans.catalog.api.OcflObjectVersionParametersDto;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionParameters;
@@ -23,16 +26,21 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Mapper
 public interface OcflObjectVersionMapper {
     OcflObjectVersionMapper INSTANCE = Mappers.getMapper(OcflObjectVersionMapper.class);
 
+    ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    @Mapping(source = "skeletonRecord", target = "skeletonRecord")
+    @Mapping(source = "metadata", target = "metadata")
     OcflObjectVersionParameters convert(OcflObjectVersionParametersDto versionDto);
 
     @Mapping(source = "tar.tarUuid", target = "tarUuid")
-    OcflObjectVersionDto convert(OcflObjectVersionEntity version);
+    OcflObjectVersionDto convert(OcflObjectVersionEntity version) ;
 
     default UUID mapUuid(String value) {
         if (value == null) {
@@ -54,5 +62,19 @@ public interface OcflObjectVersionMapper {
         }
 
         return value.toString();
+    }
+
+    default Map<String, Object> mapMetadata(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        try {
+            return OBJECT_MAPPER.readValue(value, new TypeReference<>() {
+            });
+        }
+        catch (JsonProcessingException e) {
+            throw new RuntimeException(String.format("Unable to parse JSON: %s", value), e);
+        }
     }
 }

@@ -137,6 +137,7 @@ paths:
           description: Unauthorized
         500:
           $ref: '#/components/responses/Unavailable'
+
   /tar:
     post:
       tags:
@@ -331,6 +332,7 @@ components:
       required:
         - bagId
         - objectVersion
+        - skeletonRecord
       properties:
         bagId:
           type: string
@@ -350,7 +352,7 @@ components:
           format: "uuid"
         dataversePid:
           type: string
-        dateversePidVersion:
+        dataversePidVersion:
           type: string
         otherId:
           type: string
@@ -361,11 +363,15 @@ components:
         metadata:
           type: object
           format: "json-ld"
+          additionalProperties: true
         filePidToLocalPath:
           type: string
         exportTimestamp:
           type: string
           format: date-time
+        skeletonRecord:
+          type: boolean
+          default: false
 
     OcflObjectVersionParameters:
       type: object
@@ -395,7 +401,7 @@ components:
           format: "uuid"
         dataversePid:
           type: string
-        dateversePidVersion:
+        dataversePidVersion:
           type: string
         otherId:
           type: string
@@ -406,11 +412,15 @@ components:
         metadata:
           type: object
           format: "json-ld"
+          additionalProperties: true
         filePidToLocalPath:
           type: string
         exportTimestamp:
           type: string
           format: date-time
+        skeletonRecord:
+          type: boolean
+          default: false
 
     OcflObjectVersionRef:
       type: object
