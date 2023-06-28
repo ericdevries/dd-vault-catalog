@@ -42,7 +42,7 @@ public class OcflObjectVersionEntityRepository extends AbstractDAO<OcflObjectVer
     @Override
     public List<OcflObjectVersionEntity> findAllByBagId(String bagId) {
         return new ArrayList<>(
-            query("from OcflObjectVersionEntity where bagId = :bagId order by objectVersion desc limit 1")
+            query("from OcflObjectVersionEntity where bagId = :bagId order by objectVersion desc")
                 .setParameter("bagId", bagId)
                 .list()
         );
@@ -56,7 +56,7 @@ public class OcflObjectVersionEntityRepository extends AbstractDAO<OcflObjectVer
     @Override
     public List<OcflObjectVersionEntity> findAllBySwordToken(String swordToken) {
         return new ArrayList<>(
-            query("from OcflObjectVersionEntity where swordToken = :swordToken order by objectVersion desc limit 1")
+            query("from OcflObjectVersionEntity where swordToken = :swordToken order by objectVersion desc")
                 .setParameter("swordToken", swordToken)
                 .list()
         );

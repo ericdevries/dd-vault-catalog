@@ -28,8 +28,8 @@ import java.util.Objects;
 @Setter
 @ToString
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class TarPartEntity {
 
     @Id

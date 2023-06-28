@@ -30,8 +30,8 @@ import java.util.Objects;
 @Entity
 @Table(name = "tars")
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class TarEntity {
     @Id
     @Column(name = "tar_uuid", nullable = false)
