@@ -29,6 +29,7 @@ import nl.knaw.dans.catalog.resource.mappers.TarMapper;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.util.UUID;
 
 @Path("/api/tar")
 @Slf4j
@@ -65,9 +66,9 @@ public class TarAPIResource implements TarApi {
     }
 
     @Override
-    public Response getArchiveById(String id) {
+    public Response getArchiveById(UUID id) {
         log.debug("Fetching TAR with id {}", id);
-        var result = useCases.findTarById(id)
+        var result = useCases.findTarById(id.toString())
             .map(tarMapper::convert)
             .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
 
@@ -75,11 +76,11 @@ public class TarAPIResource implements TarApi {
     }
 
     @Override
-    public Response updateArchive(String id, TarParameterDto tarDto) {
+    public Response updateArchive(UUID id, TarParameterDto tarDto) {
         log.info("Received existing TAR {}, ID is {}, storing in database", tarDto, id);
 
         try {
-            var result = useCases.updateTar(id, tarMapper.convert(tarDto));
+            var result = useCases.updateTar(id.toString(), tarMapper.convert(tarDto));
             var response = tarMapper.convert(result);
 
             return Response.ok(response).build();
