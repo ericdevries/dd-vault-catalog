@@ -63,7 +63,7 @@ class OcflObjectApiResourceTest {
         var metadata = getMetadata();
         var entity = new OcflObjectVersionParametersDto()
             .exportTimestamp(OffsetDateTime.now())
-            .swordToken(UUID.randomUUID())
+            .swordToken("sword:" + UUID.randomUUID())
             .dataSupplier("data supplier")
             .dataversePid("dataversePid")
             .dataversePidVersion("dataversePidVersion")
@@ -98,7 +98,7 @@ class OcflObjectApiResourceTest {
             assertEquals(metadata, dto.getMetadata());
             assertEquals("filePidToLocalPath", dto.getFilePidToLocalPath());
             assertEquals("someNbn", dto.getNbn());
-            assertEquals(bagId, dto.getBagId().toString());
+            assertEquals(bagId, dto.getBagId());
             assertNull(dto.getTarUuid());
         }
     }
@@ -138,7 +138,7 @@ class OcflObjectApiResourceTest {
 
         var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
 
-        var bagId = UUID.randomUUID().toString();
+        var bagId = "urn:uuid:" + UUID.randomUUID();
         var version = 1;
 
         var url = String.format("http://localhost:%d/api/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version);
@@ -149,10 +149,10 @@ class OcflObjectApiResourceTest {
         }
 
         var tar = new TarParameterDto()
-            .tarUuid(UUID.randomUUID().toString())
+            .tarUuid(UUID.randomUUID())
             .vaultPath("somePath")
             .archivalDate(OffsetDateTime.now())
-            .ocflObjectVersions(List.of(new OcflObjectVersionRefDto().objectVersion(version).bagId(UUID.fromString(bagId))));
+            .ocflObjectVersions(List.of(new OcflObjectVersionRefDto().objectVersion(version).bagId(bagId)));
 
         // creating tar
         var apiUrl = String.format("http://localhost:%d/api/tar/", SUPPORT.getLocalPort());
@@ -160,7 +160,7 @@ class OcflObjectApiResourceTest {
             assertEquals(201, response.getStatus());
 
             var tarResponse = response.readEntity(TarDto.class);
-            assertEquals(bagId, tarResponse.getOcflObjectVersions().get(0).getBagId().toString());
+            assertEquals(bagId, tarResponse.getOcflObjectVersions().get(0).getBagId());
         }
 
         // see if the ocfl object version is bound to the tar
@@ -168,8 +168,8 @@ class OcflObjectApiResourceTest {
             assertEquals(200, response.getStatus());
 
             var ocflResponse = response.readEntity(OcflObjectVersionDto.class);
-            assertEquals(tar.getTarUuid(), ocflResponse.getTarUuid().toString());
-            assertEquals(bagId, ocflResponse.getBagId().toString());
+            assertEquals(tar.getTarUuid(), ocflResponse.getTarUuid());
+            assertEquals(bagId, ocflResponse.getBagId());
         }
 
         // updating tar, but without the ocfl object
@@ -185,7 +185,7 @@ class OcflObjectApiResourceTest {
 
             var ocflResponse = response.readEntity(OcflObjectVersionDto.class);
             assertNull(ocflResponse.getTarUuid());
-            assertEquals(bagId, ocflResponse.getBagId().toString());
+            assertEquals(bagId, ocflResponse.getBagId());
         }
     }
 

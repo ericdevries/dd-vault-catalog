@@ -45,7 +45,7 @@ public class TarAPIResource implements TarApi {
         log.info("Received new TAR {}, storing in database", tarDto);
 
         try {
-            var result = useCases.createTar(tarDto.getTarUuid(), tarMapper.convert(tarDto));
+            var result = useCases.createTar(tarDto.getTarUuid().toString(), tarMapper.convert(tarDto));
             var converted = tarMapper.convert(result);
             return Response.ok(converted).status(201).build();
         }
@@ -58,6 +58,7 @@ public class TarAPIResource implements TarApi {
             throw new WebApplicationException(e.getMessage(), Response.Status.NOT_FOUND);
         }
         catch (Throwable e) {
+            e.printStackTrace();
             log.error(e.getMessage(), e);
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }

@@ -229,6 +229,7 @@ components:
           type: string
         tarUuid:
           type: string
+          format: "uuid"
         archivalDate:
           type: string
           format: date-time
@@ -260,6 +261,7 @@ components:
           type: string
         tarUuid:
           type: string
+          format: "uuid"
         archivalDate:
           type: string
           format: date-time
@@ -289,7 +291,7 @@ components:
           type: string
         tarUuid:
           type: string
-          readOnly: true
+          format: "uuid"
         checksumAlgorithm:
           type: string
         checksumValue:
@@ -336,15 +338,15 @@ components:
       properties:
         bagId:
           type: string
-          format: "uuid"
+#          format: "uuid"
         objectVersion:
           type: integer
         swordToken:
           type: string
-          format: UUID
+#          format: UUID
         nbn:
           type: string
-          format: "urn"
+#          format: "urn"
         dataSupplier:
           type: string
         tarUuid:
@@ -390,15 +392,15 @@ components:
       properties:
         swordToken:
           type: string
-          format: UUID
+#          format: UUID
         nbn:
           type: string
-          format: "urn"
+#          format: "urn"
         dataSupplier:
           type: string
-        tarUuid:
-          type: string
-          format: "uuid"
+#        tarUuid:
+#          type: string
+#          format: "uuid"
         dataversePid:
           type: string
         dataversePidVersion:
@@ -433,6 +435,5 @@ components:
       properties:
         bagId:
           type: string
-          format: "uuid"
         objectVersion:
           type: integer

@@ -21,7 +21,6 @@ import lombok.Value;
 @Value
 @Builder
 public class TarPartParameters {
-
     String partName;
     String checksumAlgorithm;
     String checksumValue;

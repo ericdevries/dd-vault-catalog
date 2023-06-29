@@ -64,7 +64,7 @@ class TarAPIResourceIntegrationTest {
         var entity = new TarParameterDto()
             .archivalDate(OffsetDateTime.now())
             .vaultPath("test")
-            .tarUuid(UUID.randomUUID().toString());
+            .tarUuid(UUID.randomUUID());
 
         var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
 
@@ -94,7 +94,7 @@ class TarAPIResourceIntegrationTest {
         var entity = new TarParameterDto()
             .archivalDate(OffsetDateTime.now())
             .vaultPath("test")
-            .tarUuid(UUID.randomUUID().toString())
+            .tarUuid(UUID.randomUUID())
             .tarParts(List.of(part1, part2));
 
         var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
@@ -124,13 +124,13 @@ class TarAPIResourceIntegrationTest {
             .checksumValue("secret");
 
         var ocfl1 = new OcflObjectVersionRefDto()
-            .bagId(UUID.randomUUID())
+            .bagId(String.valueOf(UUID.randomUUID()))
             .objectVersion(1);
 
         var entity = new TarParameterDto()
             .archivalDate(OffsetDateTime.now())
             .vaultPath("test")
-            .tarUuid(UUID.randomUUID().toString())
+            .tarUuid(UUID.randomUUID())
             .ocflObjectVersions(List.of(ocfl1))
             .tarParts(List.of(part1));
 
@@ -160,7 +160,7 @@ class TarAPIResourceIntegrationTest {
         var entity = new TarParameterDto()
             .archivalDate(OffsetDateTime.now())
             .vaultPath("test")
-            .tarUuid(UUID.randomUUID().toString())
+            .tarUuid(UUID.randomUUID())
             .ocflObjectVersions(List.of(new OcflObjectVersionRefDto().bagId(version.getBagId()).objectVersion(version.getObjectVersion())))
             .tarParts(List.of(part1));
 
@@ -183,7 +183,7 @@ class TarAPIResourceIntegrationTest {
             .bagId(version.getBagId())
             .objectVersion(version.getObjectVersion())
             .otherId("random id")
-            .tarUuid(UUID.fromString(entity.getTarUuid()));
+            .tarUuid(entity.getTarUuid());
 
         assertThat(response.getOcflObjectVersions())
             .containsOnly(expected);
@@ -200,7 +200,7 @@ class TarAPIResourceIntegrationTest {
             .put(Entity.json(str))) {
 
             return new OcflObjectVersionDto()
-                .bagId(UUID.fromString(bagId))
+                .bagId(bagId)
                 .objectVersion(version);
         }
     }
