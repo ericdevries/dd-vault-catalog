@@ -26,50 +26,50 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public class OcflObjectVersionEntityRepository extends AbstractDAO<OcflObjectVersionEntity> implements OcflObjectVersionRepository {
-    public OcflObjectVersionEntityRepository(SessionFactory sessionFactory) {
+public class OcflObjectVersionDAO extends AbstractDAO<OcflObjectVersion> implements OcflObjectVersionRepository {
+    public OcflObjectVersionDAO(SessionFactory sessionFactory) {
         super(sessionFactory);
     }
 
     @Override
-    public Optional<OcflObjectVersionEntity> findByBagIdAndVersion(String bagId, int version) {
-        return query("from OcflObjectVersionEntity where bagId = :bagId and objectVersion = :version order by id")
+    public Optional<OcflObjectVersion> findByBagIdAndVersion(String bagId, int version) {
+        return query("from OcflObjectVersion where bagId = :bagId and objectVersion = :version order by id")
             .setParameter("bagId", bagId)
             .setParameter("version", version)
             .uniqueResultOptional();
     }
 
     @Override
-    public List<OcflObjectVersionEntity> findAllByBagId(String bagId) {
+    public List<OcflObjectVersion> findAllByBagId(String bagId) {
         return new ArrayList<>(
-            query("from OcflObjectVersionEntity where bagId = :bagId order by objectVersion desc")
+            query("from OcflObjectVersion where bagId = :bagId order by objectVersion desc")
                 .setParameter("bagId", bagId)
                 .list()
         );
     }
 
     @Override
-    public List<OcflObjectVersionEntity> findAll() {
-        return new ArrayList<>(list(query("from OcflObjectVersionEntity")));
+    public List<OcflObjectVersion> findAll() {
+        return new ArrayList<>(list(query("from OcflObjectVersion")));
     }
 
     @Override
-    public List<OcflObjectVersionEntity> findAllBySwordToken(String swordToken) {
+    public List<OcflObjectVersion> findAllBySwordToken(String swordToken) {
         return new ArrayList<>(
-            query("from OcflObjectVersionEntity where swordToken = :swordToken order by objectVersion desc")
+            query("from OcflObjectVersion where swordToken = :swordToken order by objectVersion desc")
                 .setParameter("swordToken", swordToken)
                 .list()
         );
     }
 
     @Override
-    public OcflObjectVersionEntity save(OcflObjectVersionEntity ocflObjectVersion) {
+    public OcflObjectVersion save(OcflObjectVersion ocflObjectVersion) {
         return persist(ocflObjectVersion);
     }
 
     @Override
-    public List<OcflObjectVersionEntity> findAll(Collection<OcflObjectVersionId> versions) throws OcflObjectVersionNotFoundException {
-        var ocflObjectVersions = new ArrayList<OcflObjectVersionEntity>();
+    public List<OcflObjectVersion> findAll(Collection<OcflObjectVersionId> versions) throws OcflObjectVersionNotFoundException {
+        var ocflObjectVersions = new ArrayList<OcflObjectVersion>();
 
         if (versions != null) {
             for (var version : versions) {
@@ -86,11 +86,11 @@ public class OcflObjectVersionEntityRepository extends AbstractDAO<OcflObjectVer
     }
 
     @Override
-    public List<OcflObjectVersionEntity> findByNbn(String nbn) {
+    public List<OcflObjectVersion> findByNbn(String nbn) {
         return new ArrayList<>(
             list(
                 query(
-                    "from OcflObjectVersionEntity where nbn = :nbn order by objectVersion desc"
+                    "from OcflObjectVersion where nbn = :nbn order by objectVersion desc"
                 ).setParameter("nbn", nbn)
             )
         );

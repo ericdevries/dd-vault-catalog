@@ -15,16 +15,16 @@
  */
 package nl.knaw.dans.catalog.core;
 
-import nl.knaw.dans.catalog.db.TarEntity;
+import nl.knaw.dans.catalog.db.Tar;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface TarRepository {
 
-    Optional<TarEntity> getTarById(String id);
+    Optional<Tar> getTarById(String id);
 
-    TarEntity save(TarEntity tar);
+    Tar save(Tar tar);
 
-    List<TarEntity> findAll();
+    List<Tar> findAll();
 }

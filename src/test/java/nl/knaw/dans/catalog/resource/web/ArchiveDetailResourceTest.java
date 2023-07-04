@@ -22,8 +22,8 @@ import io.dropwizard.testing.junit5.ResourceExtension;
 import io.dropwizard.views.ViewMessageBodyWriter;
 import io.dropwizard.views.freemarker.FreemarkerViewRenderer;
 import nl.knaw.dans.catalog.UseCaseFixture;
-import nl.knaw.dans.catalog.db.OcflObjectVersionEntity;
-import nl.knaw.dans.catalog.db.TarEntity;
+import nl.knaw.dans.catalog.db.OcflObjectVersion;
+import nl.knaw.dans.catalog.db.Tar;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,13 +50,13 @@ class ArchiveDetailResourceTest {
 
     @Test
     void getOK() {
-        var tar = TarEntity.builder()
+        var tar = Tar.builder()
             .tarUuid("uuid")
             .vaultPath("path")
             .archivalDate(OffsetDateTime.now())
             .build();
 
-        var ocflObjectVersion1 = OcflObjectVersionEntity.builder()
+        var ocflObjectVersion1 = OcflObjectVersion.builder()
             .bagId("bagid")
             .objectVersion(2)
             .otherId("OTHER ID")
@@ -65,7 +65,7 @@ class ArchiveDetailResourceTest {
             .exportTimestamp(OffsetDateTime.now())
             .build();
 
-        var ocflObjectVersion2 = OcflObjectVersionEntity.builder()
+        var ocflObjectVersion2 = OcflObjectVersion.builder()
             .bagId("bagid")
             .objectVersion(1)
             .otherId("OTHER ID DIFFERENT")

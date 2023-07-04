@@ -18,19 +18,19 @@ package nl.knaw.dans.catalog.db.mappers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionParameters;
-import nl.knaw.dans.catalog.db.OcflObjectVersionEntity;
+import nl.knaw.dans.catalog.db.OcflObjectVersion;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 import java.util.Map;
 
 @Mapper
-public interface OcflObjectVersionEntityMapper {
+public interface OcflObjectVersionMapper {
     ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    OcflObjectVersionEntityMapper INSTANCE = Mappers.getMapper(OcflObjectVersionEntityMapper.class);
+    OcflObjectVersionMapper INSTANCE = Mappers.getMapper(OcflObjectVersionMapper.class);
 
-    OcflObjectVersionEntity convert(OcflObjectVersionParameters parameters);
+    OcflObjectVersion convert(OcflObjectVersionParameters parameters);
 
     default String mapMetadata(Map<String, Object> value) throws JsonProcessingException {
         if (value == null) {

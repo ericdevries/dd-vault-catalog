@@ -24,21 +24,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class TarEntityRepository extends AbstractDAO<TarEntity> implements TarRepository {
-    public TarEntityRepository(SessionFactory sessionFactory) {
+public class TarDAO extends AbstractDAO<Tar> implements TarRepository {
+    public TarDAO(SessionFactory sessionFactory) {
         super(sessionFactory);
     }
 
     @Override
-    public Optional<TarEntity> getTarById(String id) {
-        return query("from TarEntity t where tarUuid = :id")
+    public Optional<Tar> getTarById(String id) {
+        return query("from Tar t where tarUuid = :id")
             .setParameter("id", id)
             .uniqueResultOptional()
             .map(this::initializeChildren);
     }
 
     @Override
-    public TarEntity save(TarEntity tar) {
+    public Tar save(Tar tar) {
         for (var version : tar.getOcflObjectVersions()) {
             version.setTar(tar);
         }
@@ -51,27 +51,27 @@ public class TarEntityRepository extends AbstractDAO<TarEntity> implements TarRe
     }
 
     @Override
-    public List<TarEntity> findAll() {
-        return list(query("from TarEntity"))
+    public List<Tar> findAll() {
+        return list(query("from Tar"))
             .stream().map(this::initializeChildren)
             .collect(Collectors.toList());
     }
 
-    void evict(TarEntity tar) {
+    void evict(Tar tar) {
         currentSession().evict(tar);
         currentSession().flush();
     }
 
-    void delete(TarEntity tar) {
+    void delete(Tar tar) {
         currentSession().delete(tar);
         currentSession().flush();
     }
 
-    List<TarPartEntity> findAllParts() {
-        return currentSession().createQuery("from TarPartEntity", TarPartEntity.class).list();
+    List<TarPart> findAllParts() {
+        return currentSession().createQuery("from TarPart", TarPart.class).list();
     }
 
-    TarEntity initializeChildren(TarEntity entity) {
+    Tar initializeChildren(Tar entity) {
         Hibernate.initialize(entity.getTarParts());
         Hibernate.initialize(entity.getOcflObjectVersions());
 

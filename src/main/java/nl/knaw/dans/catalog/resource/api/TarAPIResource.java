@@ -59,7 +59,6 @@ public class TarAPIResource implements TarApi {
             throw new WebApplicationException(e.getMessage(), Response.Status.NOT_FOUND);
         }
         catch (Throwable e) {
-            e.printStackTrace();
             log.error(e.getMessage(), e);
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }

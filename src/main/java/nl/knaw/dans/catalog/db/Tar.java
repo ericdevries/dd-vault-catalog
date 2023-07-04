@@ -32,7 +32,7 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-public class TarEntity {
+public class Tar {
     @Id
     @Column(name = "tar_uuid", nullable = false)
     private String tarUuid;
@@ -42,16 +42,16 @@ public class TarEntity {
     private OffsetDateTime archivalDate;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "tar")
     @ToString.Exclude
-    private List<TarPartEntity> tarParts = new ArrayList<>();
+    private List<TarPart> tarParts = new ArrayList<>();
     @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "tar")
     @ToString.Exclude
-    private List<OcflObjectVersionEntity> ocflObjectVersions = new ArrayList<>();
+    private List<OcflObjectVersion> ocflObjectVersions = new ArrayList<>();
 
-    public List<TarPartEntity> getTarParts() {
+    public List<TarPart> getTarParts() {
         return new ArrayList<>(tarParts);
     }
 
-    public void setTarParts(List<TarPartEntity> tarParts) {
+    public void setTarParts(List<TarPart> tarParts) {
         if (this.tarParts == null) {
             this.tarParts = new ArrayList<>();
         }
@@ -64,11 +64,11 @@ public class TarEntity {
         }
     }
 
-    public List<OcflObjectVersionEntity> getOcflObjectVersions() {
+    public List<OcflObjectVersion> getOcflObjectVersions() {
         return new ArrayList<>(ocflObjectVersions);
     }
 
-    public void setOcflObjectVersions(List<OcflObjectVersionEntity> ocflObjectVersions) {
+    public void setOcflObjectVersions(List<OcflObjectVersion> ocflObjectVersions) {
         if (this.ocflObjectVersions == null) {
             this.ocflObjectVersions = new ArrayList<>();
         }
@@ -89,8 +89,8 @@ public class TarEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        TarEntity tarEntity = (TarEntity) o;
-        return getTarUuid() != null && Objects.equals(getTarUuid(), tarEntity.getTarUuid());
+        Tar tar = (Tar) o;
+        return getTarUuid() != null && Objects.equals(getTarUuid(), tar.getTarUuid());
     }
 
     @Override

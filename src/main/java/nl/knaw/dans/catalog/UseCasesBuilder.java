@@ -23,16 +23,16 @@ import nl.knaw.dans.catalog.core.OcflObjectVersionRepository;
 import nl.knaw.dans.catalog.core.SearchIndex;
 import nl.knaw.dans.catalog.core.TarRepository;
 import nl.knaw.dans.catalog.core.UseCases;
-import nl.knaw.dans.catalog.db.OcflObjectVersionEntityRepository;
-import nl.knaw.dans.catalog.db.TarEntityRepository;
+import nl.knaw.dans.catalog.db.OcflObjectVersionDAO;
+import nl.knaw.dans.catalog.db.TarDAO;
 
 public class UseCasesBuilder {
 
     public static UseCases build(DdVaultCatalogConfiguration configuration, HibernateBundle<DdVaultCatalogConfiguration> hibernateBundle) {
         var ocflObjectMetadataReader = new OcflObjectMetadataReader();
         var searchIndex = new SolrServiceImpl(configuration.getSolr(), ocflObjectMetadataReader);
-        var ocflObjectVersionRepository = new OcflObjectVersionEntityRepository(hibernateBundle.getSessionFactory());
-        var tarRepository = new TarEntityRepository(hibernateBundle.getSessionFactory());
+        var ocflObjectVersionRepository = new OcflObjectVersionDAO(hibernateBundle.getSessionFactory());
+        var tarRepository = new TarDAO(hibernateBundle.getSessionFactory());
 
         return new UnitOfWorkAwareProxyFactory(hibernateBundle)
             .create(UseCases.class,

@@ -30,7 +30,7 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-public class TarPartEntity {
+public class TarPart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,13 +43,13 @@ public class TarPartEntity {
     private String checksumValue;
     @ManyToOne
     @JoinColumn(name = "tar_uuid")
-    private TarEntity tar;
+    private Tar tar;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        TarPartEntity that = (TarPartEntity) o;
+        TarPart that = (TarPart) o;
         return Objects.equals(id, that.id);
     }
 

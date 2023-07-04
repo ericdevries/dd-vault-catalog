@@ -19,8 +19,8 @@ import nl.knaw.dans.catalog.api.TarDto;
 import nl.knaw.dans.catalog.api.TarParameterDto;
 import nl.knaw.dans.catalog.api.TarPartDto;
 import nl.knaw.dans.catalog.core.domain.TarParameters;
-import nl.knaw.dans.catalog.db.TarEntity;
-import nl.knaw.dans.catalog.db.TarPartEntity;
+import nl.knaw.dans.catalog.db.Tar;
+import nl.knaw.dans.catalog.db.TarPart;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -35,9 +35,9 @@ public interface TarMapper {
     @Mapping(source = "ocflObjectVersions", target = "versions")
     TarParameters convert(TarParameterDto tarParameterDto);
 
-    TarDto convert(TarEntity tar);
+    TarDto convert(Tar tar);
 
     @Mapping(source = "tar.tarUuid", target = "tarUuid")
-    TarPartDto convert(TarPartEntity tarPart);
+    TarPartDto convert(TarPart tarPart);
 
 }

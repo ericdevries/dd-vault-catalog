@@ -37,7 +37,7 @@ import java.util.Objects;
 @TypeDefs({
     @TypeDef(name = "string", defaultForType = java.lang.String.class, typeClass = org.hibernate.type.TextType.class)
 })
-public class OcflObjectVersionEntity {
+public class OcflObjectVersion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,7 +48,7 @@ public class OcflObjectVersionEntity {
     private Integer objectVersion;
     @ManyToOne
     @JoinColumn(name = "tar_uuid")
-    private TarEntity tar;
+    private Tar tar;
     @Column(name = "data_supplier")
     private String dataSupplier;
     @Column(name = "dataverse_pid")
@@ -65,10 +65,8 @@ public class OcflObjectVersionEntity {
     private String swordToken;
     @Column(name = "ocfl_object_path")
     private String ocflObjectPath;
-    @Lob
     @Column(name = "metadata")
     private String metadata;
-    @Lob
     @Column(name = "filepid_to_local_path")
     private String filePidToLocalPath;
     @Column(name = "export_timestamp")
@@ -88,7 +86,7 @@ public class OcflObjectVersionEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        OcflObjectVersionEntity that = (OcflObjectVersionEntity) o;
+        OcflObjectVersion that = (OcflObjectVersion) o;
         return getId() != null && Objects.equals(getId(), that.getId());
     }
 

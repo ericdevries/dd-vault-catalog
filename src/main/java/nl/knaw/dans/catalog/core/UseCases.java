@@ -21,10 +21,10 @@ import nl.knaw.dans.catalog.core.domain.OcflObjectVersionId;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionParameters;
 import nl.knaw.dans.catalog.core.domain.TarParameters;
 import nl.knaw.dans.catalog.core.exception.*;
-import nl.knaw.dans.catalog.db.OcflObjectVersionEntity;
-import nl.knaw.dans.catalog.db.TarEntity;
-import nl.knaw.dans.catalog.db.mappers.OcflObjectVersionEntityMapper;
-import nl.knaw.dans.catalog.db.mappers.TarEntityMapper;
+import nl.knaw.dans.catalog.db.OcflObjectVersion;
+import nl.knaw.dans.catalog.db.Tar;
+import nl.knaw.dans.catalog.db.mappers.OcflObjectVersionMapper;
+import nl.knaw.dans.catalog.db.mappers.TarMapper;
 
 import java.util.Collection;
 import java.util.List;
@@ -37,8 +37,8 @@ public class UseCases {
     private final TarRepository tarRepository;
     private final SearchIndex searchIndex;
 
-    private final TarEntityMapper tarEntityMapper = TarEntityMapper.INSTANCE;
-    private final OcflObjectVersionEntityMapper ocflObjectVersionEntityMapper = OcflObjectVersionEntityMapper.INSTANCE;
+    private final TarMapper tarMapper = TarMapper.INSTANCE;
+    private final OcflObjectVersionMapper ocflObjectVersionMapper = OcflObjectVersionMapper.INSTANCE;
 
     public UseCases(OcflObjectVersionRepository ocflObjectVersionRepository, TarRepository tarRepository, SearchIndex searchIndex) {
         this.ocflObjectVersionRepository = ocflObjectVersionRepository;
@@ -47,17 +47,17 @@ public class UseCases {
     }
 
     @UnitOfWork
-    public Collection<OcflObjectVersionEntity> findOcflObjectVersionsByBagId(String bagId) {
+    public Collection<OcflObjectVersion> findOcflObjectVersionsByBagId(String bagId) {
         return ocflObjectVersionRepository.findAllByBagId(bagId);
     }
 
     @UnitOfWork
-    public Collection<OcflObjectVersionEntity> findOcflObjectVersionsBySwordToken(String swordToken) {
+    public Collection<OcflObjectVersion> findOcflObjectVersionsBySwordToken(String swordToken) {
         return ocflObjectVersionRepository.findAllBySwordToken(swordToken);
     }
 
     @UnitOfWork
-    public List<OcflObjectVersionEntity> findOcflObjectVersionsByNbn(String nbn) throws OcflObjectVersionNotFoundException {
+    public List<OcflObjectVersion> findOcflObjectVersionsByNbn(String nbn) throws OcflObjectVersionNotFoundException {
         var results = ocflObjectVersionRepository.findByNbn(nbn);
 
         log.info("Found {} OCFL object versions for NBN {}", results.size(), nbn);
@@ -72,19 +72,19 @@ public class UseCases {
     }
 
     @UnitOfWork
-    public Optional<OcflObjectVersionEntity> findOcflObjectVersionByBagIdAndVersion(String bagId, Integer versionNumber) {
+    public Optional<OcflObjectVersion> findOcflObjectVersionByBagIdAndVersion(String bagId, Integer versionNumber) {
         return ocflObjectVersionRepository.findByBagIdAndVersion(bagId, versionNumber);
     }
 
     @UnitOfWork
-    public OcflObjectVersionEntity createOcflObjectVersion(OcflObjectVersionId id, OcflObjectVersionParameters parameters) throws OcflObjectVersionAlreadyExistsException {
+    public OcflObjectVersion createOcflObjectVersion(OcflObjectVersionId id, OcflObjectVersionParameters parameters) throws OcflObjectVersionAlreadyExistsException {
         var existingOcflObjectVersion = ocflObjectVersionRepository.findByBagIdAndVersion(id.getBagId(), id.getObjectVersion());
 
         if (existingOcflObjectVersion.isPresent()) {
             throw new OcflObjectVersionAlreadyExistsException(id.getBagId(), id.getObjectVersion());
         }
 
-        var ocflObjectVersion = ocflObjectVersionEntityMapper.convert(parameters);
+        var ocflObjectVersion = ocflObjectVersionMapper.convert(parameters);
         ocflObjectVersion.setObjectVersion(id.getObjectVersion());
         ocflObjectVersion.setBagId(id.getBagId());
 
@@ -93,7 +93,7 @@ public class UseCases {
     }
 
     @UnitOfWork
-    public TarEntity createTar(String id, TarParameters params) throws TarAlreadyExistsException, OcflObjectVersionNotFoundException, OcflObjectVersionAlreadyInTarException {
+    public Tar createTar(String id, TarParameters params) throws TarAlreadyExistsException, OcflObjectVersionNotFoundException, OcflObjectVersionAlreadyInTarException {
         var existingTar = tarRepository.getTarById(id);
 
         if (existingTar.isPresent()) {
@@ -116,7 +116,7 @@ public class UseCases {
 
         log.info("Successfully found all OCFL object versions for TAR {}", id);
 
-        var tar = tarEntityMapper.convert(params);
+        var tar = tarMapper.convert(params);
         tar.setTarUuid(id);
         tar.setOcflObjectVersions(ocflObjectVersions);
 
@@ -130,12 +130,12 @@ public class UseCases {
     }
 
     @UnitOfWork
-    public Optional<TarEntity> findTarById(String id) {
+    public Optional<Tar> findTarById(String id) {
         return tarRepository.getTarById(id);
     }
 
     @UnitOfWork
-    public TarEntity updateTar(String id, TarParameters params) throws TarNotFoundException, OcflObjectVersionNotFoundException, OcflObjectVersionAlreadyInTarException {
+    public Tar updateTar(String id, TarParameters params) throws TarNotFoundException, OcflObjectVersionNotFoundException, OcflObjectVersionAlreadyInTarException {
         var tar = tarRepository.getTarById(id)
             .orElseThrow(() -> new TarNotFoundException(
                 String.format("Tar with id %s not found", id)
@@ -146,7 +146,7 @@ public class UseCases {
 
         // check if all ocfl object versions are not already in a tar
         for (var version : ocflObjectVersions) {
-            if (version.getTar() != null && version.getTar().equals(tar)) {
+            if (version.getTar() != null && !version.getTar().equals(tar)) {
                 throw new OcflObjectVersionAlreadyInTarException(String.format(
                     "OcflObjectVersion with bagId %s and version %d is already in TAR %s, cannot add to TAR %s",
                     version.getId().getBagId(), version.getId().getObjectVersion(), version.getTar().getTarUuid(), tar.getTarUuid()
@@ -154,7 +154,7 @@ public class UseCases {
             }
         }
 
-        var parts = params.getTarParts().stream().map(tarEntityMapper::convert).collect(Collectors.toList());
+        var parts = params.getTarParts().stream().map(tarMapper::convert).collect(Collectors.toList());
         tar.setArchivalDate(params.getArchivalDate());
         tar.setVaultPath(params.getVaultPath());
         tar.setTarParts(parts);

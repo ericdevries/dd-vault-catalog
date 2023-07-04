@@ -18,8 +18,8 @@ package nl.knaw.dans.catalog.client;
 
 import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
 import nl.knaw.dans.catalog.core.SearchIndex;
-import nl.knaw.dans.catalog.db.TarEntity;
-import nl.knaw.dans.catalog.db.TarPartEntity;
+import nl.knaw.dans.catalog.db.Tar;
+import nl.knaw.dans.catalog.db.TarPart;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.Http2SolrClient;
 import org.apache.solr.common.SolrInputDocument;
@@ -59,7 +59,7 @@ public class SolrServiceImpl implements SearchIndex {
      * ## int fields version_major version_minor
      */
     @Override
-    public void indexTar(TarEntity tar) {
+    public void indexTar(Tar tar) {
         if (solrClient == null) {
             log.warn("Solr is not configured, skipping indexing of tar {}", tar.getTarUuid());
             return;
@@ -80,7 +80,7 @@ public class SolrServiceImpl implements SearchIndex {
 //            doc.setField("sword_client", ocflObjectVersion.getsw());
                 doc.setField("sword_token", ocflObjectVersion.getSwordToken());
                 doc.setField("ocfl_object_path", ocflObjectVersion.getOcflObjectPath());
-                doc.setField("tar_part_name", ocflObjectVersion.getTar().getTarParts().stream().map(TarPartEntity::getPartName).collect(Collectors.toList()));
+                doc.setField("tar_part_name", ocflObjectVersion.getTar().getTarParts().stream().map(TarPart::getPartName).collect(Collectors.toList()));
 
                 doc.setField("tar_archival_timestamp", formatDate(ocflObjectVersion.getTar().getArchivalDate()));
                 doc.setField("export_timestamp", formatDate(ocflObjectVersion.getExportTimestamp()));

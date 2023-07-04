@@ -33,36 +33,36 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TarRepositoryTest {
     //
     private final DAOTestExtension daoTestRule = DAOTestExtension.newBuilder()
-        .addEntityClass(TarEntity.class)
-        .addEntityClass(TarPartEntity.class)
-        .addEntityClass(OcflObjectVersionEntity.class)
+        .addEntityClass(Tar.class)
+        .addEntityClass(TarPart.class)
+        .addEntityClass(OcflObjectVersion.class)
         .build();
 
-    private TarEntityRepository tarRepository;
-    private OcflObjectVersionEntityRepository ocflObjectVersionRepository;
+    private TarDAO tarRepository;
+    private OcflObjectVersionDAO ocflObjectVersionRepository;
 
     @BeforeEach
     void setUp() {
-        tarRepository = new TarEntityRepository(daoTestRule.getSessionFactory());
-        ocflObjectVersionRepository = new OcflObjectVersionEntityRepository(daoTestRule.getSessionFactory());
+        tarRepository = new TarDAO(daoTestRule.getSessionFactory());
+        ocflObjectVersionRepository = new OcflObjectVersionDAO(daoTestRule.getSessionFactory());
     }
 
     @Test
     void save_should_persist_to_db() {
         daoTestRule.inTransaction(() -> {
-            var tar = TarEntity.builder()
+            var tar = Tar.builder()
                 .tarUuid("uuid1")
                 .vaultPath("path")
                 .archivalDate(OffsetDateTime.now())
                 .build();
 
-            var version1 = OcflObjectVersionEntity.builder()
+            var version1 = OcflObjectVersion.builder()
                 .bagId("bagid")
                 .objectVersion(1)
                 .otherId("TEST")
                 .build();
 
-            var part1 = TarPartEntity.builder()
+            var part1 = TarPart.builder()
                 .partName("0000")
                 .checksumAlgorithm("md5")
                 .checksumValue("cs")
@@ -84,19 +84,19 @@ class TarRepositoryTest {
     @Test
     void deleting_tar_should_not_delete_OcflObjectVersionEntity() {
         daoTestRule.inTransaction(() -> {
-            var tar = TarEntity.builder()
+            var tar = Tar.builder()
                 .tarUuid("uuid1")
                 .vaultPath("path")
                 .archivalDate(OffsetDateTime.now())
                 .build();
 
-            var version1 = OcflObjectVersionEntity.builder()
+            var version1 = OcflObjectVersion.builder()
                 .bagId("bagid")
                 .objectVersion(1)
                 .otherId("TEST")
                 .build();
 
-            var part1 = TarPartEntity.builder()
+            var part1 = TarPart.builder()
                 .partName("0000")
                 .checksumAlgorithm("md5")
                 .checksumValue("cs")

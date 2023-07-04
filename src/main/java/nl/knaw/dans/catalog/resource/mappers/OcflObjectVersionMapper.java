@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.knaw.dans.catalog.api.OcflObjectVersionDto;
 import nl.knaw.dans.catalog.api.OcflObjectVersionParametersDto;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionParameters;
-import nl.knaw.dans.catalog.db.OcflObjectVersionEntity;
+import nl.knaw.dans.catalog.db.OcflObjectVersion;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -40,7 +40,7 @@ public interface OcflObjectVersionMapper {
     OcflObjectVersionParameters convert(OcflObjectVersionParametersDto versionDto);
 
     @Mapping(source = "tar.tarUuid", target = "tarUuid")
-    OcflObjectVersionDto convert(OcflObjectVersionEntity version) ;
+    OcflObjectVersionDto convert(OcflObjectVersion version) ;
 
     default UUID mapUuid(String value) {
         if (value == null) {

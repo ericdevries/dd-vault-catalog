@@ -17,19 +17,19 @@ package nl.knaw.dans.catalog.db.mappers;
 
 import nl.knaw.dans.catalog.core.domain.TarParameters;
 import nl.knaw.dans.catalog.core.domain.TarPartParameters;
-import nl.knaw.dans.catalog.db.TarEntity;
-import nl.knaw.dans.catalog.db.TarPartEntity;
+import nl.knaw.dans.catalog.db.Tar;
+import nl.knaw.dans.catalog.db.TarPart;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface TarEntityMapper {
+public interface TarMapper {
 
-    TarEntityMapper INSTANCE = Mappers.getMapper(TarEntityMapper.class);
+    TarMapper INSTANCE = Mappers.getMapper(TarMapper.class);
 
-    TarEntity convert(TarParameters parameters);
+    Tar convert(TarParameters parameters);
 
-    TarPartEntity convert(TarPartParameters parameters);
+    TarPart convert(TarPartParameters parameters);
 
 
 }
