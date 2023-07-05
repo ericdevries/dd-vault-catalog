@@ -13,27 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.knaw.dans.catalog.resource.api;
 
-package nl.knaw.dans.catalog;
+import lombok.extern.slf4j.Slf4j;
+import nl.knaw.dans.catalog.resource.DefaultApi;
 
-import io.dropwizard.Configuration;
-import io.dropwizard.db.DataSourceFactory;
-import lombok.Data;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+@Path("/api/ocflObject")
+@Slf4j
+public class DefaultApiResource implements DefaultApi {
 
-@Data
-public class DdVaultCatalogConfiguration extends Configuration {
-    @Valid
-    @NotNull
-    private DataSourceFactory database = new DataSourceFactory();
-
-    @Valid
-    private SolrConfig solr;
-
-    @Data
-    public static class SolrConfig {
-        private String url;
+    @Override
+    public Response getInfo() {
+        // TODO figure out what the version means, and where to get it from
+        return Response.ok("DANS VAULT CATALOG SERVICE running v1.2.3").build();
     }
 }

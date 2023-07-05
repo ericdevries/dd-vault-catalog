@@ -21,9 +21,7 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import net.sourceforge.argparse4j.inf.Namespace;
 import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
-import nl.knaw.dans.catalog.core.OcflObjectMetadataReaderImpl;
-import nl.knaw.dans.catalog.core.SolrServiceImpl;
-import nl.knaw.dans.catalog.db.TarDAO;
+import nl.knaw.dans.catalog.UseCasesBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,23 +50,13 @@ public class ReindexCommand extends ConfiguredCommand<DdVaultCatalogConfiguratio
 
         log.info("Configured Hibernate");
 
-        var tarDao = new TarDAO(hibernateBundle.getSessionFactory());
-        var ocflObjectMetadataReader = new OcflObjectMetadataReaderImpl();
-        var solrService = new SolrServiceImpl(configuration.getSolr(), ocflObjectMetadataReader);
+        var useCases = UseCasesBuilder.build(configuration, hibernateBundle);
 
         log.info("Configured services");
 
         try (var session = hibernateBundle.getSessionFactory().getCurrentSession()) {
             var transaction = session.beginTransaction();
-            var tars = tarDao.findAll();
-
-            log.info("Reindexing {} archives", tars.size());
-
-            for (var tar : tars) {
-                log.info("Reindexing TAR {}", tar.getTarUuid());
-                solrService.indexArchive(tar);
-            }
-
+            useCases.reindexAllTars();
             transaction.rollback();
         }
     }

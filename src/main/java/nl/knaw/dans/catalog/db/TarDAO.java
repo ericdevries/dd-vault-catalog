@@ -13,38 +13,68 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nl.knaw.dans.catalog.db;
 
 import io.dropwizard.hibernate.AbstractDAO;
+import nl.knaw.dans.catalog.core.TarRepository;
+import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class TarDAO extends AbstractDAO<Tar> {
-
+public class TarDAO extends AbstractDAO<Tar> implements TarRepository {
     public TarDAO(SessionFactory sessionFactory) {
         super(sessionFactory);
     }
 
-    public Optional<Tar> findById(String id) {
-        return Optional.ofNullable(get(id));
+    @Override
+    public Optional<Tar> getTarById(String id) {
+        return query("from Tar t where tarUuid = :id")
+            .setParameter("id", id)
+            .uniqueResultOptional()
+            .map(this::initializeChildren);
     }
 
+    @Override
     public Tar save(Tar tar) {
+        for (var version : tar.getOcflObjectVersions()) {
+            version.setTar(tar);
+        }
+
+        for (var part : tar.getTarParts()) {
+            part.setTar(tar);
+        }
+
         return persist(tar);
     }
 
-    public Tar merge(Tar tar) {
-        return (Tar) currentSession().merge(tar);
-    }
-
-    public void evict(Tar tar) {
-        currentSession().evict(tar);
-    }
-
+    @Override
     public List<Tar> findAll() {
-        return currentSession().createQuery("from Tar", Tar.class).list();
+        return list(query("from Tar"))
+            .stream().map(this::initializeChildren)
+            .collect(Collectors.toList());
+    }
+
+    void evict(Tar tar) {
+        currentSession().evict(tar);
+        currentSession().flush();
+    }
+
+    void delete(Tar tar) {
+        currentSession().delete(tar);
+        currentSession().flush();
+    }
+
+    List<TarPart> findAllParts() {
+        return currentSession().createQuery("from TarPart", TarPart.class).list();
+    }
+
+    Tar initializeChildren(Tar entity) {
+        Hibernate.initialize(entity.getTarParts());
+        Hibernate.initialize(entity.getOcflObjectVersions());
+
+        return entity;
     }
 }

@@ -16,22 +16,25 @@
 
 package nl.knaw.dans.catalog.db;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import lombok.*;
+import org.hibernate.Hibernate;
+
+import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tar_parts")
+@Getter
+@Setter
+@ToString
+@Builder
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class TarPart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @Column(name = "part_name")
     private String partName;
     @Column(name = "checksum_algorithm")
@@ -42,64 +45,16 @@ public class TarPart {
     @JoinColumn(name = "tar_uuid")
     private Tar tar;
 
-    public TarPart(String partName, String checksumAlgorithm, String checksumValue, Tar tar) {
-        this.partName = partName;
-        this.checksumAlgorithm = checksumAlgorithm;
-        this.checksumValue = checksumValue;
-        this.tar = tar;
-    }
-
-    public TarPart() {
-
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getPartName() {
-        return partName;
-    }
-
-    public void setPartName(String partName) {
-        this.partName = partName;
-    }
-
-    public String getChecksumAlgorithm() {
-        return checksumAlgorithm;
-    }
-
-    public void setChecksumAlgorithm(String checksumAlgorithm) {
-        this.checksumAlgorithm = checksumAlgorithm;
-    }
-
-    public String getChecksumValue() {
-        return checksumValue;
-    }
-
-    public void setChecksumValue(String checksumValue) {
-        this.checksumValue = checksumValue;
-    }
-
-    public Tar getTar() {
-        return tar;
-    }
-
-    public void setTar(Tar tar) {
-        this.tar = tar;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        TarPart that = (TarPart) o;
+        return Objects.equals(id, that.id);
     }
 
     @Override
-    public String toString() {
-        return "TarPart{" +
-            "id=" + id +
-            ", partName='" + partName + '\'' +
-            ", checksumAlgorithm='" + checksumAlgorithm + '\'' +
-            ", checksumValue='" + checksumValue + '\'' +
-            '}';
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

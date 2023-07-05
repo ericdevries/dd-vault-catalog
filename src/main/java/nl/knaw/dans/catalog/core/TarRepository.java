@@ -13,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.knaw.dans.catalog.core;
 
-package nl.knaw.dans.catalog;
+import nl.knaw.dans.catalog.db.Tar;
 
-import io.dropwizard.Configuration;
-import io.dropwizard.db.DataSourceFactory;
-import lombok.Data;
+import java.util.List;
+import java.util.Optional;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+public interface TarRepository {
 
-@Data
-public class DdVaultCatalogConfiguration extends Configuration {
-    @Valid
-    @NotNull
-    private DataSourceFactory database = new DataSourceFactory();
+    Optional<Tar> getTarById(String id);
 
-    @Valid
-    private SolrConfig solr;
+    Tar save(Tar tar);
 
-    @Data
-    public static class SolrConfig {
-        private String url;
-    }
+    List<Tar> findAll();
 }

@@ -13,27 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.knaw.dans.catalog.core.domain;
 
-package nl.knaw.dans.catalog;
+import lombok.Builder;
+import lombok.Value;
 
-import io.dropwizard.Configuration;
-import io.dropwizard.db.DataSourceFactory;
-import lombok.Data;
+import java.time.OffsetDateTime;
+import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-@Data
-public class DdVaultCatalogConfiguration extends Configuration {
-    @Valid
-    @NotNull
-    private DataSourceFactory database = new DataSourceFactory();
-
-    @Valid
-    private SolrConfig solr;
-
-    @Data
-    public static class SolrConfig {
-        private String url;
-    }
+@Value
+@Builder
+public class TarParameters {
+    String vaultPath;
+    OffsetDateTime archivalDate;
+    List<TarPartParameters> tarParts;
+    List<OcflObjectVersionId> versions;
 }

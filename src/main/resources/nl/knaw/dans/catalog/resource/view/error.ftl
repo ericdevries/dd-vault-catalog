@@ -16,15 +16,15 @@
                     <p><em>${errorMessage.message}</em></p>
                     <p>There was an error displaying this page.</p>
                 </header>
+
                 <#if errorMessage.details?has_content>
-                <div class="bg-light my-5 py-4 px-4 border">
-                    <pre class="my-0"><code>${errorMessage.details}</code></pre>
-                </div>
-               </#if>
+                    <div class="bg-light my-5 py-4 px-4 border">
+                        <pre class="my-0"><code>${errorMessage.details}</code></pre>
+                    </div>
+                </#if>
+            </div>
         </div>
     </div>
-    </div>
-
 </body>
 
 </html>

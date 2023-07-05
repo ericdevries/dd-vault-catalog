@@ -13,103 +13,88 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nl.knaw.dans.catalog.db;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import lombok.*;
+import org.hibernate.Hibernate;
+
+import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+@ToString
+@Getter
+@Setter
 @Entity
 @Table(name = "tars")
+@Builder
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class Tar {
     @Id
     @Column(name = "tar_uuid", nullable = false)
     private String tarUuid;
     @Column(name = "vault_path")
     private String vaultPath;
-    @Column(name = "staged_date", nullable = false)
-    private OffsetDateTime stagedDate;
     @Column(name = "archival_date")
     private OffsetDateTime archivalDate;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "tar")
+    @ToString.Exclude
     private List<TarPart> tarParts = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "tar")
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "tar")
+    @ToString.Exclude
     private List<OcflObjectVersion> ocflObjectVersions = new ArrayList<>();
 
-    public Tar() {
-
-    }
-
-    public Tar(String tarUuid, String vaultPath, OffsetDateTime stagedDate) {
-        this.tarUuid = tarUuid;
-        this.vaultPath = vaultPath;
-        this.stagedDate = stagedDate;
-    }
-
-    public OffsetDateTime getStagedDate() {
-        return stagedDate;
-    }
-
-    public void setStagedDate(OffsetDateTime stagedDate) {
-        this.stagedDate = stagedDate;
-    }
-
-    public String getTarUuid() {
-        return tarUuid;
-    }
-
-    public void setTarUuid(String tarUuid) {
-        this.tarUuid = tarUuid;
-    }
-
-    public String getVaultPath() {
-        return vaultPath;
-    }
-
-    public void setVaultPath(String vaultPath) {
-        this.vaultPath = vaultPath;
-    }
-
-    public OffsetDateTime getArchivalDate() {
-        return archivalDate;
-    }
-
-    public void setArchivalDate(OffsetDateTime archivalDate) {
-        this.archivalDate = archivalDate;
-    }
-
     public List<TarPart> getTarParts() {
-        return tarParts;
+        return new ArrayList<>(tarParts);
     }
 
     public void setTarParts(List<TarPart> tarParts) {
-        this.tarParts = tarParts;
+        if (this.tarParts == null) {
+            this.tarParts = new ArrayList<>();
+        }
+
+        this.tarParts.clear();
+
+        for (var part : tarParts) {
+            part.setTar(this);
+            this.tarParts.add(part);
+        }
     }
 
     public List<OcflObjectVersion> getOcflObjectVersions() {
-        return ocflObjectVersions;
+        return new ArrayList<>(ocflObjectVersions);
     }
 
     public void setOcflObjectVersions(List<OcflObjectVersion> ocflObjectVersions) {
-        this.ocflObjectVersions = ocflObjectVersions;
+        if (this.ocflObjectVersions == null) {
+            this.ocflObjectVersions = new ArrayList<>();
+        }
+
+        for (var version : this.ocflObjectVersions) {
+            version.setTar(null);
+        }
+
+        this.ocflObjectVersions.clear();
+
+        for (var version : ocflObjectVersions) {
+            version.setTar(this);
+            this.ocflObjectVersions.add(version);
+        }
     }
 
     @Override
-    public String toString() {
-        return "Tar{" +
-            "tarUuid='" + tarUuid + '\'' +
-            ", vaultPath='" + vaultPath + '\'' +
-            ", stagedDate=" + stagedDate +
-            ", archivalDate=" + archivalDate +
-            ", tarParts=" + tarParts +
-            ", ocflObjectVersions=" + ocflObjectVersions +
-            '}';
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Tar tar = (Tar) o;
+        return getTarUuid() != null && Objects.equals(getTarUuid(), tar.getTarUuid());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

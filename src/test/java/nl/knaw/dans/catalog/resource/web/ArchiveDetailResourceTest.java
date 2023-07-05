@@ -21,11 +21,10 @@ import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import io.dropwizard.testing.junit5.ResourceExtension;
 import io.dropwizard.views.ViewMessageBodyWriter;
 import io.dropwizard.views.freemarker.FreemarkerViewRenderer;
-import nl.knaw.dans.catalog.core.OcflObjectVersionService;
+import nl.knaw.dans.catalog.UseCaseFixture;
 import nl.knaw.dans.catalog.db.OcflObjectVersion;
 import nl.knaw.dans.catalog.db.Tar;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -35,38 +34,60 @@ import javax.ws.rs.core.Response;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @ExtendWith(DropwizardExtensionsSupport.class)
 class ArchiveDetailResourceTest {
-    private static final OcflObjectVersionService ocflObjectVersionService = Mockito.mock(OcflObjectVersionService.class);
     private static final ResourceExtension EXT = ResourceExtension.builder()
-        .addProvider(new ViewMessageBodyWriter(new MetricRegistry(), List.of(new FreemarkerViewRenderer(Configuration.VERSION_2_3_31))))
-        .addResource(new ArchiveDetailResource(ocflObjectVersionService)).build();
+        .addProvider(new ViewMessageBodyWriter(new MetricRegistry(),
+            List.of(new FreemarkerViewRenderer(Configuration.VERSION_2_3_31))))
+        .addResource(new ArchiveDetailResource(UseCaseFixture.useCases)).build();
 
     @AfterEach
     void tearDown() {
-        Mockito.reset(ocflObjectVersionService);
+        UseCaseFixture.reset();
     }
 
     @Test
     void getOK() {
-        var ocflObjectVersion = new OcflObjectVersion("bagid", "objectversion", null, "ds", "pid", "version", "nbn", 2, 1, "other", "version", "client", "token", "otherpath", "{}", "filepid", OffsetDateTime.now());
-        var tar = new Tar("uuid", "path", OffsetDateTime.now());
-        ocflObjectVersion.setTar(tar);
+        var tar = Tar.builder()
+            .tarUuid("uuid")
+            .vaultPath("path")
+            .archivalDate(OffsetDateTime.now())
+            .build();
 
-        Mockito.when(ocflObjectVersionService.findByNbn(Mockito.any()))
-            .thenReturn(List.of(ocflObjectVersion));
+        var ocflObjectVersion1 = OcflObjectVersion.builder()
+            .bagId("bagid")
+            .objectVersion(2)
+            .otherId("OTHER ID")
+            .nbn("urn:uuid:123")
+            .tar(tar)
+            .exportTimestamp(OffsetDateTime.now())
+            .build();
+
+        var ocflObjectVersion2 = OcflObjectVersion.builder()
+            .bagId("bagid")
+            .objectVersion(1)
+            .otherId("OTHER ID DIFFERENT")
+            .nbn("urn:uuid:123")
+            .tar(tar)
+            .exportTimestamp(OffsetDateTime.of(2021, 1, 1, 1, 1, 1, 1, OffsetDateTime.now().getOffset()))
+            .build();
+
+        Mockito.when(UseCaseFixture.ocflObjectVersionRepository.findByNbn(Mockito.any()))
+            .thenReturn(List.of(ocflObjectVersion1, ocflObjectVersion2));
 
         var response = EXT.target("/nbn/urn:uuid:123")
             .request()
             .accept(MediaType.TEXT_HTML_TYPE)
             .get(Response.class);
 
-        Assertions.assertEquals(200, response.getStatusInfo().getStatusCode());
+        assertEquals(200, response.getStatusInfo().getStatusCode());
     }
 
     @Test
     void getMissingNBN() {
-        Mockito.when(ocflObjectVersionService.findByNbn(Mockito.any()))
+        Mockito.when(UseCaseFixture.ocflObjectVersionRepository.findByNbn(Mockito.any()))
             .thenReturn(List.of());
 
         var response = EXT.target("/nbn/urn:uuid:123")
@@ -74,6 +95,6 @@ class ArchiveDetailResourceTest {
             .accept(MediaType.TEXT_HTML_TYPE)
             .get(Response.class);
 
-        Assertions.assertEquals(404, response.getStatusInfo().getStatusCode());
+        assertEquals(404, response.getStatusInfo().getStatusCode());
     }
 }

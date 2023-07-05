@@ -13,27 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.knaw.dans.catalog.db.mappers;
 
-package nl.knaw.dans.catalog;
+import nl.knaw.dans.catalog.core.domain.TarParameters;
+import nl.knaw.dans.catalog.core.domain.TarPartParameters;
+import nl.knaw.dans.catalog.db.Tar;
+import nl.knaw.dans.catalog.db.TarPart;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-import io.dropwizard.Configuration;
-import io.dropwizard.db.DataSourceFactory;
-import lombok.Data;
+@Mapper
+public interface TarMapper {
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+    TarMapper INSTANCE = Mappers.getMapper(TarMapper.class);
 
-@Data
-public class DdVaultCatalogConfiguration extends Configuration {
-    @Valid
-    @NotNull
-    private DataSourceFactory database = new DataSourceFactory();
+    Tar convert(TarParameters parameters);
 
-    @Valid
-    private SolrConfig solr;
+    TarPart convert(TarPartParameters parameters);
 
-    @Data
-    public static class SolrConfig {
-        private String url;
-    }
+
 }
