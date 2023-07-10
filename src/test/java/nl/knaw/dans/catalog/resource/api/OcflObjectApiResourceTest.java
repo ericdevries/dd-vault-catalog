@@ -80,7 +80,7 @@ class OcflObjectApiResourceTest {
         var version = 1;
 
         try (var response = client.target(
-                String.format("http://localhost:%d/api/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version))
+                String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version))
             .request()
             .put(Entity.json(str))) {
 
@@ -115,7 +115,7 @@ class OcflObjectApiResourceTest {
         var bagId = UUID.randomUUID().toString();
         var version = 1;
 
-        var url = String.format("http://localhost:%d/api/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version);
+        var url = String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version);
 
         try (var response = client.target(url)
             .request()
@@ -141,7 +141,7 @@ class OcflObjectApiResourceTest {
         var bagId = "urn:uuid:" + UUID.randomUUID();
         var version = 1;
 
-        var url = String.format("http://localhost:%d/api/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version);
+        var url = String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version);
 
         // creating ocfl object
         try (var response = client.target(url).request().put(Entity.json(str))) {
@@ -155,7 +155,7 @@ class OcflObjectApiResourceTest {
             .ocflObjectVersions(List.of(new OcflObjectVersionRefDto().objectVersion(version).bagId(bagId)));
 
         // creating tar
-        var apiUrl = String.format("http://localhost:%d/api/tar/", SUPPORT.getLocalPort());
+        var apiUrl = String.format("http://localhost:%d/tar/", SUPPORT.getLocalPort());
         try (var response = client.target(apiUrl).request().post(Entity.json(tar))) {
             assertEquals(201, response.getStatus());
 
@@ -201,7 +201,7 @@ class OcflObjectApiResourceTest {
         var bagId = UUID.randomUUID().toString();
         var version = 1;
 
-        var url = String.format("http://localhost:%d/api/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version);
+        var url = String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version);
 
         // creating ocfl object
         try (var response = client.target(url).request().put(Entity.json(str))) {
@@ -223,7 +223,7 @@ class OcflObjectApiResourceTest {
             "  \"dcterms:modified\": \"2021-11-17\",\n" +
             "  \"dcterms:creator\": \"DANS Archaeology Data Station (dev)\",\n" +
             "  \"@type\": \"ore:ResourceMap\",\n" +
-            "  \"@id\": \"https://dar.dans.knaw.nl/api/datasets/export?exporter=OAI_ORE&persistentId=doi:10.5072/DAR/KXTEQT\",\n" +
+            "  \"@id\": \"https://dar.dans.knaw.nl/datasets/export?exporter=OAI_ORE&persistentId=doi:10.5072/DAR/KXTEQT\",\n" +
             "  \"ore:describes\": {\n" +
             "    \"citation:Topic Classification\": {\n" +
             "      \"topicClassification:Term\": \"Public health\"\n" +
