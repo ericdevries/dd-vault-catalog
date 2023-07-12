@@ -15,7 +15,6 @@
  */
 package nl.knaw.dans.catalog.resource.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.catalog.api.OcflObjectVersionParametersDto;
 import nl.knaw.dans.catalog.core.UseCases;

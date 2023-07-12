@@ -15,56 +15,100 @@
  */
 package nl.knaw.dans.catalog.client;
 
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
+import lombok.Builder;
+import lombok.Value;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.RDF;
 
+import java.io.ByteArrayInputStream;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class OcflObjectMetadataReader {
-    public Map<String, Object> readMetadata(String json) {
+
+    public OcflObjectMetadata readMetadata(String json) {
         var result = new HashMap<String, Object>();
-        var config = Configuration.defaultConfiguration().addOptions(Option.SUPPRESS_EXCEPTIONS);
-        var doc = JsonPath.using(config).parse(json);
+        var model = ModelFactory.createDefaultModel();
+        model.read(new ByteArrayInputStream(json.getBytes()), null, "JSON-LD");
+        model.listStatements().forEach(statement -> {
+            //            System.out.println(statement);
+            var obj = statement.getObject();
 
-        result.put("metadata_topic_classification",
-            readField(doc, "$['ore:describes']['citation:Topic Classification']['topicClassification:Term']"));
-        result.put("metadata_citation_email",
-            readField(doc, "$['ore:describes']['citation:Contact']['datasetContact:E-mail']"));
-        result.put("metadata_distributor_name",
-            readField(doc, "$['ore:describes']['citation:Distributor']['distributor:Name']"));
-        result.put("metadata_description",
-            readField(doc, "$['ore:describes']['citation:Description']['dsDescription:Text']"));
-        result.put("metadata_related_publication",
-            readField(doc, "$['ore:describes']['Related Publication']['Citation']"));
-        result.put("metadata_title",
-            readField(doc, "$['ore:describes']['Title']"));
-        result.put("metadata_subject",
-            readField(doc, "$['ore:describes']['Subject']"));
-        result.put("metadata_included_data_catalog",
-            readField(doc, "$['ore:describes']['schema:includedInDataCatalog']"));
-        result.put("metadata_dcterms_creator",
-            readField(doc, "$['dcterms:creator']"));
+            if (obj.isLiteral()) {
+                var name = makeFieldName(statement.getPredicate());
+                var value = obj.asLiteral().getValue();
+                result.put(name, value.toString());
+            }
+        });
 
-        List<String> authorNames = doc.read("$['ore:describes']['Author'][*]['author:Name']");
-        result.put("metadata_author_name", authorNames.toArray(String[]::new));
+        var builder = OcflObjectMetadata.builder()
+            .metadata(result);
 
-        List<String> authorAffiliations = doc.read("$['ore:describes']['Author'][*]['author:Affiliation']");
-        result.put("metadata_author_affiliation", authorAffiliations.toArray(String[]::new));
+        var aggregationNS = model.createProperty("http://www.openarchives.org/ore/terms/", "Aggregation");
+        var aggregations = model.listStatements(null, RDF.type, aggregationNS);
 
-        return result;
-    }
+        if (aggregations.hasNext()) {
+            var resource = aggregations.next().getSubject();
 
-    String readField(DocumentContext doc, String jsonPath) {
-        var result = doc.read(jsonPath);
-
-        if (result != null) {
-            return result.toString();
+            builder.title(getRDFProperty(resource, DCTerms.title));
+            builder.description(getEmbeddedRDFProperty(resource, DVCitation.dsDescription, DVCitation.dsDescriptionValue));
         }
 
-        return null;
+        return builder.build();
     }
+
+    private String getEmbeddedRDFProperty(Resource resource, Property parent, Property child) {
+        var results = new ArrayList<String>();
+        resource.listProperties(parent)
+            .forEachRemaining(item -> {
+                var value = getRDFProperty(item.getObject().asResource(), child);
+
+                if (value != null) {
+                    results.add(value);
+                }
+            });
+
+        if (results.size() == 0) {
+            return null;
+        }
+
+        return StringUtils.join(results, "; ");
+    }
+
+    private String getRDFProperty(Resource resource, Property name) {
+        var results = new ArrayList<String>();
+
+        resource.listProperties(name).forEachRemaining(item -> {
+            results.add(item.getObject().asLiteral().getString());
+        });
+
+        if (results.size() == 0) {
+            return null;
+        }
+
+        return StringUtils.join(results, "; ");
+    }
+
+    String makeFieldName(Property prop) {
+        return URI.create(prop.getURI())
+            .getSchemeSpecificPart()
+            .toLowerCase()
+            .replaceFirst("^//", "")
+            .replaceAll("[^a-zA-Z0-9]", "_");
+    }
+
+    @Value
+    @Builder
+    public static class OcflObjectMetadata {
+        Map<String, Object> metadata;
+        String title;
+        String description;
+    }
+
 }

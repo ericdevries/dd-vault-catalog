@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.catalog.core;
+package nl.knaw.dans.catalog.client;
 
-import nl.knaw.dans.catalog.db.OcflObjectVersion;
-import nl.knaw.dans.catalog.db.Tar;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
 
-public interface SearchIndex {
-
-    void indexTar(Tar tar);
-
-    void indexOcflObjectVersion(OcflObjectVersion ocflObjectVersion);
+public class PROV {
+    public static final String NS = "https://www.w3.org/prov-o/#";
+    private static final Model m = ModelFactory.createDefaultModel();
+    public static final Property wasDerivedFrom = m.createProperty(NS, "wasDerivedFrom");
+    public static final Property alternateOf = m.createProperty(NS, "alternateOf");
 }
