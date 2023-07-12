@@ -29,7 +29,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.stream.Collectors;
 
-@Path("/api/ocflObject")
 @Slf4j
 public class OcflObjectApiResource implements OcflObjectApi {
     private final OcflObjectVersionMapper ocflObjectVersionMapper = OcflObjectVersionMapper.INSTANCE;

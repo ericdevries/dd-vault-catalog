@@ -69,7 +69,7 @@ class TarAPIResourceIntegrationTest {
         var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
 
         try (var response = client.target(
-                String.format("http://localhost:%d/api/tar", SUPPORT.getLocalPort()))
+                String.format("http://localhost:%d/tar", SUPPORT.getLocalPort()))
             .request()
             .post(Entity.json(str))) {
 
@@ -100,7 +100,7 @@ class TarAPIResourceIntegrationTest {
         var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
 
         try (var response = client.target(
-                String.format("http://localhost:%d/api/tar", SUPPORT.getLocalPort()))
+                String.format("http://localhost:%d/tar", SUPPORT.getLocalPort()))
             .request()
             .post(Entity.json(str))) {
 
@@ -137,7 +137,7 @@ class TarAPIResourceIntegrationTest {
         var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
 
         try (var response = client.target(
-                String.format("http://localhost:%d/api/tar", SUPPORT.getLocalPort()))
+                String.format("http://localhost:%d/tar", SUPPORT.getLocalPort()))
             .request()
             .post(Entity.json(str))) {
 
@@ -167,7 +167,7 @@ class TarAPIResourceIntegrationTest {
         var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
 
         try (var response = client.target(
-                String.format("http://localhost:%d/api/tar", SUPPORT.getLocalPort()))
+                String.format("http://localhost:%d/tar", SUPPORT.getLocalPort()))
             .request()
             .post(Entity.json(str))) {
 
@@ -175,7 +175,7 @@ class TarAPIResourceIntegrationTest {
         }
 
         var response = client.target(
-                String.format("http://localhost:%d/api/tar/%s", SUPPORT.getLocalPort(), entity.getTarUuid()))
+                String.format("http://localhost:%d/tar/%s", SUPPORT.getLocalPort(), entity.getTarUuid()))
             .request()
             .get(TarDto.class);
 
@@ -195,7 +195,7 @@ class TarAPIResourceIntegrationTest {
         var version = 1;
 
         try (var response = client.target(
-                String.format("http://localhost:%d/api/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version))
+                String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version))
             .request()
             .put(Entity.json(str))) {
 

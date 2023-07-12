@@ -21,7 +21,6 @@ import nl.knaw.dans.catalog.resource.DefaultApi;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-@Path("/api/ocflObject")
 @Slf4j
 public class DefaultApiResource implements DefaultApi {
 

@@ -26,6 +26,7 @@ import io.dropwizard.setup.Environment;
 import io.dropwizard.views.View;
 import io.dropwizard.views.ViewBundle;
 import nl.knaw.dans.catalog.cli.ReindexCommand;
+import nl.knaw.dans.catalog.resource.api.DefaultApiResource;
 import nl.knaw.dans.catalog.resource.api.OcflObjectApiResource;
 import nl.knaw.dans.catalog.resource.api.TarAPIResource;
 import nl.knaw.dans.catalog.resource.view.ErrorView;
@@ -58,6 +59,7 @@ public class DdVaultCatalogApplication extends Application<DdVaultCatalogConfigu
     public void run(final DdVaultCatalogConfiguration configuration, final Environment environment) {
         var useCases = UseCasesBuilder.build(configuration, hibernateBundle);
 
+        environment.jersey().register(new DefaultApiResource());
         environment.jersey().register(new TarAPIResource(useCases));
         environment.jersey().register(new OcflObjectApiResource(useCases));
         environment.jersey().register(new ArchiveDetailResource(useCases));
