@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.catalog.client;
+package nl.knaw.dans.catalog.core.solr.vocabulary;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
 
-public class DansRel {
-    public static final String NS = "https://dar.dans.knaw.nl/schema/2023.04/dansRelationMetadata#";
+public class ORE {
+    public static final String NS = "http://www.openarchives.org/ore/terms/";
     private static final Model m = ModelFactory.createDefaultModel();
-    public static final Property dansAudience = m.createProperty(NS, "dansAudience");
-    public static final Property dansCollection = m.createProperty(NS, "dansCollection");
-    public static final Property dansRelation = m.createProperty(NS, "dansRelation");
-    public static final Property dansRelationType = m.createProperty(NS, "dansRelationType");
-    public static final Property dansRelationURI = m.createProperty(NS, "dansRelationURI");
-    public static final Property dansRelationText = m.createProperty(NS, "dansRelationText");
+    public static final Property describes = m.createProperty(NS, "describes");
+    public static final Resource AggregatedResource = m.createProperty(NS, "AggregatedResource");
+    public static final Resource Aggregation = m.createProperty(NS, "Aggregation");
+    public static final Resource ResourceMap = m.createProperty(NS, "ResourceMap");
+    public static final Property aggregates = m.createProperty(NS, "aggregates");
 }

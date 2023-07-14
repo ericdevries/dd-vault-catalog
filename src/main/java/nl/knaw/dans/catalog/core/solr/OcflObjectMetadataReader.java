@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.catalog.client;
+package nl.knaw.dans.catalog.core.solr;
 
 import lombok.Builder;
 import lombok.Value;
+import nl.knaw.dans.catalog.core.solr.vocabulary.DVCitation;
+import nl.knaw.dans.catalog.core.solr.vocabulary.ORE;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -26,32 +28,34 @@ import org.apache.jena.vocabulary.RDF;
 
 import java.io.ByteArrayInputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class OcflObjectMetadataReader {
 
     public OcflObjectMetadata readMetadata(String json) {
-        var result = new HashMap<String, Object>();
+        var result = new HashMap<String, Set<String>>();
         var model = ModelFactory.createDefaultModel();
-        model.read(new ByteArrayInputStream(json.getBytes()), null, "JSON-LD");
+        model.read(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)), null, "JSON-LD");
         model.listStatements().forEach(statement -> {
-            //            System.out.println(statement);
             var obj = statement.getObject();
 
             if (obj.isLiteral()) {
                 var name = makeFieldName(statement.getPredicate());
                 var value = obj.asLiteral().getValue();
-                result.put(name, value.toString());
+
+                result.computeIfAbsent(name, k -> new HashSet<>()).add(value.toString());
             }
         });
 
         var builder = OcflObjectMetadata.builder()
             .metadata(result);
 
-        var aggregationNS = model.createProperty("http://www.openarchives.org/ore/terms/", "Aggregation");
-        var aggregations = model.listStatements(null, RDF.type, aggregationNS);
+        var aggregations = model.listStatements(null, RDF.type, ORE.Aggregation);
 
         if (aggregations.hasNext()) {
             var resource = aggregations.next().getSubject();
@@ -64,7 +68,8 @@ public class OcflObjectMetadataReader {
     }
 
     private String getEmbeddedRDFProperty(Resource resource, Property parent, Property child) {
-        var results = new ArrayList<String>();
+        var results = new HashSet<String>();
+
         resource.listProperties(parent)
             .forEachRemaining(item -> {
                 var value = getRDFProperty(item.getObject().asResource(), child);
@@ -78,11 +83,15 @@ public class OcflObjectMetadataReader {
             return null;
         }
 
-        return StringUtils.join(results, "; ");
+        // ensure we get deterministic results
+        var list = new ArrayList<>(results);
+        list.sort(String::compareTo);
+
+        return StringUtils.join(list, "; ");
     }
 
     private String getRDFProperty(Resource resource, Property name) {
-        var results = new ArrayList<String>();
+        var results = new HashSet<String>();
 
         resource.listProperties(name).forEachRemaining(item -> {
             results.add(item.getObject().asLiteral().getString());
@@ -92,13 +101,22 @@ public class OcflObjectMetadataReader {
             return null;
         }
 
-        return StringUtils.join(results, "; ");
+        // ensure we get deterministic results
+        var list = new ArrayList<>(results);
+        list.sort(String::compareTo);
+
+        return StringUtils.join(list, "; ");
     }
 
     String makeFieldName(Property prop) {
-        return URI.create(prop.getURI())
-            .getSchemeSpecificPart()
-            .toLowerCase()
+        var uri = URI.create(prop.getURI());
+        var stripped = uri.getSchemeSpecificPart();
+
+        if (uri.getFragment() != null) {
+            stripped += "#" + uri.getFragment();
+        }
+
+        return stripped.toLowerCase()
             .replaceFirst("^//", "")
             .replaceAll("[^a-zA-Z0-9]", "_");
     }
@@ -106,7 +124,7 @@ public class OcflObjectMetadataReader {
     @Value
     @Builder
     public static class OcflObjectMetadata {
-        Map<String, Object> metadata;
+        Map<String, Set<String>> metadata;
         String title;
         String description;
     }

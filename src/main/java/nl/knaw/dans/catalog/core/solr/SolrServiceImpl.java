@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package nl.knaw.dans.catalog.client;
+package nl.knaw.dans.catalog.core.solr;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
@@ -128,7 +128,11 @@ public class SolrServiceImpl implements SearchIndex {
         var metadata = ocflObjectMetadataReader.readMetadata(ocflObjectVersion.getMetadata());
 
         for (var entry : metadata.getMetadata().entrySet()) {
-            doc.addField("_text_", entry.getValue());
+            var fieldName = entry.getKey() + "_txt";
+
+            for (var value : entry.getValue()) {
+                doc.addField(fieldName, value);
+            }
         }
 
         // specific metadata we want to store so we can show it in search results
