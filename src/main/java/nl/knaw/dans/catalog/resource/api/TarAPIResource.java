@@ -31,7 +31,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.UUID;
 
-@Path("/api/tar")
 @Slf4j
 public class TarAPIResource implements TarApi {
     private final TarMapper tarMapper = TarMapper.INSTANCE;
