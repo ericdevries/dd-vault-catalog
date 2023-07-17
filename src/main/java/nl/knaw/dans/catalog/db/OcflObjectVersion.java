@@ -16,18 +16,33 @@
 
 package nl.knaw.dans.catalog.db;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import nl.knaw.dans.catalog.core.domain.OcflObjectVersionId;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "ocfl_object_versions", uniqueConstraints = {@UniqueConstraint(columnNames = {"bag_id", "object_version"})})
+@Table(name = "ocfl_object_versions", uniqueConstraints = { @UniqueConstraint(columnNames = { "bag_id", "object_version" }) })
 @Getter
 @Setter
 @ToString
@@ -46,7 +61,7 @@ public class OcflObjectVersion {
     private String bagId;
     @Column(name = "object_version", nullable = false)
     private Integer objectVersion;
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "tar_uuid")
     private Tar tar;
     @Column(name = "data_supplier")
@@ -84,8 +99,10 @@ public class OcflObjectVersion {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (this == o)
+            return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o))
+            return false;
         OcflObjectVersion that = (OcflObjectVersion) o;
         return getId() != null && Objects.equals(getId(), that.getId());
     }
@@ -93,5 +110,13 @@ public class OcflObjectVersion {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    Long getInternalId() {
+        return id;
+    }
+
+    void setInternalId(Long id) {
+        this.id = id;
     }
 }

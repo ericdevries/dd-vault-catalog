@@ -43,7 +43,7 @@ public class Tar {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "tar")
     @ToString.Exclude
     private List<TarPart> tarParts = new ArrayList<>();
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "tar")
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, mappedBy = "tar")
     @ToString.Exclude
     private List<OcflObjectVersion> ocflObjectVersions = new ArrayList<>();
 
