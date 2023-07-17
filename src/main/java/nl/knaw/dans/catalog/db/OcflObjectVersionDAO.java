@@ -64,7 +64,13 @@ public class OcflObjectVersionDAO extends AbstractDAO<OcflObjectVersion> impleme
 
     @Override
     public OcflObjectVersion save(OcflObjectVersion ocflObjectVersion) {
-        return persist(ocflObjectVersion);
+        findByBagIdAndVersion(ocflObjectVersion.getBagId(), ocflObjectVersion.getObjectVersion())
+            .ifPresent(item -> {
+                ocflObjectVersion.setInternalId(item.getInternalId());
+            });
+
+        var merged = (OcflObjectVersion) (currentSession().merge(ocflObjectVersion));
+        return persist(merged);
     }
 
     @Override

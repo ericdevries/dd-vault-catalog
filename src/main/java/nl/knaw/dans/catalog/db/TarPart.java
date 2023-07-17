@@ -41,8 +41,8 @@ public class TarPart {
     private String checksumAlgorithm;
     @Column(name = "checksum_value")
     private String checksumValue;
-    @ManyToOne
-    @JoinColumn(name = "tar_uuid")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "tar_uuid", nullable = false)
     private Tar tar;
 
     @Override

@@ -78,7 +78,9 @@ public class UseCases {
 
     @UnitOfWork
     public OcflObjectVersion createOcflObjectVersion(OcflObjectVersionId id, OcflObjectVersionParameters parameters) throws OcflObjectVersionAlreadyExistsException {
-        var existingOcflObjectVersion = ocflObjectVersionRepository.findByBagIdAndVersion(id.getBagId(), id.getObjectVersion());
+        // in case of skeletonRecord, allow writing
+        var existingOcflObjectVersion = ocflObjectVersionRepository.findByBagIdAndVersion(id.getBagId(), id.getObjectVersion())
+            .filter(ocflObjectVersion -> !ocflObjectVersion.isSkeletonRecord());
 
         if (existingOcflObjectVersion.isPresent()) {
             throw new OcflObjectVersionAlreadyExistsException(id.getBagId(), id.getObjectVersion());
