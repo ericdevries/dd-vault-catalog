@@ -105,8 +105,6 @@ class TarRepositoryTest {
             tar.setOcflObjectVersions(List.of(version1));
             tar.setTarParts(List.of(part1));
 
-            ocflObjectVersionRepository.save(version1);
-
             tarRepository.save(tar);
             tarRepository.evict(tar);
         });

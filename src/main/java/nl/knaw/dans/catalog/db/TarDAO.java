@@ -47,7 +47,8 @@ public class TarDAO extends AbstractDAO<Tar> implements TarRepository {
             part.setTar(tar);
         }
 
-        return persist(tar);
+        var merged = (Tar) currentSession().merge(tar);
+        return persist(merged);
     }
 
     @Override
@@ -63,6 +64,10 @@ public class TarDAO extends AbstractDAO<Tar> implements TarRepository {
     }
 
     void delete(Tar tar) {
+        for (var version: tar.getOcflObjectVersions()) {
+            version.setTar(null);
+        }
+
         currentSession().delete(tar);
         currentSession().flush();
     }

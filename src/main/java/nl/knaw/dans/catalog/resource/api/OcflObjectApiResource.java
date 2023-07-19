@@ -23,7 +23,6 @@ import nl.knaw.dans.catalog.core.exception.OcflObjectVersionAlreadyExistsExcepti
 import nl.knaw.dans.catalog.resource.OcflObjectApi;
 import nl.knaw.dans.catalog.resource.mappers.OcflObjectVersionMapper;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.stream.Collectors;
@@ -53,6 +52,10 @@ public class OcflObjectApiResource implements OcflObjectApi {
         catch (OcflObjectVersionAlreadyExistsException e) {
             log.error(e.getMessage());
             throw new WebApplicationException(e.getMessage(), Response.Status.CONFLICT);
+        }
+        catch (Throwable e) {
+            log.error(e.getMessage(), e);
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 

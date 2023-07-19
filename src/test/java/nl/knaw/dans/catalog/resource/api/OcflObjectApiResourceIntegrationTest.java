@@ -207,6 +207,34 @@ class OcflObjectApiResourceIntegrationTest {
         }
     }
 
+    @Test
+    public void createOcflVersion_should_allow_writing_to_SkeletonRecord() throws Exception {
+        var client = new JerseyClientBuilder().build();
+        var entity = new OcflObjectVersionParametersDto()
+            .dataSupplier("test")
+            .skeletonRecord(true)
+            .nbn("someNbn");
+
+        var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
+        var bagId = UUID.randomUUID().toString();
+        var version = 1;
+
+        var url = String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version);
+
+        // creating ocfl object
+        try (var response = client.target(url).request().put(Entity.json(str))) {
+            assertEquals(201, response.getStatus());
+        }
+
+        entity.dataSupplier(null);
+        str = SUPPORT.getObjectMapper().writeValueAsString(entity);
+
+        // verify it also returns true on the next request
+        try (var response = client.target(url).request().put(Entity.json(str))) {
+            assertEquals(201, response.getStatus());
+        }
+    }
+
     Map<String, Object> getMetadata() throws JsonProcessingException {
         var str = "{\n" +
             "  \"dcterms:modified\": \"2021-11-17\",\n" +
