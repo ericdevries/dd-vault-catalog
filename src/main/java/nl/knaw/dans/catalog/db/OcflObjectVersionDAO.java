@@ -21,6 +21,7 @@ import nl.knaw.dans.catalog.core.domain.OcflObjectVersionId;
 import nl.knaw.dans.catalog.core.exception.OcflObjectVersionNotFoundException;
 import org.hibernate.SessionFactory;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -67,7 +68,12 @@ public class OcflObjectVersionDAO extends AbstractDAO<OcflObjectVersion> impleme
         findByBagIdAndVersion(ocflObjectVersion.getBagId(), ocflObjectVersion.getObjectVersion())
             .ifPresent(item -> {
                 ocflObjectVersion.setInternalId(item.getInternalId());
+                ocflObjectVersion.setUpdated(OffsetDateTime.now());
             });
+
+        if (ocflObjectVersion.getInternalId() == null) {
+            ocflObjectVersion.setCreated(OffsetDateTime.now());
+        }
 
         var merged = (OcflObjectVersion) (currentSession().merge(ocflObjectVersion));
         return persist(merged);

@@ -61,6 +61,12 @@ public class OcflObjectVersion {
     private String bagId;
     @Column(name = "object_version", nullable = false)
     private Integer objectVersion;
+    @Column(name = "created", nullable = false, updatable = false)
+    @Setter(AccessLevel.PACKAGE)
+    private OffsetDateTime created;
+    @Column(name = "updated")
+    @Setter(AccessLevel.PACKAGE)
+    private OffsetDateTime updated;
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "tar_uuid")
     private Tar tar;

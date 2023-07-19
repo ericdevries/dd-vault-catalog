@@ -215,11 +215,11 @@ class OcflObjectApiResourceIntegrationTest {
             .skeletonRecord(true)
             .nbn("someNbn");
 
-        var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
+        var str = EXT.getObjectMapper().writeValueAsString(entity);
         var bagId = UUID.randomUUID().toString();
         var version = 1;
 
-        var url = String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version);
+        var url = String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", EXT.getLocalPort(), bagId, version);
 
         // creating ocfl object
         try (var response = client.target(url).request().put(Entity.json(str))) {
@@ -227,7 +227,7 @@ class OcflObjectApiResourceIntegrationTest {
         }
 
         entity.dataSupplier(null);
-        str = SUPPORT.getObjectMapper().writeValueAsString(entity);
+        str = EXT.getObjectMapper().writeValueAsString(entity);
 
         // verify it also returns true on the next request
         try (var response = client.target(url).request().put(Entity.json(str))) {
