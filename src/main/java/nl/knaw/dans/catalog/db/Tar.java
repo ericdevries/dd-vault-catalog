@@ -15,10 +15,21 @@
  */
 package nl.knaw.dans.catalog.db;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +54,7 @@ public class Tar {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "tar")
     @ToString.Exclude
     private List<TarPart> tarParts = new ArrayList<>();
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, mappedBy = "tar")
+    @OneToMany(cascade = { CascadeType.REFRESH }, mappedBy = "tar")
     @ToString.Exclude
     private List<OcflObjectVersion> ocflObjectVersions = new ArrayList<>();
 
@@ -87,8 +98,10 @@ public class Tar {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (this == o)
+            return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o))
+            return false;
         Tar tar = (Tar) o;
         return getTarUuid() != null && Objects.equals(getTarUuid(), tar.getTarUuid());
     }

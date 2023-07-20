@@ -41,6 +41,7 @@ public class TarDAO extends AbstractDAO<Tar> implements TarRepository {
     public Tar save(Tar tar) {
         for (var version : tar.getOcflObjectVersions()) {
             version.setTar(tar);
+            currentSession().save(version);
         }
 
         for (var part : tar.getTarParts()) {
@@ -66,6 +67,7 @@ public class TarDAO extends AbstractDAO<Tar> implements TarRepository {
     void delete(Tar tar) {
         for (var version: tar.getOcflObjectVersions()) {
             version.setTar(null);
+            currentSession().save(version);
         }
 
         currentSession().delete(tar);

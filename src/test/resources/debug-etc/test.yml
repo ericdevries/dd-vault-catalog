@@ -9,6 +9,8 @@ server:
     - type: http
       # Replace with port number unique for this service
       port: 0
+  requestLog:
+    appenders: []
 
 database:
   driverClass: org.hsqldb.jdbcDriver
@@ -26,9 +28,3 @@ database:
 #
 logging:
   level: off
-  loggers:
-    "nl.knaw.dans":
-      level: off
-  appenders:
-    - type: console
-      logFormat: "%-5p [%d{ISO8601}] [%t] %c: %m%n%rEx"

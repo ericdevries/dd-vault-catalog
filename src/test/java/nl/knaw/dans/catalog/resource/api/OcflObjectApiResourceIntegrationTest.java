@@ -18,15 +18,13 @@ package nl.knaw.dans.catalog.resource.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.dropwizard.testing.DropwizardTestSupport;
 import io.dropwizard.testing.ResourceHelpers;
+import io.dropwizard.testing.junit5.DropwizardAppExtension;
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import nl.knaw.dans.catalog.DdVaultCatalogApplication;
 import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
 import nl.knaw.dans.catalog.api.*;
 import org.glassfish.jersey.client.JerseyClientBuilder;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -40,22 +38,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(DropwizardExtensionsSupport.class)
-class OcflObjectApiResourceTest {
+class OcflObjectApiResourceIntegrationTest {
 
-    public static final DropwizardTestSupport<DdVaultCatalogConfiguration> SUPPORT =
-        new DropwizardTestSupport<>(DdVaultCatalogApplication.class,
+    public static final DropwizardAppExtension<DdVaultCatalogConfiguration> EXT =
+        new DropwizardAppExtension<>(
+            DdVaultCatalogApplication.class,
             ResourceHelpers.resourceFilePath("debug-etc/test.yml")
         );
-
-    @BeforeAll
-    public static void beforeClass() throws Exception {
-        SUPPORT.before();
-    }
-
-    @AfterAll
-    public static void afterClass() {
-        SUPPORT.after();
-    }
 
     @Test
     public void createOcflVersion_should_return_201() throws Exception {
@@ -74,13 +63,13 @@ class OcflObjectApiResourceTest {
             .filePidToLocalPath("filePidToLocalPath")
             .nbn("someNbn");
 
-        var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
+        var str = EXT.getObjectMapper().writeValueAsString(entity);
 
         var bagId = UUID.randomUUID().toString();
         var version = 1;
 
         try (var response = client.target(
-                String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version))
+                String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", EXT.getLocalPort(), bagId, version))
             .request()
             .put(Entity.json(str))) {
 
@@ -105,17 +94,17 @@ class OcflObjectApiResourceTest {
 
     @Test
     public void createOcflVersion_should_return_409_if_version_already_exists() throws Exception {
-        var client = new JerseyClientBuilder().build();
+        var client = EXT.client();
         var entity = new OcflObjectVersionParametersDto()
             .dataSupplier("test")
             .nbn("someNbn");
 
-        var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
+        var str = EXT.getObjectMapper().writeValueAsString(entity);
 
         var bagId = UUID.randomUUID().toString();
         var version = 1;
 
-        var url = String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version);
+        var url = String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", EXT.getLocalPort(), bagId, version);
 
         try (var response = client.target(url)
             .request()
@@ -131,17 +120,17 @@ class OcflObjectApiResourceTest {
 
     @Test
     public void getOcflVersion_should_return_existing_item_after_unassignment_from_tar() throws Exception {
-        var client = new JerseyClientBuilder().build();
+        var client = EXT.client();
         var entity = new OcflObjectVersionParametersDto()
             .dataSupplier("test")
             .nbn("someNbn");
 
-        var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
+        var str = EXT.getObjectMapper().writeValueAsString(entity);
 
         var bagId = "urn:uuid:" + UUID.randomUUID();
         var version = 1;
 
-        var url = String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version);
+        var url = String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", EXT.getLocalPort(), bagId, version);
 
         // creating ocfl object
         try (var response = client.target(url).request().put(Entity.json(str))) {
@@ -155,7 +144,7 @@ class OcflObjectApiResourceTest {
             .ocflObjectVersions(List.of(new OcflObjectVersionRefDto().objectVersion(version).bagId(bagId)));
 
         // creating tar
-        var apiUrl = String.format("http://localhost:%d/tar/", SUPPORT.getLocalPort());
+        var apiUrl = String.format("http://localhost:%d/tar/", EXT.getLocalPort());
         try (var response = client.target(apiUrl).request().post(Entity.json(tar))) {
             assertEquals(201, response.getStatus());
 
@@ -197,11 +186,11 @@ class OcflObjectApiResourceTest {
             .skeletonRecord(true)
             .nbn("someNbn");
 
-        var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
+        var str = EXT.getObjectMapper().writeValueAsString(entity);
         var bagId = UUID.randomUUID().toString();
         var version = 1;
 
-        var url = String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version);
+        var url = String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", EXT.getLocalPort(), bagId, version);
 
         // creating ocfl object
         try (var response = client.target(url).request().put(Entity.json(str))) {
@@ -226,11 +215,11 @@ class OcflObjectApiResourceTest {
             .skeletonRecord(true)
             .nbn("someNbn");
 
-        var str = SUPPORT.getObjectMapper().writeValueAsString(entity);
+        var str = EXT.getObjectMapper().writeValueAsString(entity);
         var bagId = UUID.randomUUID().toString();
         var version = 1;
 
-        var url = String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", SUPPORT.getLocalPort(), bagId, version);
+        var url = String.format("http://localhost:%d/ocflObject/bagId/%s/version/%s", EXT.getLocalPort(), bagId, version);
 
         // creating ocfl object
         try (var response = client.target(url).request().put(Entity.json(str))) {
@@ -238,7 +227,7 @@ class OcflObjectApiResourceTest {
         }
 
         entity.dataSupplier(null);
-        str = SUPPORT.getObjectMapper().writeValueAsString(entity);
+        str = EXT.getObjectMapper().writeValueAsString(entity);
 
         // verify it also returns true on the next request
         try (var response = client.target(url).request().put(Entity.json(str))) {

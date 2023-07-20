@@ -60,6 +60,7 @@ class TarRepositoryTest {
                 .bagId("bagid")
                 .objectVersion(1)
                 .otherId("TEST")
+                .created(OffsetDateTime.now())
                 .build();
 
             var part1 = TarPart.builder()
@@ -68,11 +69,13 @@ class TarRepositoryTest {
                 .checksumValue("cs")
                 .build();
 
-            tar.setOcflObjectVersions(List.of(version1));
             tar.setTarParts(List.of(part1));
+            tar.setOcflObjectVersions(List.of(version1));
 
             tarRepository.save(tar);
             tarRepository.evict(tar);
+
+            version1.setTar(tar);
         });
 
         var tars = tarRepository.findAll();
@@ -94,6 +97,7 @@ class TarRepositoryTest {
                 .bagId("bagid")
                 .objectVersion(1)
                 .otherId("TEST")
+                .created(OffsetDateTime.now())
                 .build();
 
             var part1 = TarPart.builder()

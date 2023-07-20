@@ -17,8 +17,8 @@ package nl.knaw.dans.catalog;
 
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
-import nl.knaw.dans.catalog.client.OcflObjectMetadataReader;
-import nl.knaw.dans.catalog.client.SolrServiceImpl;
+import nl.knaw.dans.catalog.core.solr.OcflObjectMetadataReader;
+import nl.knaw.dans.catalog.core.solr.SolrServiceImpl;
 import nl.knaw.dans.catalog.core.OcflObjectVersionRepository;
 import nl.knaw.dans.catalog.core.SearchIndex;
 import nl.knaw.dans.catalog.core.TarRepository;

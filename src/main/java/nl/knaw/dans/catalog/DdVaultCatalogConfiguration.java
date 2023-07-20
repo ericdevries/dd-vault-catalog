@@ -19,11 +19,13 @@ package nl.knaw.dans.catalog;
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class DdVaultCatalogConfiguration extends Configuration {
     @Valid
     @NotNull
@@ -35,5 +37,6 @@ public class DdVaultCatalogConfiguration extends Configuration {
     @Data
     public static class SolrConfig {
         private String url;
+        private String schema;
     }
 }

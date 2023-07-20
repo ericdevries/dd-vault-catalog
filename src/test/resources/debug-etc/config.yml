@@ -31,7 +31,6 @@ logging:
   appenders:
     - type: console
       logFormat: "%-5p [%d{ISO8601}] [%t] %c: %m%n%rEx"
-
     - type: file
       archive: false
       currentLogFilename: data/dd-vault-catalog.log

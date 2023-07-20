@@ -87,12 +87,16 @@
             <artifactId>dropwizard-views-freemarker</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-annotations</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.jena/apache-jena-libs -->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>apache-jena-libs</artifactId>
+            <version>4.9.0</version>
+            <type>pom</type>
         </dependency>
 
         <!-- test dependencies -->
@@ -188,6 +192,7 @@
                                 <delegatePattern>true</delegatePattern>
                                 <interfaceOnly>true</interfaceOnly>
                                 <returnResponse>true</returnResponse>
+                                <useSwaggerAnnotations>false</useSwaggerAnnotations>
                             </configOptions>
                         </configuration>
                     </execution>
