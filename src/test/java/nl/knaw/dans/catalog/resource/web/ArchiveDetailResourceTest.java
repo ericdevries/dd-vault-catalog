@@ -53,7 +53,7 @@ class ArchiveDetailResourceTest {
         var tar = Tar.builder()
             .tarUuid("uuid")
             .vaultPath("path")
-            .archivalDate(OffsetDateTime.now())
+            .archivalTimestamp(OffsetDateTime.now())
             .build();
 
         var ocflObjectVersion1 = OcflObjectVersion.builder()

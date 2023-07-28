@@ -105,7 +105,7 @@ class OcflObjectApiResourceIntegrationTest {
     }
 
     @Test
-    public void createOcflVersion_should_return_409_if_version_already_exists() throws Exception {
+    public void createOcflVersion_should_return_201_if_version_already_exists() throws Exception {
         var client = EXT.client();
         var entity = new OcflObjectVersionParametersDto()
             .dataSupplier("test")
@@ -124,8 +124,8 @@ class OcflObjectApiResourceIntegrationTest {
 
             assertEquals(201, response.getStatus());
 
-            try (var conflicted = client.target(url).request().put(Entity.json(str))) {
-                assertEquals(409, conflicted.getStatus());
+            try (var sameRecord = client.target(url).request().put(Entity.json(str))) {
+                assertEquals(201, sameRecord.getStatus());
             }
         }
     }
@@ -152,7 +152,7 @@ class OcflObjectApiResourceIntegrationTest {
         var tar = new TarParameterDto()
             .tarUuid(UUID.randomUUID())
             .vaultPath("somePath")
-            .archivalDate(OffsetDateTime.now())
+            .archivalTimestamp(OffsetDateTime.now())
             .ocflObjectVersions(List.of(new OcflObjectVersionRefDto().objectVersion(version).bagId(bagId)));
 
         // creating tar

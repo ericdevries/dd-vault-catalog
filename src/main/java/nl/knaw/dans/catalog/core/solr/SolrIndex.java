@@ -117,7 +117,7 @@ public class SolrIndex implements SearchIndex {
         if (ocflObjectVersion.getTar() != null) {
             doc.setField("tar_id", ocflObjectVersion.getTar().getTarUuid());
             doc.setField("tar_vault_path", ocflObjectVersion.getTar().getVaultPath());
-            doc.setField("tar_archival_date", formatDate(ocflObjectVersion.getTar().getArchivalDate()));
+            doc.setField("tar_archival_date", formatDate(ocflObjectVersion.getTar().getArchivalTimestamp()));
 
             for (var tarPart : ocflObjectVersion.getTar().getTarParts()) {
                 doc.addField("tar_part_name", tarPart.getPartName());
