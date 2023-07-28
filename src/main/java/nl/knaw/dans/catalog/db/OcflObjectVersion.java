@@ -99,7 +99,7 @@ public class OcflObjectVersion {
     private String metadata;
 
     @Column(name = "filepid_to_local_path")
-    private String filePidToLocalPath;
+    private String filepidToLocalPath;
 
     @Column
     private Boolean deaccessioned;

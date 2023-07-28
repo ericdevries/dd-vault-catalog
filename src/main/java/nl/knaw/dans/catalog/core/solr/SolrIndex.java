@@ -21,11 +21,9 @@ import nl.knaw.dans.catalog.DdVaultCatalogConfiguration;
 import nl.knaw.dans.catalog.core.SearchIndex;
 import nl.knaw.dans.catalog.db.OcflObjectVersion;
 import nl.knaw.dans.catalog.db.Tar;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.Http2SolrClient;
 import org.apache.solr.common.SolrInputDocument;
 
-import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
@@ -106,7 +104,7 @@ public class SolrIndex implements SearchIndex {
         doc.setField("sword_token", ocflObjectVersion.getSwordToken());
         doc.setField("other_id", ocflObjectVersion.getOtherId());
         doc.setField("other_id_version", ocflObjectVersion.getOtherIdVersion());
-        doc.setField("filepid_to_local_path", ocflObjectVersion.getFilePidToLocalPath());
+        doc.setField("filepid_to_local_path", ocflObjectVersion.getFilepidToLocalPath());
         doc.setField("ocfl_object_path", ocflObjectVersion.getOcflObjectPath());
         doc.setField("deaccessioned", ocflObjectVersion.getDeaccessioned());
         doc.setField("exporter", ocflObjectVersion.getExporter());

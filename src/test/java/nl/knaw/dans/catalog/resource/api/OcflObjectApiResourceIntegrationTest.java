@@ -68,7 +68,7 @@ class OcflObjectApiResourceIntegrationTest {
             .otherIdVersion("otherIdVersion")
             .ocflObjectPath("ocflObjectPath")
             .metadata(metadata)
-            .filePidToLocalPath("filePidToLocalPath");
+            .filepidToLocalPath("filePidToLocalPath");
 
         var str = EXT.getObjectMapper().writeValueAsString(entity);
 
@@ -98,7 +98,7 @@ class OcflObjectApiResourceIntegrationTest {
             assertEquals("otherIdVersion", dto.getOtherIdVersion());
             assertEquals("ocflObjectPath", dto.getOcflObjectPath());
             assertEquals(metadata, dto.getMetadata());
-            assertEquals("filePidToLocalPath", dto.getFilePidToLocalPath());
+            assertEquals("filePidToLocalPath", dto.getFilepidToLocalPath());
             assertEquals(bagId, dto.getBagId());
             assertNull(dto.getTarUuid());
         }

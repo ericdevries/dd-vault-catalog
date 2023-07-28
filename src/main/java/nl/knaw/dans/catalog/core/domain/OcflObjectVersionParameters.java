@@ -33,7 +33,7 @@ public class OcflObjectVersionParameters {
     String otherIdVersion;
     String ocflObjectPath;
     Map<String, Object> metadata;
-    String filePidToLocalPath;
+    String filepidToLocalPath;
     Boolean skeletonRecord;
     Boolean deaccessioned;
     String exporter;

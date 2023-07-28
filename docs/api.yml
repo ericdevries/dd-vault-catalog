@@ -367,7 +367,7 @@ components:
           type: object
           format: "json-ld"
           additionalProperties: true
-        filePidToLocalPath:
+        filepidToLocalPath:
           type: string
         deaccessioned:
           type: boolean
@@ -419,7 +419,7 @@ components:
           type: object
           format: "json-ld"
           additionalProperties: true
-        filePidToLocalPath:
+        filepidToLocalPath:
           type: string
         skeletonRecord:
           type: boolean
