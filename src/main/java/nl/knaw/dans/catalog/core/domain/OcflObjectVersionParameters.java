@@ -18,7 +18,6 @@ package nl.knaw.dans.catalog.core.domain;
 import lombok.Builder;
 import lombok.Value;
 
-import java.time.OffsetDateTime;
 import java.util.Map;
 
 @Value
@@ -26,6 +25,7 @@ import java.util.Map;
 public class OcflObjectVersionParameters {
     String swordToken;
     String nbn;
+    String datastation;
     String dataSupplier;
     String dataversePid;
     String dataversePidVersion;
@@ -34,6 +34,8 @@ public class OcflObjectVersionParameters {
     String ocflObjectPath;
     Map<String, Object> metadata;
     String filePidToLocalPath;
-    OffsetDateTime exportTimestamp;
     Boolean skeletonRecord;
+    Boolean deaccessioned;
+    String exporter;
+    String exporterVersion;
 }

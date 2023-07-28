@@ -90,11 +90,13 @@ public class UseCases {
         ocflObjectVersion.setObjectVersion(id.getObjectVersion());
         ocflObjectVersion.setBagId(id.getBagId());
 
+        log.info("Creating new OCFL object version with bagId {} and version {}: {}", id.getBagId(), id.getObjectVersion(), ocflObjectVersion);
+        ocflObjectVersionRepository.save(ocflObjectVersion);
+
         log.info("Indexing OCFL object version in search index: {}", ocflObjectVersion.getId());
         searchIndex.indexOcflObjectVersion(ocflObjectVersion);
 
-        log.info("Creating new OCFL object version with bagId {} and version {}: {}", id.getBagId(), id.getObjectVersion(), ocflObjectVersion);
-        return ocflObjectVersionRepository.save(ocflObjectVersion);
+        return ocflObjectVersion;
     }
 
     @UnitOfWork

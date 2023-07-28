@@ -330,7 +330,9 @@ components:
         dataversePidVersion: V1.0
         otherId: REPO1:31998
         otherIdVersion: 3.2
-        exportTimestamp: 2023-04-09T11:56:58.607Z
+        deaccessioned: false
+        exporter: vault-catalog-service
+        exporterVersion: 1.2.3
       required:
         - bagId
         - objectVersion
@@ -353,6 +355,8 @@ components:
           type: string
         dataversePidVersion:
           type: string
+        datastation:
+          type: string
         otherId:
           type: string
         otherIdVersion:
@@ -365,9 +369,12 @@ components:
           additionalProperties: true
         filePidToLocalPath:
           type: string
-        exportTimestamp:
+        deaccessioned:
+          type: boolean
+        exporter:
           type: string
-          format: date-time
+        exporterVersion:
+          type: string
         skeletonRecord:
           type: boolean
           default: false
@@ -386,10 +393,15 @@ components:
         otherId: REPO1:31998
         otherIdVersion: 3.2
         exportTimestamp: 2023-04-09T11:56:58.607Z
+        deaccessioned: false
+        exporter: vault-catalog-service
+        exporterVersion: 1.2.3
       properties:
         swordToken:
           type: string
         nbn:
+          type: string
+        datastation:
           type: string
         dataSupplier:
           type: string
@@ -409,12 +421,15 @@ components:
           additionalProperties: true
         filePidToLocalPath:
           type: string
-        exportTimestamp:
-          type: string
-          format: date-time
         skeletonRecord:
           type: boolean
           default: false
+        deaccessioned:
+          type: boolean
+        exporter:
+          type: string
+        exporterVersion:
+          type: string
 
     OcflObjectVersionRef:
       type: object
