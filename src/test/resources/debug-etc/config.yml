@@ -3,12 +3,10 @@ server:
   adminContextPath: /
   applicationConnectors:
     - type: http
-      # Replace with port number unique for this service
-      port: 20000
+      port: 20305
   adminConnectors:
     - type: http
-      # Replace with port number unique for this service
-      port: 20001
+      port: 20306
 
 database:
   driverClass: org.hsqldb.jdbcDriver
